@@ -1,6 +1,6 @@
 {
   "name": "tracker-thing-root",
-  "private": "true",
+  "private": true,
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm -w --filter docs run dev",
