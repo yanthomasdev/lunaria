@@ -1,0 +1,15 @@
+{
+  "name": "tracker-thing-root",
+  "private": "true",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm -w --filter docs run dev",
+    "build:core": "pnpm -w --filter 'packages/core' build",
+    "format": "prettier -w --cache --plugin prettier-plugin-astro ."
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "3.0.3",
+    "prettier-plugin-astro": "0.12.0"
+  }
+}

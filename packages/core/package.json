@@ -1,0 +1,30 @@
+{
+  "name": "@tracker-thing/core",
+  "version": "0.0.1",
+  "description": "Translation management system for open-source projects",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.ts --format cjs,esm --dts",
+    "lint": "tsc"
+  },
+  "keywords": [
+    "i18n",
+    "translation",
+    "dashboard",
+    "management"
+  ],
+  "author": "Yan Thomas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yan-Thomas/tracker-thing",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/Yan-Thomas/tracker-thing/issues",
+  "devDependencies": {
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  }
+}
