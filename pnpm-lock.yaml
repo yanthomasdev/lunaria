@@ -29,11 +29,18 @@ importers:
 
   examples/with-vitepress:
     devDependencies:
+      '@tracker-thing/core':
+        specifier: workspace:^
+        version: link:../../packages/core
       vitepress:
         specifier: 1.0.0-rc.20
         version: 1.0.0-rc.20(@algolia/client-search@4.20.0)(search-insights@2.8.3)
 
   packages/core:
+    dependencies:
+      zod:
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       tsup:
         specifier: ^7.2.0
@@ -4755,6 +4762,10 @@ packages:
 
   /zod@3.21.1:
     resolution: {integrity: sha512-+dTu2m6gmCbO9Ahm4ZBDapx2O6ZY9QSPXst2WXjcznPMwf2YNpn3RevLx4KkZp1OPW/ouFcoBtBzFz/LeY69oA==}
+    dev: false
+
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
 
   /zwitch@2.0.4:
