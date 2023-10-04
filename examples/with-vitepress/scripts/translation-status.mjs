@@ -5,8 +5,8 @@ const tracker = createTracker({
 	defaultLocale: {
 		label: 'English',
 		lang: 'en',
-		contentLocation: "./**/*.md"
+		contentLocation: './**/*.md',
 	},
 });
 
-console.log("Run successfully!");
+console.log('Run successfully!');
