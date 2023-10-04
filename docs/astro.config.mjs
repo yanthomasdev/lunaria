@@ -6,16 +6,17 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Tracker Thing',
-			sidebar: 
-			[{
-				label: 'Start Here',
-				items: [
-					{
-						label: 'Getting Started',
-						link: 'getting-started'
-					}
-				]
-			}]
+			sidebar: [
+				{
+					label: 'Start Here',
+					items: [
+						{
+							label: 'Getting Started',
+							link: 'getting-started',
+						},
+					],
+				},
+			],
 		}),
 	],
 });
