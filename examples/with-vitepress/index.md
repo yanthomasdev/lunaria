@@ -1,4 +1,5 @@
 ---
+i18nReady: true
 layout: home
 
 hero:
