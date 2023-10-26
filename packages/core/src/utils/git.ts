@@ -3,7 +3,7 @@ import os from 'os';
 import { join, resolve } from 'path';
 import { simpleGit } from 'simple-git';
 import { GitHostingUrl } from '../types';
-import { TrackerThingConfig } from './config';
+import { LunariaConfig } from './config';
 
 const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
@@ -13,7 +13,7 @@ const git = simpleGit({
  * that only allow shallow repositores (e.g. Vercel) and returns
  * `true` if it's running on a shallow repository.
  */
-export async function handleShallowRepo({ cloneDir, repository }: TrackerThingConfig) {
+export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig) {
 	const isShallowRepo = await git.revparse(['--is-shallow-repository']);
 	if (isShallowRepo === 'true') {
 		console.info(

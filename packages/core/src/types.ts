@@ -1,7 +1,7 @@
 import { TemplateResult } from 'lit-html';
-import { TrackerThingConfig } from './utils/config';
+import { LunariaConfig } from './utils/config';
 
-export { Dashboard, Locale, SharedPathResolver, TrackerThingConfig } from './utils/config';
+export { Dashboard, Locale, LunariaConfig, SharedPathResolver } from './utils/config';
 
 export type AugmentedFileData = FileData & AdditionalContentData;
 
@@ -78,9 +78,9 @@ export type RegExpGroups<T extends string> =
 	  })
 	| null;
 
-export type CustomComponent = (opts: TrackerThingConfig) => TemplateResult<1>;
+export type CustomComponent = (opts: LunariaConfig) => TemplateResult<1>;
 
 export type CustomStatusComponent = (
-	opts: TrackerThingConfig,
+	opts: LunariaConfig,
 	translationStatus: FileTranslationStatus[]
 ) => TemplateResult<1>;

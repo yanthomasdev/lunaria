@@ -1,11 +1,11 @@
 {
-  "name": "tracker-thing-root",
+  "name": "lunaria-root",
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev:docs": "pnpm --filter tracker-thing-docs dev",
-    "dev:core": "pnpm --filter @tracker-thing/core dev",
-    "build:core": "pnpm --filter @tracker-thing/core build",
+    "dev:docs": "pnpm --filter lunaria-docs dev",
+    "dev:core": "pnpm --filter @lunaria/core dev",
+    "build:core": "pnpm --filter @lunaria/core build",
     "format": "prettier -w --cache --plugin prettier-plugin-astro ."
   },
   "license": "MIT",

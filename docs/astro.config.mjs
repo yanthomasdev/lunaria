@@ -5,7 +5,7 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'Tracker Thing',
+			title: 'Lunaria',
 			sidebar: [
 				{
 					label: 'Start Here',

@@ -11,8 +11,8 @@ import {
 	FileData,
 	FileTranslationStatus,
 	IndexData,
+	LunariaConfig,
 	RegExpGroups,
-	TrackerThingConfig,
 } from './types';
 import { SharedPathResolver } from './utils/config';
 import { getGitHostingUrl, getPageHistory } from './utils/git';
@@ -23,7 +23,7 @@ import {
 	toUtcString,
 } from './utils/misc';
 
-export default async function run(opts: TrackerThingConfig, isShallowRepo: boolean) {
+export default async function run(opts: LunariaConfig, isShallowRepo: boolean) {
 	console.time('⌛ Building translation dashboard');
 	console.log(`➡️  Dashboard output path: ${resolve(opts.outDir)}`);
 
@@ -41,7 +41,7 @@ export default async function run(opts: TrackerThingConfig, isShallowRepo: boole
 }
 
 export async function getTranslationStatus(
-	opts: TrackerThingConfig,
+	opts: LunariaConfig,
 	fileContentIndex: FileContentIndex
 ) {
 	const { defaultLocale, locales, repository, rootDir } = opts;
@@ -134,7 +134,7 @@ export async function getDictionaryTranslationStatus(
 	};
 }
 
-export async function getContentIndex(opts: TrackerThingConfig, isShallowRepo: boolean) {
+export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolean) {
 	const {
 		translatableProperty,
 		rootDir,

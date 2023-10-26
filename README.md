@@ -1,6 +1,6 @@
-# Tracker Thing (Name TBD)
+# Lunaria
 
-Tracker Thing is an "own your content" translation management system for open-source projects.
+Lunaria is an "own your content" translation management system for open-source projects.
 
 ## Is it ready?
 

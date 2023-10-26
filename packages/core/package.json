@@ -1,5 +1,5 @@
 {
-  "name": "@tracker-thing/core",
+  "name": "@lunaria/core",
   "type": "module",
   "version": "0.0.0-alpha.1",
   "description": "Translation management system for open-source projects",
@@ -23,10 +23,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yan-Thomas/tracker-thing",
+    "url": "https://github.com/Yan-Thomas/lunaria",
     "directory": "packages/core"
   },
-  "bugs": "https://github.com/Yan-Thomas/tracker-thing/issues",
+  "bugs": "https://github.com/Yan-Thomas/lunaria/issues",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --watch",

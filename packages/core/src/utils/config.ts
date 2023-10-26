@@ -227,7 +227,7 @@ const DashboardSchema = z.object({
 		.default({}),
 });
 
-export const TrackerThingConfigSchema = z.object({
+export const LunariaConfigSchema = z.object({
 	dashboard: DashboardSchema,
 	/** The default locale of your content that is going to be translated. */
 	defaultLocale: LocaleSchema,
@@ -250,7 +250,7 @@ export const TrackerThingConfigSchema = z.object({
 	customSharedPathResolver: SharedPathResolverSchema.describe(
 		'Custom fuction to handle the shared path resolver, used to "link" pages between two locales.'
 	),
-	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/tracker-thing"`. */
+	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria"`. */
 	repository: z
 		.string()
 		.url()
@@ -263,7 +263,7 @@ export const TrackerThingConfigSchema = z.object({
 		// Removes any trailing slashes
 		.transform((link) => link.replace(/\/+$/, ''))
 		.describe(
-			'The URL of your current repository, used to generate history links, e.g. `"github.com/Yan-Thomas/tracker-thing"`.'
+			'The URL of your current repository, used to generate history links, e.g. `"github.com/Yan-Thomas/lunaria"`.'
 		),
 	/** The root directory of the project being tracked, must be set when using a monorepo.
 	 *
@@ -308,5 +308,5 @@ export const TrackerThingConfigSchema = z.object({
 export type Locale = z.output<typeof LocaleSchema>;
 export type SharedPathResolver = z.infer<typeof SharedPathResolverSchema>;
 export type Dashboard = z.output<typeof DashboardSchema>;
-export type TrackerThingConfig = z.infer<typeof TrackerThingConfigSchema>;
-export type TrackerThingUserConfig = z.input<typeof TrackerThingConfigSchema>;
+export type LunariaConfig = z.infer<typeof LunariaConfigSchema>;
+export type LunariaUserConfig = z.input<typeof LunariaConfigSchema>;

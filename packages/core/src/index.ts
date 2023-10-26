@@ -1,5 +1,5 @@
 import run from './tracker';
-import { TrackerThingConfigSchema, TrackerThingUserConfig } from './utils/config';
+import { LunariaConfigSchema, LunariaUserConfig } from './utils/config';
 import { handleShallowRepo } from './utils/git';
 
 export type {
@@ -7,19 +7,19 @@ export type {
 	FileData,
 	FileTranslationStatus,
 	Locale,
+	LunariaConfig,
 	SharedPathResolver,
-	TrackerThingConfig,
 } from './types';
 
 export { html } from 'lit-html';
 
-export async function createTracker(opts: TrackerThingUserConfig) {
-	const parsedConfig = TrackerThingConfigSchema.safeParse(opts);
+export async function createTracker(opts: LunariaUserConfig) {
+	const parsedConfig = LunariaConfigSchema.safeParse(opts);
 
 	if (!parsedConfig.success) {
 		console.error(
 			new Error(
-				'Invalid configuration options passed to `@tracker-thing/core`\n' +
+				'Invalid configuration options passed to `@lunaria/core`\n' +
 					parsedConfig.error.issues.map((i) => i).join('\n')
 			)
 		);

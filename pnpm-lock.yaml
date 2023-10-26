@@ -31,10 +31,11 @@ importers:
         version: 0.32.6
 
   examples/with-vitepress:
-    devDependencies:
-      '@tracker-thing/core':
-        specifier: workspace:^
+    dependencies:
+      '@lunaria/core':
+        specifier: workspace:0.0.0-alpha.1
         version: link:../../packages/core
+    devDependencies:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.8.9)(typescript@5.2.2)

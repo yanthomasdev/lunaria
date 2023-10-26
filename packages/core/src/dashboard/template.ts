@@ -1,12 +1,12 @@
 import { html } from 'lit-html';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
-import { Dashboard, FileTranslationStatus, TrackerThingConfig } from '../types';
+import { Dashboard, FileTranslationStatus, LunariaConfig } from '../types';
 import { getTextFromFormat, renderToString } from '../utils/misc';
 import { defaultStyles } from './styles';
 
 export async function generateDashboardHtml(
-	opts: TrackerThingConfig,
+	opts: LunariaConfig,
 	translationStatus: FileTranslationStatus[]
 ) {
 	const html = await rehype()
@@ -15,7 +15,7 @@ export async function generateDashboardHtml(
 	return String(html);
 }
 
-const Page = (opts: TrackerThingConfig, translationStatus: FileTranslationStatus[]) => {
+const Page = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
 	const { dashboard } = opts;
 	return html`
 		<!doctype html>
@@ -49,7 +49,7 @@ const DefaultMeta = (dashboard: Dashboard) => html`
 	<meta property="og:description" content="${dashboard.description}" />
 `;
 
-const DefaultContent = (opts: TrackerThingConfig, translationStatus: FileTranslationStatus[]) => {
+const DefaultContent = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
 	const { dashboard } = opts;
 	return html`
 		<main>
@@ -66,7 +66,7 @@ const DefaultContent = (opts: TrackerThingConfig, translationStatus: FileTransla
 	`;
 };
 
-const StatusByLocale = (opts: TrackerThingConfig, translationStatus: FileTranslationStatus[]) => {
+const StatusByLocale = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-locale">
@@ -126,7 +126,7 @@ const StatusByLocale = (opts: TrackerThingConfig, translationStatus: FileTransla
 	`;
 };
 
-const StatusByContent = (opts: TrackerThingConfig, translationStatus: FileTranslationStatus[]) => {
+const StatusByContent = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-content">
