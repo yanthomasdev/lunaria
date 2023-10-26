@@ -19,7 +19,7 @@ export async function createTracker(opts: LunariaUserConfig) {
 	if (!parsedConfig.success) {
 		console.error(
 			new Error(
-				'Invalid configuration options passed to `@lunaria/core`\n' +
+				'Invalid configuration options passed to `@lunariajs/core`\n' +
 					parsedConfig.error.issues.map((i) => i).join('\n')
 			)
 		);

@@ -1,4 +1,4 @@
-import { createTracker } from '@lunaria/core';
+import { createTracker } from '@lunariajs/core';
 
 const tracker = await createTracker({
 	repository: 'https://github.com/Yan-Thomas/lunaria',

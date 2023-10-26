@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "scripts": {
     "dev:docs": "pnpm --filter lunaria-docs dev",
-    "dev:core": "pnpm --filter @lunaria/core dev",
-    "build:core": "pnpm --filter @lunaria/core build",
+    "dev:core": "pnpm --filter @lunariajs/core dev",
+    "build:core": "pnpm --filter @lunariajs/core build",
     "format": "prettier -w --cache --plugin prettier-plugin-astro ."
   },
   "license": "MIT",
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "prettier": "3.0.3",
     "prettier-plugin-astro": "0.12.0",
     "prettier-plugin-organize-imports": "^3.2.3"
