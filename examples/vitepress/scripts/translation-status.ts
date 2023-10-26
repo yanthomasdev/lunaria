@@ -2,7 +2,7 @@ import { createTracker } from '@lunaria/core';
 
 const tracker = await createTracker({
 	repository: 'https://github.com/Yan-Thomas/lunaria',
-	rootDir: './examples/with-vitepress',
+	rootDir: './examples/vitepress',
 	dashboard: {
 		//title: "Estado da Tradução",
 		url: 'https://localhost:3000/',

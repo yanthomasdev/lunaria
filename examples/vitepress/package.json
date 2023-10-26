@@ -1,5 +1,5 @@
 {
-  "name": "@example/with-vitepress",
+  "name": "@example/vitepress",
   "type": "module",
   "private": true,
   "version": "0.0.1",

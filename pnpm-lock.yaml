@@ -30,7 +30,7 @@ importers:
         specifier: ^0.32.5
         version: 0.32.6
 
-  examples/with-vitepress:
+  examples/vitepress:
     dependencies:
       '@lunaria/core':
         specifier: workspace:0.0.0-alpha.1
