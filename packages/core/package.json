@@ -1,14 +1,17 @@
 {
   "name": "@tracker-thing/core",
-  "version": "0.0.1",
+  "type": "module",
+  "version": "0.0.0-alpha.1",
   "description": "Translation management system for open-source projects",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts",
-    "dev": "tsup index.ts --watch",
-    "lint": "tsc"
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
   },
   "keywords": [
     "i18n",
@@ -24,11 +27,25 @@
     "directory": "packages/core"
   },
   "bugs": "https://github.com/Yan-Thomas/tracker-thing/issues",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --watch",
+    "lint": "tsc"
+  },
   "devDependencies": {
+    "@types/micromatch": "^4.0.3",
+    "@types/node": "^20.8.9",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "fast-glob": "^3.3.1",
+    "lit-html": "^3.0.0",
+    "micromatch": "^4.0.5",
+    "rehype": "^13.0.1",
+    "rehype-format": "^5.0.0",
+    "simple-git": "^3.20.0",
+    "ultramatter": "^0.0.4",
     "zod": "^3.22.3"
   }
 }

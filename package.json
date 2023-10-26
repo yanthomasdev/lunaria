@@ -11,7 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "prettier": "3.0.3",
-    "prettier-plugin-astro": "0.12.0"
+    "prettier-plugin-astro": "0.12.0",
+    "prettier-plugin-organize-imports": "^3.2.3"
   },
   "packageManager": "pnpm@8.7.6"
 }
