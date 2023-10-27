@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.5
+
+### Patch Changes
+
+- cc4c807: Fix ESM exports
+
 ## 0.0.4
 
 ### Patch Changes
