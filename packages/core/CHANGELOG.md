@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.3
+
+### Patch Changes
+
+- c41e14e: Fix .cjs types & published files in `package.json`
+
 ## 0.0.2
 
 ### Patch Changes
