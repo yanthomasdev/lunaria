@@ -1,4 +1,4 @@
 module.exports = {
-    brand: "Automobiles",
-    type: "Comfort"
-}
+	brand: 'Automobiles',
+	type: 'Comfort',
+};

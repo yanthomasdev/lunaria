@@ -1,4 +1,4 @@
 export default {
-    brand: "Automobiles",
-    type: "Comfort"
-}
+	brand: 'Automobiles',
+	type: 'Comfort',
+};
