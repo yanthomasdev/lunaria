@@ -4,7 +4,7 @@
   "version": "0.0.4",
   "description": "Translation management system for open-source projects",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -13,8 +13,8 @@
         "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
     }
   },
