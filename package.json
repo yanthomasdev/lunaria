@@ -6,7 +6,8 @@
     "dev:docs": "pnpm --filter lunaria-docs dev",
     "dev:core": "pnpm --filter @lunariajs/core dev",
     "build:core": "pnpm --filter @lunariajs/core build",
-    "format": "prettier -w --cache --plugin prettier-plugin-astro ."
+    "format": "prettier -w --cache --plugin prettier-plugin-astro .",
+    "version": "pnpm changeset version && pnpm i --no-frozen-lockfile"
   },
   "license": "MIT",
   "devDependencies": {
