@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: 'Exemplo VitePress'
-  tagline: Exemplo mostrando Tracker Thing + VitePress
+  tagline: Exemplo mostrando Lunaria + VitePress
   actions:
     - theme: brand
       text: Primeira página

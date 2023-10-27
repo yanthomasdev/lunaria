@@ -5,7 +5,7 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "useTabs": true,
-  "plugins": ["prettier-plugin-astro"],
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-organize-imports"],
   "overrides": [
     {
       "files": [".*", "*.json", "*.md", "*.toml", "*.yml"],

@@ -1,15 +1,19 @@
 {
-  "name": "@example/with-vitepress",
+  "name": "@example/vitepress",
+  "type": "module",
   "private": true,
   "version": "0.0.1",
   "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
-    "translation-status": "node ./scripts/translation-status.mjs"
+    "translation-status": "ts-node-esm ./scripts/translation-status.ts"
   },
   "devDependencies": {
-    "@tracker-thing/core": "workspace:^",
+    "ts-node": "^10.9.1",
     "vitepress": "1.0.0-rc.20"
+  },
+  "dependencies": {
+    "@lunariajs/core": "workspace:0.0.0"
   }
 }
