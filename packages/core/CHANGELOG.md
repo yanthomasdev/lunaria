@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.4
+
+### Patch Changes
+
+- a10f2a4: Add missing build files
+
 ## 0.0.3
 
 ### Patch Changes
