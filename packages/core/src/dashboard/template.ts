@@ -74,11 +74,12 @@ const StatusByLocale = (opts: LunariaConfig, translationStatus: FileTranslationS
 		</h2>
 		${locales.map(({ label, lang }) => {
 			const missingPages = translationStatus.filter(
-				(content) => content.translations[lang].isMissing
+				(content) => content.translations[lang]?.isMissing
 			);
 			const outdatedPages = translationStatus.filter(
 				(content) =>
-					content.translations[lang].isOutdated || !content.translations[lang].completeness.complete
+					content.translations[lang]?.isOutdated ||
+					!content.translations[lang]?.completeness.complete
 			);
 			const doneLength = translationStatus.length - outdatedPages.length - missingPages.length;
 
@@ -148,23 +149,23 @@ const StatusByContent = (opts: LunariaConfig, translationStatus: FileTranslation
 							<td>
 								${Object.keys(page.translations).map(
 									(lang) => html`
-										${page.translations[lang].isMissing
+										${page.translations[lang]?.isMissing
 											? html`<span title="${dashboard.ui['status.missing']}"
 													><span aria-hidden="true"
 														>${dashboard.ui['status.emojiMissing']}</span
 													></span
 											  >`
-											: page.translations[lang].isOutdated ||
-											  !page.translations[lang].completeness.complete
+											: page.translations[lang]?.isOutdated ||
+											  !page.translations[lang]?.completeness.complete
 											? html`<a
-													href="${page.translations[lang].gitHostingUrl}"
+													href="${page.translations[lang]?.gitHostingUrl}"
 													title="${dashboard.ui['status.outdated']}"
 													><span aria-hidden="true"
 														>${dashboard.ui['status.emojiOutdated']}</span
 													></a
 											  >`
 											: html`<a
-													href="${page.translations[lang].gitHostingUrl}"
+													href="${page.translations[lang]?.gitHostingUrl}"
 													title="${dashboard.ui['status.done']}"
 													><span aria-hidden="true">${dashboard.ui['status.emojiDone']}</span></a
 											  >`}
@@ -199,14 +200,14 @@ const OutdatedPages = (
 			${outdatedPages.map(
 				(page) => html`
 					<li>
-						${!page.translations[lang].completeness.complete
+						${!page.translations[lang]?.completeness.complete
 							? html`
 									<details>
 										<summary>${ContentDetailsLinks(page, lang, dashboard)}</summary>
 										${html`
 											<h4>${dashboard.ui['statusByLocale.missingKeys']}</h4>
 											<ul>
-												${page.translations[lang].completeness.missingKeys!.map(
+												${page.translations[lang]?.completeness.missingKeys!.map(
 													(key) => html`<li>${key}</li>`
 												)}
 											</ul>
@@ -225,16 +226,18 @@ const ContentDetailsLinks = (
 	dashboard: Dashboard
 ) => html`
 	${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
-	(${GitHostingLink(
-		page.translations[lang].gitHostingUrl,
-		!page.translations[lang].completeness.complete
-			? dashboard.ui['statusByLocale.incompleteTranslationLink']
-			: dashboard.ui['statusByLocale.outdatedTranslationLink']
-	)},
-	${GitHostingLink(
-		page.translations[lang].sourceHistoryUrl,
-		dashboard.ui['statusByLocale.sourceChangeHistoryLink']
-	)})
+	${page.translations[lang]
+		? html`(${GitHostingLink(
+				page.translations[lang]?.gitHostingUrl!,
+				!page.translations[lang]?.completeness.complete
+					? dashboard.ui['statusByLocale.incompleteTranslationLink']
+					: dashboard.ui['statusByLocale.outdatedTranslationLink']
+		  )},
+		  ${GitHostingLink(
+				page.translations[lang]?.sourceHistoryUrl!,
+				dashboard.ui['statusByLocale.sourceChangeHistoryLink']
+		  )})`
+		: ''}
 `;
 
 // TODO: See if this needs to be escaped

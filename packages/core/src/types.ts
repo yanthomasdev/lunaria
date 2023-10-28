@@ -61,7 +61,7 @@ export interface FileTranslationStatus {
 }
 
 export interface TranslationStatus {
-	file: FileData;
+	file: FileData | undefined;
 	completeness: {
 		complete: boolean;
 		missingKeys: string[] | null;
