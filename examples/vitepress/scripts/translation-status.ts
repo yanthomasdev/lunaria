@@ -42,6 +42,16 @@ const tracker = await createTracker({
 				location: 'ui/pt/*.{js,cjs,mjs,ts,yml}',
 			},
 		},
+		{
+			label: 'Spanish',
+			lang: 'es',
+			content: {
+				location: 'es/**/*.md',
+			},
+			dictionaries: {
+				location: 'ui/es/*.{js,cjs,mjs,ts,yml}',
+			},
+		},
 	],
 	translatableProperty: 'i18nReady',
 });
