@@ -52,7 +52,7 @@ export function getTextFromFormat(
 ) {
 	let formatResult = format;
 	Object.keys(placeholders).forEach((key) => {
-		formatResult = formatResult.replace(key, placeholders[key]);
+		formatResult = formatResult.replace(key, placeholders[key] ?? '');
 	});
 	return formatResult;
 }

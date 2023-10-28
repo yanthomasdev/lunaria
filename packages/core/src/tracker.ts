@@ -60,7 +60,7 @@ export async function getTranslationStatus(
 	await Promise.all(
 		Object.keys(sourceLocaleIndex).map(async (sharedPath) => {
 			const sourceFile = sourceLocaleIndex[sharedPath];
-			if (!sourceFile.isTranslatable) return;
+			if (!sourceFile || !sourceFile.isTranslatable) return;
 
 			const fileStatus: FileTranslationStatus = {
 				sharedPath,
@@ -75,7 +75,7 @@ export async function getTranslationStatus(
 
 			await Promise.all(
 				locales.map(async ({ lang }) => {
-					const translationFile = fileContentIndex[lang][sharedPath];
+					const translationFile = fileContentIndex[lang]?.[sharedPath];
 					fileStatus.translations[lang] = {
 						file: translationFile,
 						completeness: await getDictionaryTranslationStatus(
@@ -85,11 +85,13 @@ export async function getTranslationStatus(
 						),
 						isMissing: !translationFile,
 						isOutdated:
-							translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange,
+							(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
+							false,
 						gitHostingUrl: getGitHostingUrl({
 							repository: repository,
 							rootDir: rootDir,
-							filePath: translationFile.filePath,
+							// TODO: Find a way to get the translation file path, instead of the source one.
+							filePath: sourceFile.filePath,
 						}),
 						sourceHistoryUrl: getGitHostingUrl({
 							repository: repository,
@@ -108,11 +110,11 @@ export async function getTranslationStatus(
 }
 
 export async function getDictionaryTranslationStatus(
-	dictionary: AugmentedFileData,
+	dictionary: AugmentedFileData | undefined,
 	sourceFilePath: string,
 	sharedPath: string
 ) {
-	if (dictionary.type === 'generic') return { complete: true, missingKeys: [] };
+	if (!dictionary || dictionary.type === 'generic') return { complete: true, missingKeys: [] };
 	const { filePath, module, optionalKeys } = dictionary;
 
 	const [sourceData, translationData] = await getDictionaryFilesData(
@@ -121,6 +123,13 @@ export async function getDictionaryTranslationStatus(
 		filePath,
 		module
 	);
+
+	if (!sourceData || !translationData) {
+		console.error(
+			new Error(`Could not retrieve the data for the specified dictionary: ${sharedPath}`)
+		);
+		process.exit(1);
+	}
 
 	const missingKeys = Object.keys(sourceData).flatMap((key) => {
 		const isOptionalKey = optionalKeys?.find((optionalKey) => optionalKey === key);
@@ -170,8 +179,6 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 		customSharedPathResolver?.({ lang, filePath }) ?? defaultSharedPathResolver({ lang, filePath });
 
 	for (const { lang, content, dictionaries } of allLocales) {
-		// TODO: See if there's any additional work to enable multiple file types (using .md, .mdx & .mdoc together)
-
 		const localeContentPaths = await glob(content.location, {
 			cwd: process.cwd(),
 			ignore: ['node_modules', ...content.ignore],
@@ -367,7 +374,7 @@ export async function getDictionaryFilesData(
 	sourceFilePath: string,
 	translationFilePath: string,
 	module: string
-) {
+): Promise<DictionaryObject[]> {
 	// TODO: Add tests importing all these file formats to see if they work!
 	const moduleFileExtensions = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
 	const frontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
@@ -405,9 +412,7 @@ export async function getDictionaryFilesData(
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
-
 	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
-		// TODO: Does importing a e.g. .cjs with await import syntax breaks things? Does this need to be separate?
 		// DOCS/TODO: Warn that for importing `.js` files you need to have `"type": "module"` in your package.json, or instead, use `.mjs` files.
 		// DOCS/TODO: Warn that for importing `.ts` files you need to use `ts-node` (possibly `tsm` also works).
 		const sourceImportPath = getWindowsCompatibleImportPath(sourceFilePath);
@@ -423,7 +428,6 @@ export async function getDictionaryFilesData(
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
-
 	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
 		// TODO: Use Zod to ensure Record type-safety, instead of bongos use of `as`
 		const sourceDictionaryData = getFrontmatterFromFile(sourceFilePath) as DictionaryObject;
@@ -433,7 +437,6 @@ export async function getDictionaryFilesData(
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
-
 	console.error(
 		new Error(
 			`Provided dictionary file type (${extname(

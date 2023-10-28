@@ -7,6 +7,8 @@
     "dev:core": "pnpm --filter @lunariajs/core dev",
     "build": "pnpm run build:core",
     "build:core": "pnpm --filter @lunariajs/core build",
+    "lint": "pnpm run lint:core",
+    "lint:core": "pnpm --filter @lunariajs/core lint",
     "format": "prettier -w --cache --plugin prettier-plugin-astro .",
     "version": "pnpm changeset version && pnpm i --no-frozen-lockfile"
   },

@@ -51,6 +51,7 @@ export const defaultStyles = html`
 
 		html {
 			background: var(--background);
+			scrollbar-gutter: stable;
 		}
 
 		body {
