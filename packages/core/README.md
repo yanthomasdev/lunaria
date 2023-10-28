@@ -66,11 +66,23 @@ const tracker = await createTracker({
       },
     },
   ],
-  /** Property containing a boolean value used in files that support frontmatter to mark that the content should be translated */
+  // Property to find in valid frontmatter files marking if a page should be translated or not
   translatableProperty: 'i18nReady',
 });
 
+// Generates your dashboard, by default at dist/translation-status/index.html
 tracker.run();
+```
+
+To run the script, you need to add a new script to your `package.json` file and trigger it during your website's build and deploy process, for example:
+
+```diff
+"scripts": {
+    "docs:dev": "vitepress dev .",
+    "docs:build": "vitepress build .",
+    "docs:preview": "vitepress preview .",
++   "translation-status": "node ./scripts/translation-status.js"
+  },
 ```
 
 Want other usage examples? Head over to the [`examples/` directory](https://github.com/Yan-Thomas/lunaria/tree/main/examples/) and inspect the source code for tips & tricks about using `@lunariajs/core` with other frameworks and environments.
