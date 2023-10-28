@@ -146,29 +146,30 @@ const StatusByContent = (opts: LunariaConfig, translationStatus: FileTranslation
 					(page) => html`
 						<tr>
 							<td>${GitHostingLink(page.gitHostingUrl, page.sharedPath)}</td>
-							<td>
 								${Object.keys(page.translations).map(
 									(lang) => html`
-										${page.translations[lang]?.isMissing
-											? html`<span title="${dashboard.ui['status.missing']}"
-													><span aria-hidden="true"
-														>${dashboard.ui['status.emojiMissing']}</span
-													></span
-											  >`
-											: page.translations[lang]?.isOutdated ||
-											  !page.translations[lang]?.completeness.complete
-											? html`<a
-													href="${page.translations[lang]?.gitHostingUrl}"
-													title="${dashboard.ui['status.outdated']}"
-													><span aria-hidden="true"
-														>${dashboard.ui['status.emojiOutdated']}</span
-													></a
-											  >`
-											: html`<a
-													href="${page.translations[lang]?.gitHostingUrl}"
-													title="${dashboard.ui['status.done']}"
-													><span aria-hidden="true">${dashboard.ui['status.emojiDone']}</span></a
-											  >`}
+										<td>
+											${page.translations[lang]?.isMissing
+												? html`<span title="${dashboard.ui['status.missing']}"
+														><span aria-hidden="true"
+															>${dashboard.ui['status.emojiMissing']}</span
+														></span
+												  >`
+												: page.translations[lang]?.isOutdated ||
+												  !page.translations[lang]?.completeness.complete
+												? html`<a
+														href="${page.translations[lang]?.gitHostingUrl}"
+														title="${dashboard.ui['status.outdated']}"
+														><span aria-hidden="true"
+															>${dashboard.ui['status.emojiOutdated']}</span
+														></a
+												  >`
+												: html`<a
+														href="${page.translations[lang]?.gitHostingUrl}"
+														title="${dashboard.ui['status.done']}"
+														><span aria-hidden="true">${dashboard.ui['status.emojiDone']}</span></a
+												  >`}
+										</td>
 									`
 								)}
 							</td>
