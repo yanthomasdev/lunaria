@@ -2,6 +2,7 @@ import run from './tracker';
 import { LunariaConfigSchema, LunariaUserConfig } from './utils/config';
 import { handleShallowRepo } from './utils/git';
 
+export { html } from 'lit-html';
 export type {
 	Dashboard,
 	FileData,
@@ -10,8 +11,6 @@ export type {
 	LunariaConfig,
 	SharedPathResolver,
 } from './types';
-
-export { html } from 'lit-html';
 
 export async function createTracker(opts: LunariaUserConfig) {
 	const parsedConfig = LunariaConfigSchema.safeParse(opts);

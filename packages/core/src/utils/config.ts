@@ -220,7 +220,7 @@ const DashboardSchema = z.object({
 		.object({
 			meta: createComponentSchema<CustomComponent>().optional(),
 			styles: createComponentSchema<CustomComponent>().optional(),
-			content: createComponentSchema<CustomStatusComponent>().optional(),
+			body: createComponentSchema<CustomStatusComponent>().optional(),
 			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
 			statusByContent: createComponentSchema<CustomStatusComponent>().optional(),
 		})
