@@ -1,5 +1,5 @@
 import run from './tracker';
-import { LunariaConfigSchema, LunariaUserConfig } from './utils/config';
+import { LunariaConfigSchema, type LunariaUserConfig } from './utils/config';
 import { handleShallowRepo } from './utils/git';
 
 export { html } from 'lit-html';

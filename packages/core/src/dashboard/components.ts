@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import {
+import type {
 	Dashboard,
 	FileTranslationStatus,
 	Locale,

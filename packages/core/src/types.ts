@@ -1,7 +1,7 @@
-import { TemplateResult } from 'lit-html';
-import { LunariaConfig } from './utils/config';
+import type { TemplateResult } from 'lit-html';
+import type { LunariaConfig } from './utils/config';
 
-export { Dashboard, Locale, LunariaConfig, SharedPathResolver } from './utils/config';
+export type { Dashboard, Locale, LunariaConfig, SharedPathResolver } from './utils/config';
 
 export type AugmentedFileData = FileData & AdditionalContentData;
 
