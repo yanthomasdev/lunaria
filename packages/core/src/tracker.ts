@@ -169,6 +169,8 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 	 * return the shared path between Portuguese and English files: `index.md`.
 	 *
 	 */
+
+	// TODO: Verify possibility of warning/error if a page for another locale was found?
 	const defaultSharedPathResolver: SharedPathResolver = ({ lang, filePath }) => {
 		const pathParts = filePath.split('/');
 		const localePartIndex = pathParts.findIndex((part) => part === lang);
