@@ -106,7 +106,7 @@ export const LocaleDetails = (
 				<br />
 				${ProgressBar(translationStatus.length, outdatedPages.length, missingPages.length)}
 			</summary>
-			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : null}
+			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : ''}
 			<!-- TODO: see if this is rendering correctly -->
 			${missingPages.length > 0
 				? html`<h3 class="capitalize">${dashboard.ui['status.missing']}</h3>
@@ -115,10 +115,10 @@ export const LocaleDetails = (
 								(page) => html` <li>${GitHostingLink(page.gitHostingUrl, page.sharedPath)}</li> `
 							)}
 						</ul>`
-				: null}
+				: ''}
 			${missingPages.length == 0 && outdatedPages.length == 0
 				? html`<p>${dashboard.ui['statusByLocale.completeTranslation']}</p>`
-				: null}
+				: ''}
 		</details>
 	`;
 };
