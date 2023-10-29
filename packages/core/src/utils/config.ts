@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CustomComponent, CustomStatusComponent } from '../types';
+import type { CustomComponent, CustomStatusComponent } from '../types';
 
 function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
 	return z.custom<ComponentType>((val) => {

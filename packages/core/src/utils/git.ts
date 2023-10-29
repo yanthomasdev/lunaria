@@ -2,8 +2,8 @@ import fs from 'fs';
 import os from 'os';
 import { join, resolve } from 'path';
 import { simpleGit } from 'simple-git';
-import { GitHostingUrl } from '../types';
-import { LunariaConfig } from './config';
+import type { GitHostingUrl } from '../types';
+import type { LunariaConfig } from './config';
 
 const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),

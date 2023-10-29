@@ -4,9 +4,9 @@ import micromatch from 'micromatch';
 import { dirname, extname, join, resolve } from 'path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
-import { DefaultLogFields, ListLogLine } from 'simple-git';
+import type { DefaultLogFields, ListLogLine } from 'simple-git';
 import { Page } from './dashboard/components';
-import {
+import type {
 	AugmentedFileData,
 	DictionaryObject,
 	FileContentIndex,
@@ -16,7 +16,7 @@ import {
 	LunariaConfig,
 	RegExpGroups,
 } from './types';
-import { SharedPathResolver } from './utils/config';
+import type { SharedPathResolver } from './utils/config';
 import { getGitHostingUrl, getPageHistory } from './utils/git';
 import {
 	getFrontmatterFromFile,
