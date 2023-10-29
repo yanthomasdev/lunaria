@@ -3,8 +3,8 @@
   "type": "module",
   "version": "0.0.0",
   "description": "Translation management system for open-source projects",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -13,8 +13,18 @@
         "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./components": {
+      "require": {
+        "types": "./dist/dashboard/components.d.cts",
+        "default": "./dist/dashboard/components.cjs"
+      },
+      "import": {
+        "types": "./dist/dashboard/components.d.mts",
+        "default": "./dist/dashboard/components.mjs"
       }
     }
   },
@@ -37,15 +47,14 @@
   },
   "bugs": "https://github.com/Yan-Thomas/lunaria/issues",
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --watch",
+    "build": "unbuild",
     "lint": "tsc"
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.3",
     "@types/node": "^20.8.9",
-    "tsup": "^7.2.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0"
   },
   "dependencies": {
     "fast-glob": "^3.3.1",

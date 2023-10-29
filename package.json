@@ -3,8 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev:docs": "pnpm --filter lunaria-docs dev",
-    "dev:core": "pnpm --filter @lunariajs/core dev",
+    "docs": "pnpm --filter lunaria-docs dev",
     "build": "pnpm run build:core",
     "build:core": "pnpm --filter @lunariajs/core build",
     "lint": "pnpm run lint:core",
