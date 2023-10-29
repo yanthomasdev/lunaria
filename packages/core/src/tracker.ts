@@ -2,8 +2,10 @@ import glob from 'fast-glob';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import micromatch from 'micromatch';
 import { dirname, extname, join, resolve } from 'path';
+import { rehype } from 'rehype';
+import rehypeFormat from 'rehype-format';
 import { DefaultLogFields, ListLogLine } from 'simple-git';
-import { generateDashboardHtml } from './dashboard/template';
+import { Page } from './dashboard/components';
 import {
 	AugmentedFileData,
 	DictionaryObject,
@@ -20,6 +22,7 @@ import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
 	getWindowsCompatibleImportPath,
+	renderToString,
 	toUtcString,
 } from './utils/misc';
 
@@ -166,6 +169,8 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 	 * return the shared path between Portuguese and English files: `index.md`.
 	 *
 	 */
+
+	// TODO: Verify possibility of warning/error if a page for another locale was found?
 	const defaultSharedPathResolver: SharedPathResolver = ({ lang, filePath }) => {
 		const pathParts = filePath.split('/');
 		const localePartIndex = pathParts.findIndex((part) => part === lang);
@@ -445,4 +450,14 @@ export async function getDictionaryFilesData(
 		)
 	);
 	process.exit(1);
+}
+
+async function generateDashboardHtml(
+	opts: LunariaConfig,
+	translationStatus: FileTranslationStatus[]
+) {
+	const html = await rehype()
+		.use(rehypeFormat)
+		.process(renderToString(Page(opts, translationStatus)));
+	return String(html);
 }

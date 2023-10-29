@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 
-export const defaultStyles = html`
+export const Styles = html`
 	<style>
 		:root {
 			/** Fonts */

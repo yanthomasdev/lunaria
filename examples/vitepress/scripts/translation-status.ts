@@ -25,7 +25,7 @@ const tracker = await createTracker({
 		lang: 'en',
 		content: {
 			location: '**/*.md',
-			ignore: ['pt/*.md'],
+			ignore: ['pt/*.md', 'es/*.md'],
 		},
 		dictionaries: {
 			location: 'ui/en/*.{js,cjs,mjs,ts,yml}',
