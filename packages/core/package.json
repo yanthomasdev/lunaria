@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.3.1",
+    "jiti": "^1.21.0",
     "lit-html": "^3.0.0",
     "micromatch": "^4.0.5",
     "rehype": "^13.0.1",
