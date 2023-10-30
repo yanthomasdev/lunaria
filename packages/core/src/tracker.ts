@@ -209,7 +209,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 		const dictionaryContentIndex = [];
 
 		if (dictionaries) {
-			const { location, ignore, optionalKeys, module } = dictionaries;
+			const { location, ignore, optionalKeys } = dictionaries;
 
 			const localeDictionariesPaths = await glob(location, {
 				cwd: process.cwd(),
@@ -235,7 +235,6 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 							additionalData: {
 								type: 'dictionary',
 								optionalKeys: optionalKeys ?? defaultLocale?.dictionaries?.optionalKeys,
-								module,
 							},
 						} as IndexData;
 					})

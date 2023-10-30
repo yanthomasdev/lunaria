@@ -33,7 +33,6 @@ export interface FileData {
 interface DictionaryContentData {
 	type: 'dictionary';
 	optionalKeys: string[];
-	module: string;
 }
 
 interface GenericContentData {
