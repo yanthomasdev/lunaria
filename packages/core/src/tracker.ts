@@ -6,6 +6,7 @@ import { dirname, extname, join, resolve } from 'path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
+import { z } from 'zod';
 import { Page } from './dashboard/components';
 import type {
 	AugmentedFileData,
@@ -382,28 +383,63 @@ export async function getDictionaryFilesData(
 		esmResolve: true,
 	});
 
-	// TODO: Use Zod to ensure Record type-safety
+	const DictionarySchema: z.ZodType<DictionaryObject> = z.record(
+		z.string(),
+		z.lazy(() => z.string().or(DictionarySchema))
+	);
+
+	const parseDictionary = (data: any, filePath: string) => {
+		const parsedDictionary = DictionarySchema.safeParse(data);
+
+		if (!parsedDictionary.success) {
+			console.error(
+				new Error(
+					`The dictionary at ${resolve(
+						filePath
+					)} is not a valid recursive Record of strings. Consider tracking your dictionary as part of the \`content\` object instead.`
+				)
+			);
+			process.exit(1);
+		}
+
+		return parsedDictionary.data;
+	};
+
 	if (jsonFileExtension === extname(sourceFilePath)) {
 		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
 		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
-		const sourceDictionaryData: DictionaryObject = JSON.parse(sourceDictionaryFile);
-		const translationDictionaryData: DictionaryObject = JSON.parse(translationDictionaryFile);
+		const sourceDictionaryData = parseDictionary(JSON.parse(sourceDictionaryFile), sourceFilePath);
+		const translationDictionaryData = parseDictionary(
+			JSON.parse(translationDictionaryFile),
+			translationFilePath
+		);
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
 	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
-		const sourceDictionaryData: DictionaryObject = loadFile(resolve(sourceFilePath));
-		const translationDictionaryData: DictionaryObject = loadFile(resolve(translationFilePath));
+		const sourceDictionaryFile = loadFile(resolve(sourceFilePath));
+		const translationDictionaryFile = loadFile(resolve(translationFilePath));
+
+		const sourceDictionaryData = parseDictionary(sourceDictionaryFile, sourceFilePath);
+		const translationDictionaryData = parseDictionary(
+			translationDictionaryFile,
+			translationFilePath
+		);
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
 	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
-		const sourceDictionaryData: DictionaryObject = getFrontmatterFromFile(sourceFilePath)!;
-		const translationDictionaryData: DictionaryObject =
-			getFrontmatterFromFile(translationFilePath)!;
+		const sourceDictionaryData = parseDictionary(
+			getFrontmatterFromFile(sourceFilePath)!,
+			sourceFilePath
+		);
+		const translationDictionaryData = parseDictionary(
+			getFrontmatterFromFile(translationFilePath)!,
+			translationFilePath
+		);
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
