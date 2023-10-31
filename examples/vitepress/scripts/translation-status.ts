@@ -28,7 +28,7 @@ const tracker = await createTracker({
 			ignore: ['pt/*.md', 'es/*.md'],
 		},
 		dictionaries: {
-			location: 'ui/en/*.{js,cjs,mjs,ts,yml}',
+			location: 'ui/en/*.{js,cjs,mjs,ts,yml,json}',
 		},
 	},
 	locales: [
@@ -39,7 +39,7 @@ const tracker = await createTracker({
 				location: 'pt/**/*.md',
 			},
 			dictionaries: {
-				location: 'ui/pt/*.{js,cjs,mjs,ts,yml}',
+				location: 'ui/pt/*.{js,cjs,mjs,ts,yml,json}',
 			},
 		},
 		{
@@ -49,7 +49,7 @@ const tracker = await createTracker({
 				location: 'es/**/*.md',
 			},
 			dictionaries: {
-				location: 'ui/es/*.{js,cjs,mjs,ts,yml}',
+				location: 'ui/es/*.{js,cjs,mjs,ts,yml,json}',
 			},
 		},
 	],

@@ -173,7 +173,7 @@ export const StatusByContent = (
 					)}
 				</tr>
 			</thead>
-			${TableBody(translationStatus, dashboard)}
+			${TableBody(translationStatus, locales, dashboard)}
 		</table>
 		<sup class="capitalize"
 			>${getTextFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
@@ -188,19 +188,23 @@ export const StatusByContent = (
 	`;
 };
 
-export const TableBody = (translationStatus: FileTranslationStatus[], dashboard: Dashboard) => {
+export const TableBody = (
+	translationStatus: FileTranslationStatus[],
+	locales: Locale[],
+	dashboard: Dashboard
+) => {
 	return html`
 		<tbody>
 			${translationStatus.map(
-				(page) => html`
+				(page) =>
+					html`
 				<tr>
 					<td>${GitHostingLink(page.gitHostingUrl, page.sharedPath)}</td>
-						${Object.keys(page.translations).map((lang) =>
-							TableContentStatus(page.translations, lang, dashboard)
-						)}
+						${locales.map(({ lang }) => {
+							return TableContentStatus(page.translations, lang, dashboard);
+						})}
 					</td>
-				</tr>
-			`
+				</tr>`
 			)}
 		</tbody>
 	`;
@@ -234,21 +238,23 @@ export const ContentDetailsLinks = (
 	page: FileTranslationStatus,
 	lang: string,
 	dashboard: Dashboard
-) => html`
-	${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
-	${page.translations[lang]
-		? html`(${GitHostingLink(
-				page.translations[lang]?.gitHostingUrl!,
-				!page.translations[lang]?.completeness.complete
-					? dashboard.ui['statusByLocale.incompleteTranslationLink']
-					: dashboard.ui['statusByLocale.outdatedTranslationLink']
-		  )},
-		  ${GitHostingLink(
-				page.translations[lang]?.sourceHistoryUrl!,
-				dashboard.ui['statusByLocale.sourceChangeHistoryLink']
-		  )})`
-		: ''}
-`;
+) => {
+	return html`
+		${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
+		${page.translations[lang]
+			? html`(${GitHostingLink(
+					page.translations[lang]?.gitHostingUrl!,
+					!page.translations[lang]?.completeness.complete
+						? dashboard.ui['statusByLocale.incompleteTranslationLink']
+						: dashboard.ui['statusByLocale.outdatedTranslationLink']
+			  )},
+			  ${GitHostingLink(
+					page.translations[lang]?.sourceHistoryUrl!,
+					dashboard.ui['statusByLocale.sourceChangeHistoryLink']
+			  )})`
+			: ''}
+	`;
+};
 
 export const GitHostingLink = (href: string, text: string) => {
 	return html`<a href="${href}">${text}</a>`;

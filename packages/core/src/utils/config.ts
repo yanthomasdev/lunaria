@@ -24,13 +24,6 @@ const DictionariesSchema = z.object({
 		.describe('Array of glob patterns to be ignored from matching.'),
 	/** Object whose keys equals to true will have its translation considered optional. The value configured in the defaultLocale will be considered for all locales, while individual locales can override it with locale-specific information. */
 	optionalKeys: z.array(z.string()).optional(),
-	/** The name of the export that will be used to import your dictionary. As the initial value, the default export is used. */
-	module: z
-		.string()
-		.default('default')
-		.describe(
-			'The name of the export that will be used to import your dictionary. As the initial value, the default export is used.'
-		),
 });
 
 const ContentSchema = z.object({

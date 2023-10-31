@@ -1,10 +1,12 @@
 import glob from 'fast-glob';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import jiti from 'jiti';
 import micromatch from 'micromatch';
 import { dirname, extname, join, resolve } from 'path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
+import { z } from 'zod';
 import { Page } from './dashboard/components';
 import type {
 	AugmentedFileData,
@@ -21,7 +23,6 @@ import { getGitHostingUrl, getPageHistory } from './utils/git';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
-	getWindowsCompatibleImportPath,
 	renderToString,
 	toUtcString,
 } from './utils/misc';
@@ -118,14 +119,9 @@ export async function getDictionaryTranslationStatus(
 	sharedPath: string
 ) {
 	if (!dictionary || dictionary.type === 'generic') return { complete: true, missingKeys: [] };
-	const { filePath, module, optionalKeys } = dictionary;
+	const { filePath, optionalKeys } = dictionary;
 
-	const [sourceData, translationData] = await getDictionaryFilesData(
-		sharedPath,
-		sourceFilePath,
-		filePath,
-		module
-	);
+	const [sourceData, translationData] = await getDictionaryFilesData(sourceFilePath, filePath);
 
 	if (!sourceData || !translationData) {
 		console.error(
@@ -214,7 +210,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 		const dictionaryContentIndex = [];
 
 		if (dictionaries) {
-			const { location, ignore, optionalKeys, module } = dictionaries;
+			const { location, ignore, optionalKeys } = dictionaries;
 
 			const localeDictionariesPaths = await glob(location, {
 				cwd: process.cwd(),
@@ -240,7 +236,6 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 							additionalData: {
 								type: 'dictionary',
 								optionalKeys: optionalKeys ?? defaultLocale?.dictionaries?.optionalKeys,
-								module,
 							},
 						} as IndexData;
 					})
@@ -375,73 +370,80 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 }
 
 export async function getDictionaryFilesData(
-	sharedPath: string,
 	sourceFilePath: string,
-	translationFilePath: string,
-	module: string
+	translationFilePath: string
 ): Promise<DictionaryObject[]> {
-	// TODO: Add tests importing all these file formats to see if they work!
+	// TODO: Add tests importing all these file formats to ensure they always work!
 	const moduleFileExtensions = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
 	const frontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
 	const jsonFileExtension = '.json';
 
-	const throwIfModuleNotFound = (
-		sharedPath: string,
-		sourceFile: any,
-		translationFile: any,
-		module: string
-	) => {
-		if (!sourceFile[module] || !translationFile[module]) {
+	const loadFile = jiti(process.cwd(), {
+		interopDefault: true,
+		esmResolve: true,
+	});
+
+	const DictionarySchema: z.ZodType<DictionaryObject> = z.record(
+		z.string(),
+		z.lazy(() => z.string().or(DictionarySchema))
+	);
+
+	const parseDictionary = (data: any, filePath: string) => {
+		const parsedDictionary = DictionarySchema.safeParse(data);
+
+		if (!parsedDictionary.success) {
 			console.error(
 				new Error(
-					`Could not find module ${module} for the tracked dictionary ${sharedPath}. Check if you've set your \`module\` option correctly in both the default and translation locales configuration.`
+					`The dictionary at ${resolve(
+						filePath
+					)} is not a valid recursive Record of strings. Consider tracking your dictionary as part of the \`content\` object instead.`
 				)
 			);
 			process.exit(1);
 		}
+
+		return parsedDictionary.data;
 	};
 
 	if (jsonFileExtension === extname(sourceFilePath)) {
-		const sourceImportPath = getWindowsCompatibleImportPath(sourceFilePath);
-		const sourceDictionaryFile = await import(sourceImportPath, { assert: { type: 'json' } });
+		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
+		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
-		const translationImportPath = getWindowsCompatibleImportPath(translationFilePath);
-		const translationDictionaryFile = await import(translationImportPath, {
-			assert: { type: 'json' },
-		});
-
-		throwIfModuleNotFound(sharedPath, sourceDictionaryFile, translationDictionaryFile, module);
-
-		const sourceDictionaryData: DictionaryObject = sourceDictionaryFile[module];
-		const translationDictionaryData: DictionaryObject = translationDictionaryFile[module];
-
-		return [sourceDictionaryData, translationDictionaryData];
-	}
-	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
-		// DOCS/TODO: Warn that for importing `.js` files you need to have `"type": "module"` in your package.json, or instead, use `.mjs` files.
-		// DOCS/TODO: Warn that for importing `.ts` files you need to use `ts-node` (possibly `tsm` also works).
-		const sourceImportPath = getWindowsCompatibleImportPath(sourceFilePath);
-		const sourceDictionaryFile = await import(sourceImportPath);
-
-		const translationImportPath = getWindowsCompatibleImportPath(translationFilePath);
-		const translationDictionaryFile = await import(translationImportPath);
-
-		throwIfModuleNotFound(sharedPath, sourceDictionaryFile, translationDictionaryFile, module);
-
-		const sourceDictionaryData: DictionaryObject = sourceDictionaryFile[module];
-		const translationDictionaryData: DictionaryObject = translationDictionaryFile[module];
-
-		return [sourceDictionaryData, translationDictionaryData];
-	}
-	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
-		// TODO: Use Zod to ensure Record type-safety, instead of bongos use of `as`
-		const sourceDictionaryData = getFrontmatterFromFile(sourceFilePath) as DictionaryObject;
-		const translationDictionaryData = getFrontmatterFromFile(
+		const sourceDictionaryData = parseDictionary(JSON.parse(sourceDictionaryFile), sourceFilePath);
+		const translationDictionaryData = parseDictionary(
+			JSON.parse(translationDictionaryFile),
 			translationFilePath
-		) as DictionaryObject;
+		);
 
 		return [sourceDictionaryData, translationDictionaryData];
 	}
+
+	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
+		const sourceDictionaryFile = loadFile(resolve(sourceFilePath));
+		const translationDictionaryFile = loadFile(resolve(translationFilePath));
+
+		const sourceDictionaryData = parseDictionary(sourceDictionaryFile, sourceFilePath);
+		const translationDictionaryData = parseDictionary(
+			translationDictionaryFile,
+			translationFilePath
+		);
+
+		return [sourceDictionaryData, translationDictionaryData];
+	}
+
+	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
+		const sourceDictionaryData = parseDictionary(
+			getFrontmatterFromFile(sourceFilePath)!,
+			sourceFilePath
+		);
+		const translationDictionaryData = parseDictionary(
+			getFrontmatterFromFile(translationFilePath)!,
+			translationFilePath
+		);
+
+		return [sourceDictionaryData, translationDictionaryData];
+	}
+
 	console.error(
 		new Error(
 			`Provided dictionary file type (${extname(
