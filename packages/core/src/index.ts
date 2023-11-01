@@ -1,16 +1,10 @@
+import { LunariaConfigSchema } from './schemas/config.js';
 import run from './tracker.js';
-import { LunariaConfigSchema, type LunariaUserConfig } from './utils/config.js';
+import type { LunariaUserConfig } from './types.js';
 import { handleShallowRepo } from './utils/git.js';
 
 export { html } from 'lit-html';
-export type {
-	Dashboard,
-	FileData,
-	FileTranslationStatus,
-	Locale,
-	LunariaConfig,
-	SharedPathResolver,
-} from './types.js';
+export type * from './types.js';
 
 export async function createTracker(opts: LunariaUserConfig) {
 	const parsedConfig = LunariaConfigSchema.safeParse(opts);

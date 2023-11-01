@@ -6,8 +6,8 @@ import { dirname, extname, join, resolve } from 'path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
-import { z } from 'zod';
 import { Page } from './dashboard/components.js';
+import { DictionaryContentSchema } from './schemas/misc.js';
 import type {
 	AugmentedFileData,
 	DictionaryObject,
@@ -17,8 +17,8 @@ import type {
 	IndexData,
 	LunariaConfig,
 	RegExpGroups,
+	SharedPathResolver,
 } from './types.js';
-import type { SharedPathResolver } from './utils/config.js';
 import { getGitHostingUrl, getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
@@ -385,13 +385,8 @@ export async function getDictionaryFilesData(
 		esmResolve: true,
 	});
 
-	const DictionarySchema: z.ZodType<DictionaryObject> = z.record(
-		z.string(),
-		z.lazy(() => z.string().or(DictionarySchema))
-	);
-
 	const parseDictionary = (data: any, filePath: string) => {
-		const parsedDictionary = DictionarySchema.safeParse(data);
+		const parsedDictionary = DictionaryContentSchema.safeParse(data);
 
 		if (!parsedDictionary.success) {
 			console.error(
