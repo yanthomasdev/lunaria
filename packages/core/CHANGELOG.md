@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.11
+
+### Patch Changes
+
+- d33cc34: Improve `tsconfig.json` configuration
+
 ## 0.0.10
 
 ### Patch Changes
