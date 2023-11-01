@@ -5,9 +5,9 @@ import type {
 	Locale,
 	LunariaConfig,
 	TranslationStatus,
-} from '../types';
-import { getTextFromFormat } from '../utils/misc';
-import { Styles } from './styles';
+} from '../types.js';
+import { getTextFromFormat } from '../utils/misc.js';
+import { Styles } from './styles.js';
 
 export const Page = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
 	const { dashboard } = opts;

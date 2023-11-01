@@ -1,14 +1,20 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "Bundler",
-    "noEmit": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+    "target": "ES2022",
+    "lib": ["es2022"],
+    "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "sourceMap": true,
+    "declarationMap": true,
     "verbatimModuleSyntax": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true
-  }
+  },
+  "include": ["packages/**/*"]
 }

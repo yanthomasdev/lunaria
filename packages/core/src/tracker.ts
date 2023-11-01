@@ -7,7 +7,7 @@ import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
 import { z } from 'zod';
-import { Page } from './dashboard/components';
+import { Page } from './dashboard/components.js';
 import type {
 	AugmentedFileData,
 	DictionaryObject,
@@ -17,15 +17,15 @@ import type {
 	IndexData,
 	LunariaConfig,
 	RegExpGroups,
-} from './types';
-import type { SharedPathResolver } from './utils/config';
-import { getGitHostingUrl, getPageHistory } from './utils/git';
+} from './types.js';
+import type { SharedPathResolver } from './utils/config.js';
+import { getGitHostingUrl, getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
 	renderToString,
 	toUtcString,
-} from './utils/misc';
+} from './utils/misc.js';
 
 export default async function run(opts: LunariaConfig, isShallowRepo: boolean) {
 	console.time('⌛ Building translation dashboard');
@@ -378,6 +378,8 @@ export async function getDictionaryFilesData(
 	const frontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
 	const jsonFileExtension = '.json';
 
+	// TODO: Find a way to remove this ts-ignore
+	//@ts-ignore
 	const loadFile = jiti(process.cwd(), {
 		interopDefault: true,
 		esmResolve: true,
