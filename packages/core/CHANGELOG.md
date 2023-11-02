@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.12
+
+### Patch Changes
+
+- 463ccd5: Rework package usage, refactor & move to ESM-only
+
 ## 0.0.11
 
 ### Patch Changes
