@@ -1,6 +1,6 @@
-import { createTracker } from '@lunariajs/core';
+import { defineConfig } from '@lunariajs/core';
 
-const tracker = await createTracker({
+export default defineConfig({
 	repository: 'https://github.com/Yan-Thomas/lunaria',
 	rootDir: './examples/vitepress',
 	dashboard: {
@@ -55,5 +55,3 @@ const tracker = await createTracker({
 	],
 	translatableProperty: 'i18nReady',
 });
-
-tracker.run();

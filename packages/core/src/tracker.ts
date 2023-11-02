@@ -1,13 +1,13 @@
 import glob from 'fast-glob';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import jiti from 'jiti';
 import micromatch from 'micromatch';
-import { dirname, extname, join, resolve } from 'path';
+import { readFileSync } from 'node:fs';
+import { extname, join, resolve } from 'node:path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
-import { z } from 'zod';
+import { frontmatterFileExtensions, moduleFileExtensions } from './constants.js';
 import { Page } from './dashboard/components.js';
+import { DictionaryContentSchema } from './schemas/misc.js';
 import type {
 	AugmentedFileData,
 	DictionaryObject,
@@ -17,32 +17,16 @@ import type {
 	IndexData,
 	LunariaConfig,
 	RegExpGroups,
+	SharedPathResolver,
 } from './types.js';
-import type { SharedPathResolver } from './utils/config.js';
 import { getGitHostingUrl, getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
+	loadFile,
 	renderToString,
 	toUtcString,
 } from './utils/misc.js';
-
-export default async function run(opts: LunariaConfig, isShallowRepo: boolean) {
-	console.time('⌛ Building translation dashboard');
-	console.log(`➡️  Dashboard output path: ${resolve(opts.outDir)}`);
-
-	const index = await getContentIndex(opts, isShallowRepo);
-	const translationStatus = await getTranslationStatus(opts, index);
-	const html = await generateDashboardHtml(opts, translationStatus);
-
-	const outputDir = dirname(opts.outDir);
-	if (!existsSync(outputDir)) {
-		mkdirSync(outputDir, { recursive: true });
-	}
-	writeFileSync(opts.outDir, html);
-	console.timeEnd('⌛ Building translation dashboard');
-	console.log('✅ Translation dashboard built successfully!');
-}
 
 export async function getTranslationStatus(
 	opts: LunariaConfig,
@@ -111,35 +95,6 @@ export async function getTranslationStatus(
 		})
 	);
 	return translationStatus;
-}
-
-export async function getDictionaryTranslationStatus(
-	dictionary: AugmentedFileData | undefined,
-	sourceFilePath: string,
-	sharedPath: string
-) {
-	if (!dictionary || dictionary.type === 'generic') return { complete: true, missingKeys: [] };
-	const { filePath, optionalKeys } = dictionary;
-
-	const [sourceData, translationData] = await getDictionaryFilesData(sourceFilePath, filePath);
-
-	if (!sourceData || !translationData) {
-		console.error(
-			new Error(`Could not retrieve the data for the specified dictionary: ${sharedPath}`)
-		);
-		process.exit(1);
-	}
-
-	const missingKeys = Object.keys(sourceData).flatMap((key) => {
-		const isOptionalKey = optionalKeys?.find((optionalKey) => optionalKey === key);
-		if (!translationData.hasOwnProperty(key) && !isOptionalKey) return key;
-		return [];
-	});
-
-	return {
-		complete: !missingKeys.length,
-		missingKeys: missingKeys,
-	};
 }
 
 export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolean) {
@@ -259,6 +214,16 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 	return fileContentIndex;
 }
 
+export async function generateDashboardHtml(
+	opts: LunariaConfig,
+	translationStatus: FileTranslationStatus[]
+) {
+	const html = await rehype()
+		.use(rehypeFormat)
+		.process(renderToString(Page(opts, translationStatus)));
+	return String(html);
+}
+
 async function getFileData(
 	filePath: string,
 	isShallowRepo: boolean,
@@ -369,29 +334,41 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 	return propertyValue;
 }
 
-export async function getDictionaryFilesData(
+async function getDictionaryTranslationStatus(
+	dictionary: AugmentedFileData | undefined,
+	sourceFilePath: string,
+	sharedPath: string
+) {
+	if (!dictionary || dictionary.type === 'generic') return { complete: true, missingKeys: [] };
+	const { filePath, optionalKeys } = dictionary;
+
+	const [sourceData, translationData] = await getDictionaryFilesData(sourceFilePath, filePath);
+
+	if (!sourceData || !translationData) {
+		console.error(
+			new Error(`Could not retrieve the data for the specified dictionary: ${sharedPath}`)
+		);
+		process.exit(1);
+	}
+
+	const missingKeys = Object.keys(sourceData).flatMap((key) => {
+		const isOptionalKey = optionalKeys?.find((optionalKey) => optionalKey === key);
+		if (!translationData.hasOwnProperty(key) && !isOptionalKey) return key;
+		return [];
+	});
+
+	return {
+		complete: !missingKeys.length,
+		missingKeys: missingKeys,
+	};
+}
+
+async function getDictionaryFilesData(
 	sourceFilePath: string,
 	translationFilePath: string
 ): Promise<DictionaryObject[]> {
-	// TODO: Add tests importing all these file formats to ensure they always work!
-	const moduleFileExtensions = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
-	const frontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
-	const jsonFileExtension = '.json';
-
-	// TODO: Find a way to remove this ts-ignore
-	//@ts-ignore
-	const loadFile = jiti(process.cwd(), {
-		interopDefault: true,
-		esmResolve: true,
-	});
-
-	const DictionarySchema: z.ZodType<DictionaryObject> = z.record(
-		z.string(),
-		z.lazy(() => z.string().or(DictionarySchema))
-	);
-
 	const parseDictionary = (data: any, filePath: string) => {
-		const parsedDictionary = DictionarySchema.safeParse(data);
+		const parsedDictionary = DictionaryContentSchema.safeParse(data);
 
 		if (!parsedDictionary.success) {
 			console.error(
@@ -407,7 +384,8 @@ export async function getDictionaryFilesData(
 		return parsedDictionary.data;
 	};
 
-	if (jsonFileExtension === extname(sourceFilePath)) {
+	// JSON Dictionary
+	if (extname(sourceFilePath) === '.json') {
 		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
 		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
@@ -420,6 +398,7 @@ export async function getDictionaryFilesData(
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
+	// JS/TS Dictionary
 	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
 		const sourceDictionaryFile = loadFile(resolve(sourceFilePath));
 		const translationDictionaryFile = loadFile(resolve(translationFilePath));
@@ -433,6 +412,7 @@ export async function getDictionaryFilesData(
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
+	// Frontmatter Dictionary
 	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
 		const sourceDictionaryData = parseDictionary(
 			getFrontmatterFromFile(sourceFilePath)!,
@@ -454,14 +434,4 @@ export async function getDictionaryFilesData(
 		)
 	);
 	process.exit(1);
-}
-
-async function generateDashboardHtml(
-	opts: LunariaConfig,
-	translationStatus: FileTranslationStatus[]
-) {
-	const html = await rehype()
-		.use(rehypeFormat)
-		.process(renderToString(Page(opts, translationStatus)));
-	return String(html);
 }

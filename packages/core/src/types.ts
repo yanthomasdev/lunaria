@@ -1,65 +1,61 @@
 import type { TemplateResult } from 'lit-html';
-import type { LunariaConfig } from './utils/config.js';
+import type { LunariaConfig } from './schemas/config.js';
 
-export type { Dashboard, Locale, LunariaConfig, SharedPathResolver } from './utils/config.js';
-
-export type AugmentedFileData = FileData & AdditionalContentData;
-
-export type FileContentIndex = Record<string, Record<string, AugmentedFileData>>;
-
-export type ContentTypes = 'dictionary' | 'generic';
-
-export type DictionaryObject = {
-	[key: string]: string | DictionaryObject;
+type DictionaryContentData = {
+	type: 'dictionary';
+	optionalKeys: string[];
 };
 
-export interface IndexData {
+type GenericContentData = {
+	type: 'generic';
+};
+
+type AdditionalContentData = DictionaryContentData | GenericContentData;
+
+export type * from './schemas/config.js';
+export type * from './schemas/dashboard.js';
+export type * from './schemas/locale.js';
+export type * from './schemas/misc.js';
+
+export type AugmentedFileData = FileData & AdditionalContentData;
+export type FileContentIndex = Record<string, Record<string, AugmentedFileData>>;
+
+export type IndexData = {
 	lang: string;
 	filePath: string;
 	sharedPath: string;
 	fileData: FileData;
 	additionalData: AdditionalContentData;
-}
+};
 
-export interface FileData {
+export type FileData = {
 	filePath: string;
 	isTranslatable: boolean;
 	lastChange: string;
 	lastCommitMessage: string;
 	lastMajorChange: string;
 	lastMajorCommitMessage: string;
-}
+};
 
-interface DictionaryContentData {
-	type: 'dictionary';
-	optionalKeys: string[];
-}
-
-interface GenericContentData {
-	type: 'generic';
-}
-
-type AdditionalContentData = DictionaryContentData | GenericContentData;
-
-export interface GitHostingUrl {
+export type GitHostingUrl = {
 	type?: string;
 	refName?: string;
 	query?: string;
 	repository: string;
 	filePath: string;
 	rootDir: string;
-}
+};
 
-export interface FileTranslationStatus {
+export type FileTranslationStatus = {
 	sharedPath: string;
 	sourcePage: FileData;
 	gitHostingUrl: string;
 	translations: {
 		[locale: string]: TranslationStatus;
 	};
-}
+};
 
-export interface TranslationStatus {
+export type TranslationStatus = {
 	file: FileData | undefined;
 	completeness: {
 		complete: boolean;
@@ -69,7 +65,7 @@ export interface TranslationStatus {
 	isOutdated: boolean;
 	gitHostingUrl: string;
 	sourceHistoryUrl: string;
-}
+};
 
 export type RegExpGroups<T extends string> =
 	| (RegExpMatchArray & {
@@ -83,3 +79,7 @@ export type CustomStatusComponent = (
 	opts: LunariaConfig,
 	translationStatus: FileTranslationStatus[]
 ) => TemplateResult<1>;
+
+export type DictionaryObject = {
+	[key: string]: string | DictionaryObject;
+};
