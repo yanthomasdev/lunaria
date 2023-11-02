@@ -5,7 +5,7 @@ import { frontmatterFileExtensions } from '../constants.js';
 /** TODO: Using it with an import statement causes
  * the TypeScript types to not be found.
  * Needs to investigated. */
-const jiti = require('jiti');
+import jiti from 'jiti';
 
 export function renderToString(data: any) {
 	const { strings, values } = data;
@@ -60,6 +60,8 @@ export function getTextFromFormat(
 	return formatResult;
 }
 
+/** TODO: Jiti cannot find types when imported as ES Module, needs investigation.  */
+// @ts-ignore
 export const loadFile = jiti(process.cwd(), {
 	interopDefault: true,
 	esmResolve: true,
