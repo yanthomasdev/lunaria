@@ -23,16 +23,16 @@ yarn add @lunariajs/core
 
 ## Basic Usage
 
-Start using `@lunariajs/core` by setting up a script to generate your translation dashboard status.
+Start using `@lunariajs/core` by setting up your own `lunaria.config` file and adding a script to your `package.json` file.
 
 The example below contains all of the **required** options to generate a dashboard tracking the status of both the Portuguese and Spanish translations of a site:
 
 ```js
-// scripts/translation-status.js
-import { createTracker } from '@lunariajs/core';
+// lunaria.config.ts
+import { defineConfig } from '@lunariajs/core';
 
-const tracker = await createTracker({
-  // Current repository of this script and content
+export default defineConfig({
+  // Current repository of your content
   repository: 'https://github.com/me/cool-docs',
   dashboard: {
     // Generated dashboard URL used in meta tags
@@ -69,19 +69,16 @@ const tracker = await createTracker({
   // Property to find in valid frontmatter files marking if a page should be translated or not
   translatableProperty: 'i18nReady',
 });
-
-// Generates your dashboard, by default at dist/translation-status/index.html
-tracker.run();
 ```
 
-To run the script, you need to add a new script to your `package.json` file and trigger it during your website's build and deploy process, for example:
+Now, you need to add a new script to your `package.json` file to trigger a dashboard build during your website's deploy process, like so:
 
 ```diff
 "scripts": {
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
-+   "translation-status": "node ./scripts/translation-status.js"
++   "translation-status": "lunaria"
   },
 ```
 
