@@ -1,6 +1,6 @@
-import fs from 'fs';
-import os from 'os';
-import { join, resolve } from 'path';
+import { existsSync, rmSync } from 'node:fs';
+import os from 'node:os';
+import { join, resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
 import type { GitHostingUrl, LunariaConfig } from '../types.js';
 
@@ -21,7 +21,7 @@ export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig)
 
 		const target = resolve(cloneDir);
 
-		if (fs.existsSync(target)) fs.rmSync(target, { recursive: true, force: true });
+		if (existsSync(target)) rmSync(target, { recursive: true, force: true });
 
 		const remote = `${repository}.git`;
 

@@ -1,7 +1,7 @@
 import glob from 'fast-glob';
-import { readFileSync } from 'fs';
 import micromatch from 'micromatch';
-import { extname, join, resolve } from 'path';
+import { readFileSync } from 'node:fs';
+import { extname, join, resolve } from 'node:path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';

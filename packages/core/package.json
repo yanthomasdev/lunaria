@@ -3,33 +3,22 @@
   "type": "module",
   "version": "0.0.11",
   "description": "Translation management system for open-source projects",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
     "lunaria": "./dist/cli.mjs"
   },
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      },
-      "import": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
-      }
     },
     "./components": {
-      "require": {
-        "types": "./dist/dashboard/components.d.cts",
-        "default": "./dist/dashboard/components.cjs"
-      },
-      "import": {
         "types": "./dist/dashboard/components.d.mts",
         "default": "./dist/dashboard/components.mjs"
-      }
     }
+  },
+  "engines": {
+    "node": ">=18"
   },
   "files": [
     "dist",

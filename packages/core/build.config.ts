@@ -6,9 +6,8 @@ export default defineBuildConfig({
 	declaration: true,
 	sourcemap: true,
 	rollup: {
-		emitCJS: true,
-		inlineDependencies: true,
 		esbuild: {
+			target: 'es2022',
 			minify: true,
 		},
 	},

@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { extname } from 'path';
+import { readFileSync } from 'node:fs';
+import { extname } from 'node:path';
 import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
 /** TODO: Using it with an import statement causes
@@ -32,7 +32,7 @@ export function renderToString(data: any) {
 export function getFrontmatterFromFile(absolutePath: string): Record<string, any> | undefined {
 	if (!frontmatterFileExtensions.includes(extname(absolutePath))) return undefined;
 
-	const contents = fs.readFileSync(absolutePath, 'utf8');
+	const contents = readFileSync(absolutePath, 'utf8');
 	return parse(contents).frontmatter;
 }
 
