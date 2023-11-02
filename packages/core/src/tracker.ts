@@ -1,11 +1,11 @@
 import glob from 'fast-glob';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import jiti from 'jiti';
 import micromatch from 'micromatch';
 import { dirname, extname, join, resolve } from 'path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
+import { frontmatterFileExtensions, moduleFileExtensions } from './constants.js';
 import { Page } from './dashboard/components.js';
 import { DictionaryContentSchema } from './schemas/misc.js';
 import type {
@@ -23,6 +23,7 @@ import { getGitHostingUrl, getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
+	loadFile,
 	renderToString,
 	toUtcString,
 } from './utils/misc.js';
@@ -373,18 +374,6 @@ export async function getDictionaryFilesData(
 	sourceFilePath: string,
 	translationFilePath: string
 ): Promise<DictionaryObject[]> {
-	// TODO: Add tests importing all these file formats to ensure they always work!
-	const moduleFileExtensions = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
-	const frontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
-	const jsonFileExtension = '.json';
-
-	// TODO: Find a way to remove this ts-ignore
-	//@ts-ignore
-	const loadFile = jiti(process.cwd(), {
-		interopDefault: true,
-		esmResolve: true,
-	});
-
 	const parseDictionary = (data: any, filePath: string) => {
 		const parsedDictionary = DictionaryContentSchema.safeParse(data);
 
@@ -402,7 +391,8 @@ export async function getDictionaryFilesData(
 		return parsedDictionary.data;
 	};
 
-	if (jsonFileExtension === extname(sourceFilePath)) {
+	// JSON Dictionary
+	if (extname(sourceFilePath) === '.json') {
 		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
 		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
@@ -415,6 +405,7 @@ export async function getDictionaryFilesData(
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
+	// JS/TS Dictionary
 	if (moduleFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
 		const sourceDictionaryFile = loadFile(resolve(sourceFilePath));
 		const translationDictionaryFile = loadFile(resolve(translationFilePath));
@@ -428,6 +419,7 @@ export async function getDictionaryFilesData(
 		return [sourceDictionaryData, translationDictionaryData];
 	}
 
+	// Frontmatter Dictionary
 	if (frontmatterFileExtensions.find((extension) => extension === extname(sourceFilePath))) {
 		const sourceDictionaryData = parseDictionary(
 			getFrontmatterFromFile(sourceFilePath)!,

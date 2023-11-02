@@ -1,7 +1,11 @@
 import fs from 'fs';
-import { platform } from 'os';
-import { extname, resolve } from 'path';
+import { extname } from 'path';
 import { parse } from 'ultramatter';
+import { frontmatterFileExtensions } from '../constants.js';
+/** TODO: Using it with an import statement causes
+ * the TypeScript types to not be found.
+ * Needs to investigated. */
+const jiti = require('jiti');
 
 export function renderToString(data: any) {
 	const { strings, values } = data;
@@ -26,8 +30,7 @@ export function renderToString(data: any) {
 }
 
 export function getFrontmatterFromFile(absolutePath: string): Record<string, any> | undefined {
-	const validFrontmatterFileExtensions = ['.yml', '.md', '.markdown', '.mdx', '.mdoc'];
-	if (!validFrontmatterFileExtensions.includes(extname(absolutePath))) return undefined;
+	if (!frontmatterFileExtensions.includes(extname(absolutePath))) return undefined;
 
 	const contents = fs.readFileSync(absolutePath, 'utf8');
 	return parse(contents).frontmatter;
@@ -57,6 +60,7 @@ export function getTextFromFormat(
 	return formatResult;
 }
 
-export function getWindowsCompatibleImportPath(filePath: string) {
-	return platform() === 'win32' ? 'file://' + resolve(filePath) : resolve(filePath);
-}
+export const loadFile = jiti(process.cwd(), {
+	interopDefault: true,
+	esmResolve: true,
+});
