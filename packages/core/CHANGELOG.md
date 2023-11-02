@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.13
+
+### Patch Changes
+
+- fba4d6f: Add missing `README.md` update
+
 ## 0.0.12
 
 ### Patch Changes
