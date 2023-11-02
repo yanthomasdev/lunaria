@@ -1,11 +1,8 @@
+import jiti from 'jiti';
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
 import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
-/** TODO: Using it with an import statement causes
- * the TypeScript types to not be found.
- * Needs to investigated. */
-import jiti from 'jiti';
 
 export function renderToString(data: any) {
 	const { strings, values } = data;
