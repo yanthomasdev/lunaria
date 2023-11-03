@@ -16,6 +16,7 @@ import type {
 	FileTranslationStatus,
 	IndexData,
 	LunariaConfig,
+	OptionalKeys,
 	RegExpGroups,
 	SharedPathResolver,
 } from './types.js';
@@ -67,6 +68,7 @@ export async function getTranslationStatus(
 					fileStatus.translations[lang] = {
 						file: translationFile,
 						completeness: await getDictionaryTranslationStatus(
+							defaultLocale.dictionaries?.optionalKeys,
 							translationFile,
 							sourceFile.filePath,
 							sharedPath
@@ -190,7 +192,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 							),
 							additionalData: {
 								type: 'dictionary',
-								optionalKeys: optionalKeys ?? defaultLocale?.dictionaries?.optionalKeys,
+								optionalKeys: optionalKeys,
 							},
 						} as IndexData;
 					})
@@ -335,6 +337,7 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 }
 
 async function getDictionaryTranslationStatus(
+	defaultOptionalKeys: OptionalKeys | undefined,
 	dictionary: AugmentedFileData | undefined,
 	sourceFilePath: string,
 	sharedPath: string
@@ -352,7 +355,10 @@ async function getDictionaryTranslationStatus(
 	}
 
 	const missingKeys = Object.keys(sourceData).flatMap((key) => {
-		const isOptionalKey = optionalKeys?.find((optionalKey) => optionalKey === key);
+		const isOptionalKey =
+			(defaultOptionalKeys?.[sharedPath]?.includes(key) ??
+				optionalKeys[sharedPath]?.includes(key)) === true;
+
 		if (!translationData.hasOwnProperty(key) && !isOptionalKey) return key;
 		return [];
 	});

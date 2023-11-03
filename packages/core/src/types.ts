@@ -3,7 +3,7 @@ import type { LunariaConfig } from './schemas/config.js';
 
 type DictionaryContentData = {
 	type: 'dictionary';
-	optionalKeys: string[];
+	optionalKeys: Record<string, string[]>;
 };
 
 type GenericContentData = {
