@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+const OptionalKeysSchema = z
+	.record(z.string(), z.array(z.string()).nonempty())
+	.default({})
+	.describe(
+		"Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional. While defining on the default locale's object applies it to all languages, you can pass additional keys as part of the specific locale's `optionalKeys` field."
+	);
+
 const DictionariesSchema = z
 	.object({
 		/** A glob pattern of where your UI dictionaries are and its file type(s), e.g. `"src/i18n/en/**.ts"`. */
@@ -13,8 +20,10 @@ const DictionariesSchema = z
 			.array(z.string())
 			.default([])
 			.describe('Array of glob patterns to be ignored from matching.'),
-		/** Object whose keys equals to true will have its translation considered optional. The value configured in the defaultLocale will be considered for all locales, while individual locales can override it with locale-specific information. */
-		optionalKeys: z.array(z.string()).optional(),
+		/** Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional.
+		 * While defining on the default locale's object applies it to all languages, you can pass additional keys
+		 * as part of the specific locale's `optionalKeys` field. */
+		optionalKeys: OptionalKeysSchema,
 	})
 	.optional();
 
@@ -52,3 +61,4 @@ export const LocaleSchema = z.object({
 });
 
 export type Locale = z.output<typeof LocaleSchema>;
+export type OptionalKeys = z.infer<typeof OptionalKeysSchema>;

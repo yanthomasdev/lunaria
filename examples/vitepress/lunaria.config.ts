@@ -29,6 +29,15 @@ export default defineConfig({
 		},
 		dictionaries: {
 			location: 'ui/en/*.{js,cjs,mjs,ts,yml,json}',
+			optionalKeys: {
+				'ui/nav.json': ['today'],
+				'ui/ui.cjs': ['type'],
+				'ui/ui.js': ['type'],
+				'ui/ui.mjs': ['type'],
+				'ui/ui.mts': ['type'],
+				'ui/ui.ts': ['type'],
+				'ui/ui.yml': ['here'],
+			},
 		},
 	},
 	locales: [
