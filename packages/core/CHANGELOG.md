@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.16
+
+### Patch Changes
+
+- 9ef506b: Remove accidental `console.log`
+
 ## 0.0.15
 
 ### Patch Changes
