@@ -84,3 +84,13 @@ export type CustomStatusComponent = (
 export type DictionaryObject = {
 	[key: string]: string | DictionaryObject;
 };
+
+export type FrontmatterFromFile = {
+	frontmatter: Record<string, any> | undefined;
+	context: 'found' | 'not supported';
+};
+
+export type FrontmatterProperty = {
+	property: any;
+	context: 'found' | 'not found' | 'not supported';
+};

@@ -311,12 +311,16 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 	if (!translatableProperty) return true;
 
 	const fullFilePath = resolve(filePath);
-	const propertyValue = getFrontmatterProperty(fullFilePath, translatableProperty);
+	const frontmatterObj = getFrontmatterProperty(fullFilePath, translatableProperty);
 
-	// If the property wasn't found, the page will be marked as ready regardless.
-	if (typeof propertyValue === 'undefined') return true;
+	// If the file format does not support a translatableProperty, the page will be considered ready.
+	if (frontmatterObj.context === 'not supported') return true;
 
-	if (typeof propertyValue !== 'boolean') {
+	// If the property wasn't found, the page will be considered not ready.
+	if (frontmatterObj.context === 'not found') return false;
+	console.log(frontmatterObj);
+
+	if (typeof frontmatterObj.property !== 'boolean') {
 		console.error(
 			new Error(
 				`The specified frontmatter property ${translatableProperty} was found with an non-boolean value. Ensure that all of its occurances are marked either as \`true\` or \`false\`.`
@@ -325,7 +329,7 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 		process.exit(1);
 	}
 
-	return propertyValue;
+	return frontmatterObj.property;
 }
 
 async function getDictionaryTranslationStatus(

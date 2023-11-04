@@ -4,7 +4,7 @@ import { extname } from 'node:path';
 import { joinURL } from 'ufo';
 import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
-import type { GitHubURL } from '../types.js';
+import type { FrontmatterFromFile, FrontmatterProperty, GitHubURL } from '../types.js';
 
 export function renderToString(data: any) {
 	const { strings, values } = data;
@@ -28,18 +28,48 @@ export function renderToString(data: any) {
 	return output;
 }
 
-export function getFrontmatterFromFile(absolutePath: string): Record<string, any> | undefined {
-	if (!frontmatterFileExtensions.includes(extname(absolutePath))) return undefined;
+export function getFrontmatterFromFile(absolutePath: string): FrontmatterFromFile {
+	if (!frontmatterFileExtensions.includes(extname(absolutePath))) {
+		return {
+			frontmatter: undefined,
+			context: 'not supported',
+		};
+	}
 
 	const contents = readFileSync(absolutePath, 'utf8');
-	return parse(contents).frontmatter;
+	return {
+		frontmatter: parse(contents).frontmatter,
+		context: 'found',
+	};
 }
 
-export function getFrontmatterProperty(absolutePath: string, property: string): any {
-	const frontmatter = getFrontmatterFromFile(absolutePath);
-	if (!frontmatter || typeof frontmatter[property] === 'undefined') return undefined;
+export function getFrontmatterProperty(
+	absolutePath: string,
+	property: string
+): FrontmatterProperty {
+	const frontmatterObject = getFrontmatterFromFile(absolutePath);
 
-	return frontmatter[property];
+	if (frontmatterObject.context === 'not supported') {
+		return {
+			property: undefined,
+			context: 'not supported',
+		};
+	}
+
+	if (
+		!frontmatterObject.frontmatter ||
+		typeof frontmatterObject.frontmatter[property] === 'undefined'
+	) {
+		return {
+			property: undefined,
+			context: 'not found',
+		};
+	}
+
+	return {
+		property: frontmatterObject.frontmatter[property],
+		context: 'found',
+	};
 }
 
 export function toUtcString(date: string) {
