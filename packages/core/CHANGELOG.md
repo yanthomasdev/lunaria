@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.15
+
+### Patch Changes
+
+- c765a19: Improve how `translatableProperty` is handled
+
 ## 0.0.14
 
 ### Patch Changes
