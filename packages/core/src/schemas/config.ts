@@ -1,9 +1,11 @@
+import { normalizeURL } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../schemas/dashboard.js';
 import { LocaleSchema } from '../schemas/locale.js';
-import { SharedPathResolverSchema } from '../schemas/misc.js';
+import { LocalePathConstructorSchema, SharedPathResolverSchema } from '../schemas/misc.js';
 
 export const LunariaConfigSchema = z.object({
+	/** Options about your generated dashboard. */
 	dashboard: DashboardSchema,
 	/** The default locale of your content that is going to be translated. */
 	defaultLocale: LocaleSchema,
@@ -22,22 +24,23 @@ export const LunariaConfigSchema = z.object({
 		.string()
 		.optional()
 		.describe('Name of the frontmatter property used to mark a page as ready for translation.'),
-	/** Custom fuction to handle the shared path resolver, used to "link" pages between two locales. */
-	customSharedPathResolver: SharedPathResolverSchema,
+	/** Fuction to extract a shared path from a locale's path, used to 'link' the content between two locales. */
+	sharedPathResolver: SharedPathResolverSchema,
+	/** Fuction to construct the locale-specific path from the source path of the same content. */
+	localePathConstructor: LocalePathConstructorSchema,
 	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria"`. */
 	repository: z
 		.string()
 		.url()
 		.refine(
-			(link) => link.startsWith('https://github.com/') || link.startsWith('https://gitlab.com/'),
+			(url) => url.startsWith('https://github.com/') || url.startsWith('https://gitlab.com/'),
 			{
 				message: 'URL needs to be a valid `"https://github.com/"` or `"https://gitlab.com/"` link.',
 			}
 		)
-		// Removes any trailing slashes
-		.transform((link) => link.replace(/\/+$/, ''))
+		.transform((url) => normalizeURL(url))
 		.describe(
-			'The URL of your current repository, used to generate history links, e.g. `"github.com/Yan-Thomas/lunaria"`.'
+			'The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`.'
 		),
 	/** The root directory of the project being tracked, must be set when using a monorepo.
 	 *

@@ -5,6 +5,7 @@ import { extname, join, resolve } from 'node:path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
+import { normalizeURL } from 'ufo';
 import { frontmatterFileExtensions, moduleFileExtensions } from './constants.js';
 import { Page } from './dashboard/components.js';
 import { DictionaryContentSchema } from './schemas/misc.js';
@@ -18,12 +19,12 @@ import type {
 	LunariaConfig,
 	OptionalKeys,
 	RegExpGroups,
-	SharedPathResolver,
 } from './types.js';
-import { getGitHostingUrl, getPageHistory } from './utils/git.js';
+import { getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
+	getGitHostingURL,
 	loadFile,
 	renderToString,
 	toUtcString,
@@ -33,7 +34,7 @@ export async function getTranslationStatus(
 	opts: LunariaConfig,
 	fileContentIndex: FileContentIndex
 ) {
-	const { defaultLocale, locales, repository, rootDir } = opts;
+	const { defaultLocale, locales, repository, rootDir, localePathConstructor } = opts;
 	const sourceLocaleIndex = fileContentIndex[defaultLocale.lang];
 	const translationStatus: FileTranslationStatus[] = [];
 
@@ -54,7 +55,7 @@ export async function getTranslationStatus(
 			const fileStatus: FileTranslationStatus = {
 				sharedPath,
 				sourcePage: sourceFile,
-				gitHostingUrl: getGitHostingUrl({
+				gitHostingUrl: getGitHostingURL({
 					repository: repository,
 					rootDir: rootDir,
 					filePath: sourceFile.filePath,
@@ -65,6 +66,26 @@ export async function getTranslationStatus(
 			await Promise.all(
 				locales.map(async ({ lang }) => {
 					const translationFile = fileContentIndex[lang]?.[sharedPath];
+
+					const localeFilePath = localePathConstructor({
+						localeLang: lang,
+						sourceLang: defaultLocale.lang,
+						sourcePath: sourceFile.filePath,
+					});
+
+					const existingPageURL = getGitHostingURL({
+						repository: repository,
+						rootDir: rootDir,
+						filePath: localeFilePath,
+					});
+
+					const missingPageURL = getGitHostingURL({
+						repository: repository,
+						rootDir: rootDir,
+						type: 'new',
+						query: normalizeURL(`?filename=${localeFilePath}`),
+					});
+
 					fileStatus.translations[lang] = {
 						file: translationFile,
 						completeness: await getDictionaryTranslationStatus(
@@ -77,13 +98,8 @@ export async function getTranslationStatus(
 						isOutdated:
 							(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
 							false,
-						gitHostingUrl: getGitHostingUrl({
-							repository: repository,
-							rootDir: rootDir,
-							// TODO: Find a way to get the translation file path, instead of the source one.
-							filePath: sourceFile.filePath,
-						}),
-						sourceHistoryUrl: getGitHostingUrl({
+						gitHostingUrl: !translationFile ? missingPageURL : existingPageURL,
+						sourceHistoryUrl: getGitHostingURL({
 							repository: repository,
 							rootDir: rootDir,
 							filePath: sourceFile.filePath,
@@ -106,35 +122,11 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 		defaultLocale,
 		locales,
 		ignoreKeywords,
-		customSharedPathResolver,
+		sharedPathResolver,
 	} = opts;
 
 	const allLocales = [defaultLocale, ...locales];
 	const fileContentIndex: FileContentIndex = {};
-
-	/**
-	 * A shared path resolver is a function to define the shared part of
-	 * a file path, used to link the translated version of a file with its
-	 * source (original) version.
-	 *
-	 * @example
-	 * Given the file path `pt/index.md`, we extract the locale root directory, and
-	 * return the shared path between Portuguese and English files: `index.md`.
-	 *
-	 */
-
-	// TODO: Verify possibility of warning/error if a page for another locale was found?
-	const defaultSharedPathResolver: SharedPathResolver = ({ lang, filePath }) => {
-		const pathParts = filePath.split('/');
-		const localePartIndex = pathParts.findIndex((part) => part === lang);
-
-		if (localePartIndex > -1) pathParts.splice(localePartIndex, 1);
-
-		return pathParts.join('/');
-	};
-
-	const getSharedPath: SharedPathResolver = ({ lang, filePath }) =>
-		customSharedPathResolver?.({ lang, filePath }) ?? defaultSharedPathResolver({ lang, filePath });
 
 	for (const { lang, content, dictionaries } of allLocales) {
 		const localeContentPaths = await glob(content.location, {
@@ -144,7 +136,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 
 		const genericContentIndex = await Promise.all(
 			localeContentPaths.sort().map(async (filePath) => {
-				const sharedPath = getSharedPath({ lang, filePath });
+				const sharedPath = sharedPathResolver({ lang, localePath: filePath });
 
 				return {
 					lang,
@@ -177,7 +169,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 			dictionaryContentIndex.push(
 				...(await Promise.all(
 					localeDictionariesPaths.sort().map(async (filePath) => {
-						const sharedPath = getSharedPath({ lang, filePath });
+						const sharedPath = sharedPathResolver({ lang: lang, localePath: filePath });
 						// Create or update page data for the page
 						return {
 							lang,

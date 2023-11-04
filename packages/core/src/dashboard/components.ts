@@ -107,12 +107,19 @@ export const LocaleDetails = (
 				${ProgressBar(translationStatus.length, outdatedPages.length, missingPages.length)}
 			</summary>
 			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : ''}
-			<!-- TODO: see if this is rendering correctly -->
 			${missingPages.length > 0
 				? html`<h3 class="capitalize">${dashboard.ui['status.missing']}</h3>
 						<ul>
 							${missingPages.map(
-								(page) => html` <li>${GitHostingLink(page.gitHostingUrl, page.sharedPath)}</li> `
+								(page) => html`
+									<li>
+										${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
+										${CreatePageLink(
+											page.translations[lang]?.gitHostingUrl!,
+											dashboard.ui['statusByLocale.createFileLink']
+										)}
+									</li>
+								`
 							)}
 						</ul>`
 				: ''}
@@ -258,6 +265,10 @@ export const ContentDetailsLinks = (
 
 export const GitHostingLink = (href: string, text: string) => {
 	return html`<a href="${href}">${text}</a>`;
+};
+
+export const CreatePageLink = (href: string, text: string) => {
+	return html`<a class="create-button" href="${href}">${text}</a>`;
 };
 
 export const ProgressBar = (
