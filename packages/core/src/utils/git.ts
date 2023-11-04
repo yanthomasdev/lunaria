@@ -2,6 +2,7 @@ import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
+import { withoutTrailingSlash } from 'ufo';
 import type { LunariaConfig } from '../types.js';
 
 const git = simpleGit({
@@ -23,7 +24,7 @@ export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig)
 
 		if (existsSync(target)) rmSync(target, { recursive: true, force: true });
 
-		const remote = `${repository}.git`;
+		const remote = `${withoutTrailingSlash(repository)}.git`;
 
 		await git.clone(remote, target, ['--bare', '--filter=blob:none']);
 		// Use the clone as the git directory for all tasks
