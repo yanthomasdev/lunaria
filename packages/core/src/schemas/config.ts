@@ -28,16 +28,13 @@ export const LunariaConfigSchema = z.object({
 	sharedPathResolver: SharedPathResolverSchema,
 	/** Fuction to construct the locale-specific path from the source path of the same content. */
 	localePathConstructor: LocalePathConstructorSchema,
-	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria"`. */
+	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`. */
 	repository: z
 		.string()
 		.url()
-		.refine(
-			(url) => url.startsWith('https://github.com/') || url.startsWith('https://gitlab.com/'),
-			{
-				message: 'URL needs to be a valid `"https://github.com/"` or `"https://gitlab.com/"` link.',
-			}
-		)
+		.refine((url) => url.startsWith('https://github.com/'), {
+			message: 'URL needs to be a valid GitHub link (`"https://github.com/"`).',
+		})
 		.transform((url) => normalizeURL(url))
 		.describe(
 			'The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`.'

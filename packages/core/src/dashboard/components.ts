@@ -113,9 +113,9 @@ export const LocaleDetails = (
 							${missingPages.map(
 								(page) => html`
 									<li>
-										${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
+										${Link(page.gitHubURL, page.sharedPath)}
 										${CreatePageLink(
-											page.translations[lang]?.gitHostingUrl!,
+											page.translations[lang]?.gitHubURL!,
 											dashboard.ui['statusByLocale.createFileLink']
 										)}
 									</li>
@@ -206,7 +206,7 @@ export const TableBody = (
 				(page) =>
 					html`
 				<tr>
-					<td>${GitHostingLink(page.gitHostingUrl, page.sharedPath)}</td>
+					<td>${Link(page.gitHubURL, page.sharedPath)}</td>
 						${locales.map(({ lang }) => {
 							return TableContentStatus(page.translations, lang, dashboard);
 						})}
@@ -229,12 +229,10 @@ export const TableContentStatus = (
 						><span aria-hidden="true">${dashboard.ui['status.emojiMissing']}</span></span
 				  >`
 				: translations[lang]?.isOutdated || !translations[lang]?.completeness.complete
-				? html`<a
-						href="${translations[lang]?.gitHostingUrl}"
-						title="${dashboard.ui['status.outdated']}"
+				? html`<a href="${translations[lang]?.gitHubURL}" title="${dashboard.ui['status.outdated']}"
 						><span aria-hidden="true">${dashboard.ui['status.emojiOutdated']}</span></a
 				  >`
-				: html`<a href="${translations[lang]?.gitHostingUrl}" title="${dashboard.ui['status.done']}"
+				: html`<a href="${translations[lang]?.gitHubURL}" title="${dashboard.ui['status.done']}"
 						><span aria-hidden="true">${dashboard.ui['status.emojiDone']}</span></a
 				  >`}
 		</td>
@@ -247,23 +245,23 @@ export const ContentDetailsLinks = (
 	dashboard: Dashboard
 ) => {
 	return html`
-		${GitHostingLink(page.gitHostingUrl, page.sharedPath)}
+		${Link(page.gitHubURL, page.sharedPath)}
 		${page.translations[lang]
-			? html`(${GitHostingLink(
-					page.translations[lang]?.gitHostingUrl!,
+			? html`(${Link(
+					page.translations[lang]?.gitHubURL!,
 					!page.translations[lang]?.completeness.complete
 						? dashboard.ui['statusByLocale.incompleteTranslationLink']
 						: dashboard.ui['statusByLocale.outdatedTranslationLink']
 			  )},
-			  ${GitHostingLink(
-					page.translations[lang]?.sourceHistoryUrl!,
+			  ${Link(
+					page.translations[lang]?.sourceHistoryURL!,
 					dashboard.ui['statusByLocale.sourceChangeHistoryLink']
 			  )})`
 			: ''}
 	`;
 };
 
-export const GitHostingLink = (href: string, text: string) => {
+export const Link = (href: string, text: string) => {
 	return html`<a href="${href}">${text}</a>`;
 };
 

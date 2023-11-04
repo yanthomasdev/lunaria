@@ -38,7 +38,7 @@ export type FileData = {
 	lastMajorCommitMessage: string;
 };
 
-export type GitHostingURL = {
+export type GitHubURL = {
 	type?: string;
 	refName?: string;
 	query?: string;
@@ -50,7 +50,7 @@ export type GitHostingURL = {
 export type FileTranslationStatus = {
 	sharedPath: string;
 	sourcePage: FileData;
-	gitHostingUrl: string;
+	gitHubURL: string;
 	translations: {
 		[locale: string]: TranslationStatus;
 	};
@@ -64,8 +64,8 @@ export type TranslationStatus = {
 	};
 	isMissing: boolean;
 	isOutdated: boolean;
-	gitHostingUrl: string;
-	sourceHistoryUrl: string;
+	gitHubURL: string;
+	sourceHistoryURL: string;
 };
 
 export type RegExpGroups<T extends string> =
