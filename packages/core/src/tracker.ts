@@ -298,11 +298,12 @@ function findLastMajorCommit(
 
 		const pathsOrGlobsList = pathsOrGlobs.split(';');
 
-		// TODO: Test if this is working
-		pathsOrGlobsList.find((pathOrGlob) => {
-			if (directive === '@tracker-major') return micromatch.isMatch(filePath, pathOrGlob);
-			if (directive === '@tracker-minor') return !micromatch.isMatch(filePath, pathOrGlob);
-		});
+		return (
+			pathsOrGlobsList.find((pathOrGlob) => {
+				if (directive === '@tracker-major') return micromatch.isMatch(filePath, pathOrGlob);
+				if (directive === '@tracker-minor') return !micromatch.isMatch(filePath, pathOrGlob);
+			}) !== undefined
+		);
 	});
 }
 
