@@ -318,7 +318,6 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 
 	// If the property wasn't found, the page will be considered not ready.
 	if (frontmatterObj.context === 'not found') return false;
-	console.log(frontmatterObj);
 
 	if (typeof frontmatterObj.property !== 'boolean') {
 		console.error(
