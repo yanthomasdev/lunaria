@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.17
+
+### Patch Changes
+
+- 947892d: Fix tracker directives logic
+
 ## 0.0.16
 
 ### Patch Changes
