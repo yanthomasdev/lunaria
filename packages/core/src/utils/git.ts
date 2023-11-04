@@ -1,8 +1,8 @@
 import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
-import type { GitHostingUrl, LunariaConfig } from '../types.js';
+import type { LunariaConfig } from '../types.js';
 
 const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
@@ -42,16 +42,4 @@ export async function getPageHistory(filePath: string) {
 		latest: log.latest,
 		all: log.all,
 	};
-}
-
-/* TODO: Looks like we aren't getting a URL with proper '//' in the https:// part, although the link works anyway. Gotta investigate. */
-export function getGitHostingUrl({
-	type = 'blob',
-	refName = 'main',
-	query = '',
-	repository,
-	rootDir,
-	filePath,
-}: GitHostingUrl) {
-	return (join(repository, type, refName, rootDir, filePath) + query).replaceAll('\\', '/');
 }

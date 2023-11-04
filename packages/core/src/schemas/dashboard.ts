@@ -84,6 +84,11 @@ const DashboardUiSchema = z
 			.string()
 			.default('incomplete translation')
 			.describe("The text for the locale's details incomplete translation link."),
+		/** The text for the locale's details create file link. */
+		'statusByLocale.createFileLink': z
+			.string()
+			.default('Create page')
+			.describe("The text for the locale's details create file link."),
 		/** The text for the locale's details source change history link. */
 		'statusByLocale.sourceChangeHistoryLink': z
 			.string()

@@ -1,9 +1,10 @@
 import type { TemplateResult } from 'lit-html';
 import type { LunariaConfig } from './schemas/config.js';
+import type { OptionalKeys } from './schemas/locale.js';
 
 type DictionaryContentData = {
 	type: 'dictionary';
-	optionalKeys: Record<string, string[]>;
+	optionalKeys: OptionalKeys;
 };
 
 type GenericContentData = {
@@ -37,12 +38,12 @@ export type FileData = {
 	lastMajorCommitMessage: string;
 };
 
-export type GitHostingUrl = {
+export type GitHostingURL = {
 	type?: string;
 	refName?: string;
 	query?: string;
 	repository: string;
-	filePath: string;
+	filePath?: string;
 	rootDir: string;
 };
 
