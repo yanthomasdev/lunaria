@@ -24,7 +24,7 @@ import { getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
-	getGitHostingURL,
+	getGitHubURL,
 	loadFile,
 	renderToString,
 	toUtcString,
@@ -55,7 +55,7 @@ export async function getTranslationStatus(
 			const fileStatus: FileTranslationStatus = {
 				sharedPath,
 				sourcePage: sourceFile,
-				gitHostingUrl: getGitHostingURL({
+				gitHubURL: getGitHubURL({
 					repository: repository,
 					rootDir: rootDir,
 					filePath: sourceFile.filePath,
@@ -73,13 +73,13 @@ export async function getTranslationStatus(
 						sourcePath: sourceFile.filePath,
 					});
 
-					const existingPageURL = getGitHostingURL({
+					const existingPageURL = getGitHubURL({
 						repository: repository,
 						rootDir: rootDir,
 						filePath: localeFilePath,
 					});
 
-					const missingPageURL = getGitHostingURL({
+					const missingPageURL = getGitHubURL({
 						repository: repository,
 						rootDir: rootDir,
 						type: 'new',
@@ -98,8 +98,8 @@ export async function getTranslationStatus(
 						isOutdated:
 							(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
 							false,
-						gitHostingUrl: !translationFile ? missingPageURL : existingPageURL,
-						sourceHistoryUrl: getGitHostingURL({
+						gitHubURL: !translationFile ? missingPageURL : existingPageURL,
+						sourceHistoryURL: getGitHubURL({
 							repository: repository,
 							rootDir: rootDir,
 							filePath: sourceFile.filePath,

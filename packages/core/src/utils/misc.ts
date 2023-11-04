@@ -4,7 +4,7 @@ import { extname } from 'node:path';
 import { joinURL } from 'ufo';
 import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
-import type { GitHostingURL } from '../types.js';
+import type { GitHubURL } from '../types.js';
 
 export function renderToString(data: any) {
 	const { strings, values } = data;
@@ -66,13 +66,13 @@ export const loadFile = jiti(process.cwd(), {
 	esmResolve: true,
 });
 
-export function getGitHostingURL({
+export function getGitHubURL({
 	type = 'blob',
 	refName = 'main',
 	query = '',
 	repository,
 	rootDir,
 	filePath = '',
-}: GitHostingURL) {
+}: GitHubURL) {
 	return joinURL(repository, type, refName, rootDir, filePath, query);
 }
