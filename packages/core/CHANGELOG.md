@@ -1,5 +1,12 @@
 # @lunariajs/core
 
+## 0.0.18
+
+### Patch Changes
+
+- 84cdc2c: Fix trailing slash issue in remote cloning
+- 693a5b3: Add `create-lunaria` package and improve `@lunariajs/core` configuration error
+
 ## 0.0.17
 
 ### Patch Changes
