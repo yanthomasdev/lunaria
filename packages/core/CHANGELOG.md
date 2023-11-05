@@ -5,7 +5,7 @@
 ### Patch Changes
 
 - 84cdc2c: Fix trailing slash issue in remote cloning
-- 693a5b3: Add `create-lunaria` package and improve `@lunariajs/core` configuration error
+- 693a5b3: Improved "configuration not found" error
 
 ## 0.0.17
 
