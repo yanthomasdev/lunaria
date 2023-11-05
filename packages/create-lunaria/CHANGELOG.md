@@ -4,4 +4,4 @@
 
 ### Patch Changes
 
-- 693a5b3: Add `create-lunaria` package and improve `@lunariajs/core` configuration error
+- 693a5b3: Package created!
