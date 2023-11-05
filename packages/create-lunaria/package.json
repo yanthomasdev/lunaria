@@ -1,0 +1,38 @@
+{
+  "name": "create-lunaria",
+  "type": "module",
+  "version": "0.0.0",
+  "bin": "./dist/create-lunaria.mjs",
+  "exports": {
+    ".": "./dist/create-lunaria.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Yan Thomas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yan-Thomas/lunaria",
+    "directory": "packages/create-lunaria"
+  },
+  "bugs": "https://github.com/Yan-Thomas/lunaria/issues",
+  "scripts": {
+    "dev": "node ./dist/create-lunaria.mjs",
+    "build": "unbuild",
+    "lint": "tsc",
+    "lunaria": "lunaria"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "nypm": "^0.3.3",
+    "picocolors": "^1.0.0"
+  }
+}

@@ -45,8 +45,7 @@
   "devDependencies": {
     "@types/micromatch": "^4.0.3",
     "@types/node": "^20.8.9",
-    "typescript": "^5.2.2",
-    "unbuild": "^2.0.0"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "c12": "^1.5.1",
