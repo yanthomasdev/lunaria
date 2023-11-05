@@ -10,7 +10,7 @@ const { config } = await loadConfig({
 	name: 'lunaria',
 });
 
-if (!config || !Object.keys(config).length) {
+if (config === null) {
 	console.error(new Error('Could not find a `lunaria.config.*` file, does it exist?'));
 	process.exit(1);
 }
