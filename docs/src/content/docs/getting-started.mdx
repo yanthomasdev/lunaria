@@ -1,0 +1,53 @@
+---
+title: Getting Started
+description: Learn how to get started with Lunaria
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+:::caution[Work in progress]
+Lunaria is currently in early access and **breaking changes** are bound to happen.
+If you've found anything wrong or unexpected, please [open an issue on GitHub](https://github.com/Yan-Thomas/lunaria/issues/new).
+:::
+
+Lunaria is an **localization management toolchain** for open-source projects, giving the tools necessary for both maintainers and contributors to build a seamless and efficient localization workflow.
+
+## Why Lunaria?
+
+As a maintainer, managing localization efforts has never been easy, you'd always have to sacrifice the ownership of your content by moving into a localization platform or give up on reliably tracking your content for changes, until now. Lunaria solves both of these problems by enabling an entirely new workflow, powered by Git.
+
+Every commit to select files is used to build a localization dashboard, giving each file its respective done/outdated/missing status. From the dashboard, maintainers get a detailed overview of their project's localization status while contributors receive all the information they need to efficiently help, including links to the missing files and a list of commits that need to be added to the outdated content.
+
+## Add to your project
+
+You can quickly add Lunaria to your project by running the following command in your terminal:
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm create lunaria@latest
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm create lunaria
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn create lunaria
+```
+
+</TabItem>
+</Tabs>
+
+This command will automatically create a new `lunaria.config` file, include an easy-to-use `lunaria` command to your `package.json`, and add all the necessary dependencies for your specific project.
+
+:::note
+The `create-lunaria` setup wizard currently does not walk you through configuring the `lunaria.config` file. Visit the Reference section to manually proceed instead.
+:::
