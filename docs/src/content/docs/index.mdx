@@ -1,14 +1,36 @@
 ---
-title: Receive open-source translations with ease
-description: Get your project's content for translation with Lunaria.
+title: Supercharge your localization workflow
+head:
+  - tag: title
+    content: Lunaria 🌘 The missing localization management toolchain for open source
+description: Supercharge your localization workflow.
 template: splash
 hero:
-  tagline: Bring your content to the world with the friendliest workflow and tooling for your contributors.
-  image:
-    file: ../../assets/houston.webp
+  tagline: Lunaria is the way to manage your OSS project's localization. Great for maintainers. Even better for contributors.
   actions:
     - text: Get started
       link: /getting-started/
       icon: right-arrow
       variant: primary
 ---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Your content, your framework" icon="document">
+		Are you using MDX, JSON, Markdoc? VitePress, Nextra, Starlight? Bring your
+		own tools, they're welcome.
+	</Card>
+	<Card title="For everyone involved" icon="open-book">
+		Doesn't matter if you're a maintainer or contributor, the entire toolchain
+		is built to make your experience as seamless as possible.
+	</Card>
+	<Card title="Really, really fast" icon="rocket">
+		Fast enough to build a dashboard tracking +1000 pages on over 12 locales in
+		just 30 seconds.
+	</Card>
+	<Card title="Integrated with GitHub" icon="github">
+		Get an overview and helpful insights on how PRs are going to affect your
+		localization status without ever leaving GitHub.
+	</Card>
+</CardGrid>
