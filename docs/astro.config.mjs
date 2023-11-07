@@ -3,15 +3,15 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://lunaria.dev",
+	site: 'https://lunaria.dev',
 	integrations: [
 		starlight({
 			title: 'Lunaria',
 			social: {
-				github: "https://github.com/Yan-Thomas/lunaria"
+				github: 'https://github.com/Yan-Thomas/lunaria',
 			},
 			editLink: {
-				baseUrl: "https://github.com/Yan-Thomas/lunaria/edit/main/docs/",
+				baseUrl: 'https://github.com/Yan-Thomas/lunaria/edit/main/docs/',
 			},
 			sidebar: [
 				{
