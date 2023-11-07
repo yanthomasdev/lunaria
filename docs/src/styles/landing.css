@@ -23,7 +23,7 @@
 }
 
 [data-has-hero] header button[data-open-modal] {
-    display: none;
+	display: none;
 }
 
 [data-has-hero] .hero > img {
