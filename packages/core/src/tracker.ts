@@ -1,3 +1,4 @@
+import destr from 'destr';
 import glob from 'fast-glob';
 import micromatch from 'micromatch';
 import { readFileSync } from 'node:fs';
@@ -17,6 +18,7 @@ import type {
 	FileTranslationStatus,
 	IndexData,
 	LunariaConfig,
+	LunariaRendererConfig,
 	OptionalKeys,
 	RegExpGroups,
 } from './types.js';
@@ -210,11 +212,12 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 
 export async function generateDashboardHtml(
 	opts: LunariaConfig,
+	rendererOpts: LunariaRendererConfig,
 	translationStatus: FileTranslationStatus[]
 ) {
 	const html = await rehype()
 		.use(rehypeFormat)
-		.process(renderToString(Page(opts, translationStatus)));
+		.process(renderToString(Page(opts, rendererOpts, translationStatus)));
 	return String(html);
 }
 
@@ -391,9 +394,9 @@ async function getDictionaryFilesData(
 		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
 		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
-		const sourceDictionaryData = parseDictionary(JSON.parse(sourceDictionaryFile), sourceFilePath);
+		const sourceDictionaryData = parseDictionary(destr(sourceDictionaryFile), sourceFilePath);
 		const translationDictionaryData = parseDictionary(
-			JSON.parse(translationDictionaryFile),
+			destr(translationDictionaryFile),
 			translationFilePath
 		);
 

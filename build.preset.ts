@@ -7,7 +7,6 @@ export default definePreset({
 	rollup: {
 		esbuild: {
 			target: 'es2022',
-			minify: true,
 		},
 	},
 });

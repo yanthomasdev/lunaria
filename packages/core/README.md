@@ -23,51 +23,40 @@ yarn add @lunariajs/core
 
 ## Basic Usage
 
-Start using `@lunariajs/core` by setting up your own `lunaria.config` file and adding a script to your `package.json` file.
+Start using `@lunariajs/core` by setting up your own `lunaria.config.json` file and adding a script to your `package.json` file.
 
 The example below contains all of the **required** options to generate a dashboard tracking the status of both the Portuguese and Spanish translations of a site:
 
-```js
-// lunaria.config.ts
-import { defineConfig } from '@lunariajs/core';
-
-export default defineConfig({
-  // Current repository of your content
-  repository: 'https://github.com/me/cool-docs',
-  dashboard: {
-    // Generated dashboard URL used in meta tags
-    url: 'https://tracker.cool-docs.com',
+```json
+// lunaria.config.json
+{
+  "repository": "https://github.com/me/cool-docs",
+  "dashboard": {
+    "url": "https://tracker.cool-docs.com"
   },
-  // Information about the source locale of your content
-  defaultLocale: {
-    // User-friendly label/name of the language
-    label: 'English',
-    // BCP-47 tag of the language
-    lang: 'en',
-    content: {
-      // Glob pattern of where your content is
-      location: 'content/en/**/*.md',
-    },
+  "defaultLocale": {
+    "label": "English",
+    "lang": "en",
+    "content": {
+      "location": "content/en/**/*.md"
+    }
   },
-  // Array of objects of your translated locales.
-  locales: [
+  "locales": [
     {
-      label: 'Português',
-      lang: 'pt',
-      content: {
-        location: 'content/pt/**/*.md',
-      },
+      "label": "Português",
+      "lang": "pt",
+      "content": {
+        "location": "content/pt/**/*.md"
+      }
     },
     {
-      label: 'Spanish',
-      lang: 'es',
-      content: {
-        location: 'content/es/**/*.md',
-      },
-    },
-  ],
-  // Property to find in valid frontmatter files marking if a page should be translated or not
-  translatableProperty: 'i18nReady',
+      "label": "Spanish",
+      "lang": "es",
+      "content": {
+        "location": "content/es/**/*.md"
+      }
+    }
+  ]
 });
 ```
 

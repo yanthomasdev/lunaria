@@ -48,7 +48,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "c12": "^1.5.1",
+    "destr": "^2.0.2",
     "fast-glob": "^3.3.1",
     "jiti": "^1.21.0",
     "lit-html": "^3.0.0",

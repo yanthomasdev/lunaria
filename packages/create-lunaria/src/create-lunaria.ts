@@ -6,10 +6,8 @@ import { join, resolve } from 'node:path';
 import { addDependency, detectPackageManager, installDependencies } from 'nypm';
 import color from 'picocolors';
 
-const cleanConfigContent = (pkg: string) =>
-	`import { defineConfig } from "${pkg}";
-	
-export default defineConfig({});`;
+// TODO: Add JSON Schema here!
+const cleanConfigContent = '{\n    \n}';
 
 async function main() {
 	console.clear();
@@ -18,12 +16,6 @@ async function main() {
 
 	const project = await p.group(
 		{
-			package: () =>
-				p.select({
-					message: `Which ${color.bold('@lunariajs')} package would you like to set up?`,
-					initialValue: '@lunariajs/core',
-					options: [{ value: '@lunariajs/core', label: '@lunariajs/core' }],
-				}),
 			path: () =>
 				p.text({
 					message: 'Where should we set up Lunaria?',
@@ -32,14 +24,9 @@ async function main() {
 						if (value[0] !== '.') return 'Please enter a relative path.';
 					},
 				}),
-			typed: () =>
-				p.confirm({
-					message: 'Does your project use TypeScript?',
-					initialValue: false,
-				}),
 			install: ({ results }) =>
 				p.confirm({
-					message: `Do you wish to install ${color.bold(results.package)} and its dependencies?`,
+					message: 'Install dependencies?',
 					initialValue: false,
 				}),
 		},
@@ -65,15 +52,15 @@ async function main() {
 
 	const spinner = p.spinner();
 
-	spinner.start(`Adding ${color.bold(project.package)}`);
+	spinner.start(`Adding packages`);
 
-	await addDependency(project.package, {
+	await addDependency('@lunariajs/core', {
 		cwd: projectPath,
 		packageManager: packageManager,
 		silent: true,
 	});
 
-	spinner.stop(`Added ${color.bold(project.package)}.`);
+	spinner.stop(`Added packages.`);
 
 	if (existsSync(packageJsonPath)) {
 		spinner.start(`Adding ${color.bold('lunaria')} script`);
@@ -114,11 +101,11 @@ async function main() {
 		);
 	}
 
-	const configFilename = `lunaria.config.${project.typed ? 'ts' : 'js'}`;
+	const configFilename = `lunaria.config.json`;
 	const configFilePath = join(projectPath, configFilename);
 
 	if (!existsSync(configFilePath)) {
-		writeFileSync(configFilePath, cleanConfigContent(project.package));
+		writeFileSync(configFilePath, cleanConfigContent);
 		p.log.message(`${color.bold(configFilename)} created at ${color.italic(configFilePath)}`);
 	} else {
 		p.log.warn(
