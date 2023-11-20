@@ -3,6 +3,16 @@ import { z } from 'zod';
 import { DashboardSchema } from '../schemas/dashboard.js';
 import { LocaleSchema } from '../schemas/locale.js';
 import { LocalePathConstructorSchema, SharedPathResolverSchema } from '../schemas/misc.js';
+import type { CustomComponent, CustomStatusComponent } from '../types.js';
+
+function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
+	return z.custom<ComponentType>((val) => {
+		if (typeof val === 'function' && typeof val() === 'object') {
+			return val()['_$litType$'] ? true : false;
+		}
+		return false;
+	}, 'Custom components need to be a function returning a valid `lit-html` template.');
+}
 
 export const LunariaConfigSchema = z.object({
 	/** Options about your generated dashboard. */
@@ -77,7 +87,35 @@ export const LunariaConfigSchema = z.object({
 		.describe(
 			'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/history"`'
 		),
+	/** The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration. */
+	renderer: z
+		.string()
+		.optional()
+		.describe(
+			'The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration.'
+		),
+});
+
+export const LunariaRendererConfigSchema = z.object({
+	slots: z
+		.object({
+			head: createComponentSchema<CustomComponent>().optional(),
+			beforeTitle: createComponentSchema<CustomComponent>().optional(),
+			afterTitle: createComponentSchema<CustomComponent>().optional(),
+		})
+		.default({}),
+	overrides: z
+		.object({
+			meta: createComponentSchema<CustomComponent>().optional(),
+			styles: createComponentSchema<CustomComponent>().optional(),
+			body: createComponentSchema<CustomStatusComponent>().optional(),
+			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
+			statusByContent: createComponentSchema<CustomStatusComponent>().optional(),
+		})
+		.default({}),
 });
 
 export type LunariaConfig = z.infer<typeof LunariaConfigSchema>;
 export type LunariaUserConfig = z.input<typeof LunariaConfigSchema>;
+export type LunariaRendererConfig = z.infer<typeof LunariaRendererConfigSchema>;
+export type LunariaUserRendererConfig = z.input<typeof LunariaRendererConfigSchema>;

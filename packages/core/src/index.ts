@@ -1,8 +1,8 @@
-import type { LunariaUserConfig } from './types.js';
+import type { LunariaUserRendererConfig } from './types.js';
 
 export { html } from 'lit-html';
 export type * from './types.js';
 
-export function defineConfig(opts: LunariaUserConfig) {
+export function defineRendererConfig(opts: LunariaUserRendererConfig) {
 	return opts;
 }

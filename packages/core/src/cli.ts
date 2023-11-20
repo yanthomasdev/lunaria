@@ -1,21 +1,22 @@
 #!/usr/bin/env node
-import { loadConfig } from 'c12';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { destr } from 'destr';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { LunariaConfigSchema } from './schemas/config.js';
+import { LunariaConfigSchema, LunariaRendererConfigSchema } from './schemas/config.js';
 import { generateDashboardHtml, getContentIndex, getTranslationStatus } from './tracker.js';
 import { handleShallowRepo } from './utils/git.js';
+import { loadFile } from './utils/misc.js';
 
-const { config } = await loadConfig({
-	name: 'lunaria',
-});
+const configPath = './lunaria.config.json';
 
-if (config === null) {
-	console.error(new Error('Could not find a `lunaria.config.*` file, does it exist?'));
-	process.exit(1);
+if (!existsSync(configPath)) {
+	console.error(
+		new Error(`Could not find a \`lunaria.config.json\` file in ${process.cwd()}, does it exist?`)
+	);
 }
 
-const parsedConfig = LunariaConfigSchema.safeParse(config);
+const configContents = destr(readFileSync(configPath, 'utf-8'));
+const parsedConfig = LunariaConfigSchema.safeParse(configContents);
 
 if (!parsedConfig.success) {
 	console.error(
@@ -28,6 +29,31 @@ if (!parsedConfig.success) {
 }
 
 const userConfig = parsedConfig.data;
+
+if (userConfig.renderer && !existsSync(userConfig.renderer)) {
+	console.error(
+		new Error(
+			`Could not find your specified renderer file at \`${userConfig.renderer}\`, does it exist?`
+		)
+	);
+	process.exit(1);
+}
+
+const rendererConfigContents = userConfig.renderer ? loadFile(userConfig.renderer) : {};
+const parsedRendererConfig = LunariaRendererConfigSchema.safeParse(rendererConfigContents);
+
+if (!parsedRendererConfig.success) {
+	console.error(
+		new Error(
+			'Invalid renderer configuration options passed to `@lunariajs/core`\n' +
+				parsedRendererConfig.error.issues.map((i) => i).join('\n')
+		)
+	);
+	process.exit(1);
+}
+
+const userRendererConfig = parsedRendererConfig.data;
+
 const isShallowRepo = await handleShallowRepo(userConfig);
 
 console.time('⌛ Building translation dashboard');
@@ -35,7 +61,7 @@ console.log(`➡️  Dashboard output path: ${resolve(userConfig.outDir)}`);
 
 const contentIndex = await getContentIndex(userConfig, isShallowRepo);
 const translationStatus = await getTranslationStatus(userConfig, contentIndex);
-const html = await generateDashboardHtml(userConfig, translationStatus);
+const html = await generateDashboardHtml(userConfig, userRendererConfig, translationStatus);
 
 const outputDir = dirname(userConfig.outDir);
 

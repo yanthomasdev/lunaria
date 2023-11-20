@@ -1,14 +1,4 @@
 import { z } from 'zod';
-import type { CustomComponent, CustomStatusComponent } from '../types.js';
-
-function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
-	return z.custom<ComponentType>((val) => {
-		if (typeof val === 'function' && typeof val() === 'object') {
-			return val()['_$litType$'] ? true : false;
-		}
-		return false;
-	}, 'Custom components need to be a function returning a valid `lit-html` template.');
-}
 
 const DashboardUiSchema = z
 	.object({
@@ -146,22 +136,6 @@ export const DashboardSchema = z.object({
 		.describe('The deployed URL of your translation dashboard, used in the meta tags of the page.'),
 	/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
 	ui: DashboardUiSchema,
-	slots: z
-		.object({
-			head: createComponentSchema<CustomComponent>().optional(),
-			beforeTitle: createComponentSchema<CustomComponent>().optional(),
-			afterTitle: createComponentSchema<CustomComponent>().optional(),
-		})
-		.default({}),
-	overrides: z
-		.object({
-			meta: createComponentSchema<CustomComponent>().optional(),
-			styles: createComponentSchema<CustomComponent>().optional(),
-			body: createComponentSchema<CustomStatusComponent>().optional(),
-			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
-			statusByContent: createComponentSchema<CustomStatusComponent>().optional(),
-		})
-		.default({}),
 });
 
 export type Dashboard = z.output<typeof DashboardSchema>;

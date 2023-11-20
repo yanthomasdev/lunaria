@@ -4,27 +4,34 @@ import type {
 	FileTranslationStatus,
 	Locale,
 	LunariaConfig,
+	LunariaRendererConfig,
 	TranslationStatus,
 } from '../types.js';
 import { getTextFromFormat } from '../utils/misc.js';
 import { Styles } from './styles.js';
 
-export const Page = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
+export const Page = (
+	opts: LunariaConfig,
+	rendererOpts: LunariaRendererConfig,
+	translationStatus: FileTranslationStatus[]
+) => {
 	const { dashboard } = opts;
+	const { slots, overrides } = rendererOpts;
+
 	return html`
 		<!doctype html>
 		<html dir="${dashboard.ui.dir}" lang="${dashboard.ui.lang}">
 			<head>
 				<!-- Built-in/custom meta tags -->
-				${dashboard.overrides.meta?.(opts) ?? Meta(dashboard)}
+				${overrides.meta?.(opts) ?? Meta(dashboard)}
 				<!-- Additional head tags -->
-				${dashboard.slots.head?.(opts) ?? ''}
+				${slots.head?.(opts) ?? ''}
 				<!-- Built-in/custom styles -->
-				${dashboard.overrides.styles?.(opts) ?? Styles}
+				${overrides.styles?.(opts) ?? Styles}
 			</head>
 			<body>
 				<!-- Built-in/custom body content -->
-				${dashboard.overrides.body?.(opts, translationStatus) ?? Body(opts, translationStatus)}
+				${overrides.body?.(opts, translationStatus) ?? Body(opts, rendererOpts, translationStatus)}
 			</body>
 		</html>
 	`;
@@ -42,18 +49,24 @@ export const Meta = (dashboard: Dashboard) => html`
 	<meta property="og:description" content="${dashboard.description}" />
 `;
 
-export const Body = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
+export const Body = (
+	opts: LunariaConfig,
+	rendererOpts: LunariaRendererConfig,
+	translationStatus: FileTranslationStatus[]
+) => {
 	const { dashboard } = opts;
+	const { slots, overrides } = rendererOpts;
+
 	return html`
 		<main>
 			<div class="limit-to-viewport">
-				${dashboard.slots.beforeTitle?.(opts) ?? ''}
+				${slots.beforeTitle?.(opts) ?? ''}
 				<h1>${dashboard.title}</h1>
-				${dashboard.slots.afterTitle?.(opts) ?? ''}
-				${dashboard.overrides.statusByLocale?.(opts, translationStatus) ??
+				${slots.afterTitle?.(opts) ?? ''}
+				${overrides.statusByLocale?.(opts, translationStatus) ??
 				StatusByLocale(opts, translationStatus)}
 			</div>
-			${dashboard.overrides.statusByContent?.(opts, translationStatus) ??
+			${overrides.statusByContent?.(opts, translationStatus) ??
 			StatusByContent(opts, translationStatus)}
 		</main>
 	`;
