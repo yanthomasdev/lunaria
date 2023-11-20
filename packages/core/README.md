@@ -4,7 +4,7 @@ The `@lunariajs/core` package contains the base tracking and dashboard generatio
 
 - You need fine-grained control over your dashboard
 - You want to build a package over it
-- There isn"t a framework-specific `@lunariajs` package for your use-case
+- There isn't a framework-specific `@lunariajs` package for your use-case
 
 ## Installation
 
