@@ -23,8 +23,7 @@
   "scripts": {
     "dev": "node ./dist/create-lunaria.mjs",
     "build": "unbuild",
-    "lint": "tsc",
-    "lunaria": "lunaria"
+    "lint": "tsc"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
