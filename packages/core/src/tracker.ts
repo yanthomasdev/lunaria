@@ -36,9 +36,12 @@ export async function getTranslationStatus(
 	opts: LunariaConfig,
 	fileContentIndex: FileContentIndex
 ) {
-	const { defaultLocale, locales, repository, rootDir, localePathConstructor } = opts;
+	const { defaultLocale, locales, repository, rootDir, routingStrategy } = opts;
+
 	const sourceLocaleIndex = fileContentIndex[defaultLocale.lang];
 	const translationStatus: FileTranslationStatus[] = [];
+
+	const allLangs = [defaultLocale, ...locales].map((locale) => locale.lang);
 
 	if (!sourceLocaleIndex) {
 		console.error(
@@ -69,16 +72,15 @@ export async function getTranslationStatus(
 				locales.map(async ({ lang }) => {
 					const translationFile = fileContentIndex[lang]?.[sharedPath];
 
-					const localeFilePath = localePathConstructor({
-						localeLang: lang,
-						sourceLang: defaultLocale.lang,
-						sourcePath: sourceFile.filePath,
-					});
+					const localeFilePath = getPathResolver(routingStrategy, allLangs).toLocalePath(
+						sourceFile.filePath,
+						lang
+					);
 
 					const existingPageURL = getGitHubURL({
 						repository: repository,
 						rootDir: rootDir,
-						filePath: localeFilePath,
+						filePath: translationFile?.filePath,
 					});
 
 					const missingPageURL = getGitHubURL({
@@ -118,17 +120,14 @@ export async function getTranslationStatus(
 }
 
 export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolean) {
-	const {
-		translatableProperty,
-		rootDir,
-		defaultLocale,
-		locales,
-		ignoreKeywords,
-		sharedPathResolver,
-	} = opts;
+	const { translatableProperty, rootDir, defaultLocale, locales, ignoreKeywords, routingStrategy } =
+		opts;
 
 	const allLocales = [defaultLocale, ...locales];
+	const allLangs = allLocales.map((locale) => locale.lang);
+
 	const fileContentIndex: FileContentIndex = {};
+	const pathResolver = getPathResolver(routingStrategy, allLangs);
 
 	for (const { lang, content, dictionaries } of allLocales) {
 		const localeContentPaths = await glob(content.location, {
@@ -138,7 +137,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 
 		const genericContentIndex = await Promise.all(
 			localeContentPaths.sort().map(async (filePath) => {
-				const sharedPath = sharedPathResolver({ lang, localePath: filePath });
+				const sharedPath = pathResolver.toSharedPath(filePath);
 
 				return {
 					lang,
@@ -171,7 +170,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 			dictionaryContentIndex.push(
 				...(await Promise.all(
 					localeDictionariesPaths.sort().map(async (filePath) => {
-						const sharedPath = sharedPathResolver({ lang: lang, localePath: filePath });
+						const sharedPath = pathResolver.toSharedPath(filePath);
 						// Create or update page data for the page
 						return {
 							lang,
@@ -262,6 +261,48 @@ async function getFileData(
 		lastMajorChange: toUtcString(lastMajorCommit.date),
 		lastMajorCommitMessage: lastMajorCommit.message,
 	};
+}
+
+export function getPathResolver(
+	routingStrategy: LunariaConfig['routingStrategy'],
+	allLangs: string[]
+) {
+	if (routingStrategy === 'directory') {
+		const directoryRegExp = getRegexWithVariable('(:lunaria-locales)/', allLangs);
+
+		return {
+			toLocalePath: (path: string, lang: string) => path.replace(directoryRegExp, `${lang}/`),
+			toSharedPath: (path: string) => path.replace(directoryRegExp, ''),
+		};
+	}
+
+	/** TODO: Test this with Nextra to see if it's 100% compatible. */
+	if (routingStrategy === 'file') {
+		const fileRegExp = getRegexWithVariable('.(:lunaria-locales).', allLangs);
+
+		return {
+			toLocalePath: (path: string, lang: string) => path.replace(fileRegExp, `.${lang}.`),
+			toSharedPath: (path: string) => path.replace(fileRegExp, ''),
+		};
+	}
+
+	const { regex, sharedPathReplaceWith, localePathReplaceWith } = routingStrategy;
+
+	const customLocalePathRegExp = getRegexWithVariable(regex, allLangs);
+	const customSharedPathRegExp = getRegexWithVariable(regex, allLangs);
+
+	return {
+		toLocalePath: (path: string, lang: string) =>
+			path.replace(customLocalePathRegExp, localePathReplaceWith.replace(':lunaria-locale', lang)),
+		toSharedPath: (path: string) => path.replace(customSharedPathRegExp, sharedPathReplaceWith),
+	};
+}
+
+function getRegexWithVariable(regex: string, allLangs: string[]) {
+	const allLangsRegexPartial = allLangs.join('|');
+	const regexStringWithVariable = regex.replaceAll(':lunaria-locales', allLangsRegexPartial);
+
+	return new RegExp(regexStringWithVariable);
 }
 
 function findLastMajorCommit(

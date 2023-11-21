@@ -2,7 +2,6 @@ import { normalizeURL } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../schemas/dashboard.js';
 import { LocaleSchema } from '../schemas/locale.js';
-import { LocalePathConstructorSchema, SharedPathResolverSchema } from '../schemas/misc.js';
 import type { CustomComponent, CustomStatusComponent } from '../types.js';
 
 function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
@@ -13,6 +12,23 @@ function createComponentSchema<ComponentType extends CustomComponent | CustomSta
 		return false;
 	}, 'Custom components need to be a function returning a valid `lit-html` template.');
 }
+
+/**  */
+export const customRoutingStrategyOptionsSchema = z.object({
+	regex: z
+		.string()
+		.describe(
+			"A regex pattern to find the path section to be replaced. You can use :lunaria-locales to dynamically add a list of all the locales in the format `'es|pt|ar'`."
+		),
+	localePathReplaceWith: z
+		.string()
+		.describe(
+			"The content that will be replaced into the `toLocalePath` regex's match. You can use :lunaria-locale to dynamically add the current locale for you to replace with."
+		),
+	sharedPathReplaceWith: z
+		.string()
+		.describe("The content that will be replaced into the `toSharedPath` regex's match."),
+});
 
 export const LunariaConfigSchema = z.object({
 	/** Options about your generated dashboard. */
@@ -34,10 +50,15 @@ export const LunariaConfigSchema = z.object({
 		.string()
 		.optional()
 		.describe('Name of the frontmatter property used to mark a page as ready for translation.'),
-	/** Fuction to extract a shared path from a locale's path, used to 'link' the content between two locales. */
-	sharedPathResolver: SharedPathResolverSchema,
-	/** Fuction to construct the locale-specific path from the source path of the same content. */
-	localePathConstructor: LocalePathConstructorSchema,
+	/** The routing strategy used by your framework, used to properly generate paths from a locale's path. */
+	routingStrategy: z
+		.literal('directory')
+		.or(z.literal('file'))
+		.or(customRoutingStrategyOptionsSchema)
+		.default('directory')
+		.describe(
+			"The routing strategy used by your framework, used to properly generate paths from a locale's path."
+		),
 	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`. */
 	repository: z
 		.string()
