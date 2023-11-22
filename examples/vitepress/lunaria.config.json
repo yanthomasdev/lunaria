@@ -4,7 +4,6 @@
   "dashboard": {
     "url": "https://localhost:3000/"
   },
-  "routingStrategy": "directory",
   "defaultLocale": {
     "label": "English",
     "lang": "en",
