@@ -8,8 +8,7 @@
     "label": "English",
     "lang": "en",
     "content": {
-      "location": "**/*.md",
-      "ignore": ["pt/*.md", "es/*.md"]
+      "location": "en/**/*.md"
     },
     "dictionaries": {
       "location": "ui/en/*.{js,cjs,mjs,ts,yml,json}",
@@ -47,5 +46,5 @@
     }
   ],
   "translatableProperty": "i18nReady",
-  "renderer": "./renderer.config.js"
+  "renderer": "./renderer.config.ts"
 }
