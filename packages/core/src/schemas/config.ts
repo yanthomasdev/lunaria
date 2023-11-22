@@ -13,7 +13,6 @@ function createComponentSchema<ComponentType extends CustomComponent | CustomSta
 	}, 'Custom components need to be a function returning a valid `lit-html` template.');
 }
 
-/**  */
 export const customRoutingStrategyOptionsSchema = z.object({
 	regex: z
 		.string()
