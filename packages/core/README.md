@@ -1,10 +1,8 @@
 # `@lunariajs/core`
 
-The `@lunariajs/core` package contains the base tracking and dashboard generation systems used across its related packages. You should use this package if:
+The `@lunariajs/core` package contains the base tracking and dashboard generation systems used across the toolchain.
 
-- You need fine-grained control over your dashboard
-- You want to build a package over it
-- There isn't a framework-specific `@lunariajs` package for your use-case
+Read the official [Lunaria documentation](https://lunaria.dev) to learn more about it.
 
 ## Installation
 
