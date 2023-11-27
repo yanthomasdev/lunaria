@@ -1,4 +1,4 @@
-import { normalizeURL } from 'ufo';
+import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../schemas/dashboard.js';
 import { LocaleSchema } from '../schemas/locale.js';
@@ -14,24 +14,67 @@ function createComponentSchema<ComponentType extends CustomComponent | CustomSta
 }
 
 export const customRoutingStrategyOptionsSchema = z.object({
+	/** The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`. */
 	regex: z
 		.string()
 		.describe(
-			"A regex pattern to find the path section to be replaced. You can use :lunaria-locales to dynamically add a list of all the locales in the format `'es|pt|ar'`."
+			"The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`."
 		),
+	/** The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with. */
 	localePathReplaceWith: z
 		.string()
 		.describe(
-			"The content that will be replaced into the `toLocalePath` regex's match. You can use :lunaria-locale to dynamically add the current locale for you to replace with."
+			"The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with."
 		),
+	/** The content that will be replaced into the `toSharedPath` regex's match. */
 	sharedPathReplaceWith: z
 		.string()
 		.describe("The content that will be replaced into the `toSharedPath` regex's match."),
 });
 
+export const customGitHostingOptionsSchema = z.object({
+	create: z.string().or(z.null()),
+	source: z.string().or(z.null()),
+	history: z.string().or(z.null()),
+	clone: z.string(),
+});
+
+export const repositorySchema = z.object({
+	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"`. */
+	name: z
+		.string()
+		.transform((path) => withoutTrailingSlash(path))
+		.describe(
+			'The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"`.'
+		),
+	/** The currently tracked branch of your repository. */
+	branch: z.string().default('main').describe('The currently tracked branch of your repository.'),
+	/** The root directory of the project being tracked, must be set when using a monorepo. */
+	rootDir: z
+		.string()
+		.default('')
+		.refine((path) => !isRelative(path) || path === '', {
+			message:
+				'The root directory should not be a relative path, it should follow the example: `examples/vitepress`.',
+		})
+		.transform((path) => withoutTrailingSlash(path))
+		.describe(
+			'The root directory of the project being tracked, must be set when using a monorepo.'
+		),
+	/** The git hosting platform used by your project, e.g. `"github"` or `"gitlab"`. */
+	hosting: z
+		.literal('github')
+		.or(z.literal('gitlab'))
+		.or(customGitHostingOptionsSchema)
+		.default('github')
+		.describe('The git hosting platform used by your project, e.g. `"github"` or `"gitlab"`.'),
+});
+
 export const LunariaConfigSchema = z.object({
 	/** Options about your generated dashboard. */
 	dashboard: DashboardSchema,
+	/** Information about your project's repository. */
+	repository: repositorySchema,
 	/** The default locale of your content that is going to be translated. */
 	defaultLocale: LocaleSchema,
 	/** Array of the locales that will be translated. */
@@ -57,41 +100,6 @@ export const LunariaConfigSchema = z.object({
 		.default('directory')
 		.describe(
 			"The routing strategy used by your framework, used to properly generate paths from a locale's path."
-		),
-	/** The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`. */
-	repository: z
-		.string()
-		.url()
-		.refine((url) => url.startsWith('https://github.com/'), {
-			message: 'URL needs to be a valid GitHub link (`"https://github.com/"`).',
-		})
-		.transform((url) => normalizeURL(url))
-		.describe(
-			'The URL of your current repository, used to generate history links, e.g. `"https://github.com/Yan-Thomas/lunaria/"`.'
-		),
-	/** The root directory of the project being tracked, must be set when using a monorepo.
-	 *
-	 * @example
-	 * Take this project structure as an example:
-	 * ```md
-	 * ├── docs/
-	 * ├── packages/
-	 * |   ├── package-one/
-	 * |   ├── package-two/
-	 * ```
-	 * Considering you're tracking your docs located at `docs/`, `rootDir` should be defined like the following:
-	 * ```json
-	 * rootDir: "./docs"
-	 * ```
-	 *
-	 * This is necessary because when using a shallow repository, as the entire monorepo is downloaded,
-	 * and therefore there's no other way to reliably know where your content being tracked is.
-	 */
-	rootDir: z
-		.string()
-		.default('.')
-		.describe(
-			'The root directory of the project being tracked, must be set when using a monorepo.'
 		),
 	/** The relative directory path of where your dashboard will build to, e.g. `"./dist/translation-status/index.html"`. */
 	outDir: z
