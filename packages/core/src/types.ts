@@ -50,7 +50,7 @@ export type GitHubURL = {
 export type FileTranslationStatus = {
 	sharedPath: string;
 	sourcePage: FileData;
-	gitHubURL: string;
+	gitHostingFileURL: string | null;
 	translations: {
 		[locale: string]: TranslationStatus;
 	};
@@ -64,8 +64,8 @@ export type TranslationStatus = {
 	};
 	isMissing: boolean;
 	isOutdated: boolean;
-	gitHubURL: string;
-	sourceHistoryURL: string;
+	gitHostingFileURL: string | null;
+	gitHostingHistoryURL: string | null;
 };
 
 export type RegExpGroups<T extends string> =

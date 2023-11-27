@@ -2,7 +2,7 @@ import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
-import { withoutTrailingSlash } from 'ufo';
+import { getGitHostingLinks } from '../tracker.js';
 import type { LunariaConfig } from '../types.js';
 
 const git = simpleGit({
@@ -14,23 +14,24 @@ const git = simpleGit({
  * `true` if it's running on a shallow repository.
  */
 export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig) {
-	const isShallowRepo = await git.revparse(['--is-shallow-repository']);
-	if (isShallowRepo === 'true') {
+	const gitHostingLinks = getGitHostingLinks(repository);
+	const isShallowRepo = (await git.revparse(['--is-shallow-repository'])) === 'true';
+
+	if (isShallowRepo) {
 		console.info(
-			'A shallow repository was detected: a clone of your repository will be downloaded and used instead.'
+			"A shallow repository was detected: a clone of your repository will be downloaded and used instead. If you're in a monorepo, be sure to set the `repository.rootDir` property accordingly. "
 		);
 
 		const target = resolve(cloneDir);
 
 		if (existsSync(target)) rmSync(target, { recursive: true, force: true });
 
-		const remote = `${withoutTrailingSlash(repository)}.git`;
-
-		await git.clone(remote, target, ['--bare', '--filter=blob:none']);
+		await git.clone(gitHostingLinks.clone(), target, ['--bare', '--filter=blob:none']);
 		// Use the clone as the git directory for all tasks
 		await git.cwd({ path: target, root: true });
 	}
-	return isShallowRepo === 'true';
+
+	return isShallowRepo;
 }
 
 export async function getPageHistory(filePath: string) {

@@ -1,6 +1,8 @@
 {
-  "repository": "https://github.com/Yan-Thomas/lunaria",
-  "rootDir": "./examples/vitepress",
+  "repository": {
+    "name": "Yan-Thomas/lunaria",
+    "rootDir": "examples/vitepress"
+  },
   "dashboard": {
     "url": "https://localhost:3000/"
   },

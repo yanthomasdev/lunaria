@@ -126,11 +126,15 @@ export const LocaleDetails = (
 							${missingPages.map(
 								(page) => html`
 									<li>
-										${Link(page.gitHubURL, page.sharedPath)}
-										${CreatePageLink(
-											page.translations[lang]?.gitHubURL!,
-											dashboard.ui['statusByLocale.createFileLink']
-										)}
+										${page.gitHostingFileURL
+											? Link(page.gitHostingFileURL, page.sharedPath)
+											: page.sharedPath}
+										${page.translations[lang]?.gitHostingFileURL
+											? CreatePageLink(
+													page.translations[lang]?.gitHostingFileURL!,
+													dashboard.ui['statusByLocale.createFileLink']
+											  )
+											: ''}
 									</li>
 								`
 							)}
@@ -219,7 +223,7 @@ export const TableBody = (
 				(page) =>
 					html`
 				<tr>
-					<td>${Link(page.gitHubURL, page.sharedPath)}</td>
+					<td>${page.gitHostingFileURL ? Link(page.gitHostingFileURL, page.sharedPath) : page.sharedPath}</td>
 						${locales.map(({ lang }) => {
 							return TableContentStatus(page.translations, lang, dashboard);
 						})}
@@ -238,16 +242,10 @@ export const TableContentStatus = (
 	return html`
 		<td>
 			${translations[lang]?.isMissing
-				? html`<span title="${dashboard.ui['status.missing']}"
-						><span aria-hidden="true">${dashboard.ui['status.emojiMissing']}</span></span
-				  >`
+				? EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'missing')
 				: translations[lang]?.isOutdated || !translations[lang]?.completeness.complete
-				? html`<a href="${translations[lang]?.gitHubURL}" title="${dashboard.ui['status.outdated']}"
-						><span aria-hidden="true">${dashboard.ui['status.emojiOutdated']}</span></a
-				  >`
-				: html`<a href="${translations[lang]?.gitHubURL}" title="${dashboard.ui['status.done']}"
-						><span aria-hidden="true">${dashboard.ui['status.emojiDone']}</span></a
-				  >`}
+				? EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'outdated')
+				: EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'done')}
 		</td>
 	`;
 };
@@ -258,20 +256,52 @@ export const ContentDetailsLinks = (
 	dashboard: Dashboard
 ) => {
 	return html`
-		${Link(page.gitHubURL, page.sharedPath)}
+		${page.gitHostingFileURL ? Link(page.gitHostingFileURL, page.sharedPath) : page.sharedPath}
 		${page.translations[lang]
-			? html`(${Link(
-					page.translations[lang]?.gitHubURL!,
-					!page.translations[lang]?.completeness.complete
-						? dashboard.ui['statusByLocale.incompleteTranslationLink']
-						: dashboard.ui['statusByLocale.outdatedTranslationLink']
-			  )},
-			  ${Link(
-					page.translations[lang]?.sourceHistoryURL!,
-					dashboard.ui['statusByLocale.sourceChangeHistoryLink']
-			  )})`
+			? page.translations[lang]?.gitHostingFileURL || page.translations[lang]?.gitHostingHistoryURL
+				? html`(${page.translations[lang]?.gitHostingFileURL
+						? Link(
+								page.translations[lang]?.gitHostingFileURL!,
+								!page.translations[lang]?.completeness.complete
+									? dashboard.ui['statusByLocale.incompleteTranslationLink']
+									: dashboard.ui['statusByLocale.outdatedTranslationLink']
+						  )
+						: ''},
+				  ${page.translations[lang]?.gitHostingHistoryURL
+						? Link(
+								page.translations[lang]?.gitHostingHistoryURL!,
+								dashboard.ui['statusByLocale.sourceChangeHistoryLink']
+						  )
+						: ''})`
+				: ''
 			: ''}
 	`;
+};
+
+export const EmojiFileLink = (
+	ui: Dashboard['ui'],
+	href: string | null,
+	status: 'missing' | 'outdated' | 'done'
+) => {
+	const statusTextOpts = {
+		missing: 'status.missing',
+		outdated: 'status.outdated',
+		done: 'status.done',
+	} as const;
+
+	const statusEmojiOpts = {
+		missing: 'status.emojiMissing',
+		outdated: 'status.emojiOutdated',
+		done: 'status.emojiDone',
+	} as const;
+
+	return href
+		? html`<a href="${href}" title="${ui[statusTextOpts[status]]}">
+				<span aria-hidden="true">${ui[statusEmojiOpts[status]]}</span>
+		  </a>`
+		: html`<span title="${ui[statusTextOpts[status]]}">
+				<span aria-hidden="true">${ui[statusEmojiOpts[status]]}</span>
+		  </span>`;
 };
 
 export const Link = (href: string, text: string) => {

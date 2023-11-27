@@ -6,7 +6,7 @@ import { extname, join, resolve } from 'node:path';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
-import { normalizeURL } from 'ufo';
+import { joinURL } from 'ufo';
 import { frontmatterFileExtensions, moduleFileExtensions } from './constants.js';
 import { Page } from './dashboard/components.js';
 import { DictionaryContentSchema } from './schemas/misc.js';
@@ -26,7 +26,7 @@ import { getPageHistory } from './utils/git.js';
 import {
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
-	getGitHubURL,
+	getTextFromFormat,
 	loadFile,
 	renderToString,
 	toUtcString,
@@ -36,12 +36,13 @@ export async function getTranslationStatus(
 	opts: LunariaConfig,
 	fileContentIndex: FileContentIndex
 ) {
-	const { defaultLocale, locales, repository, rootDir, routingStrategy } = opts;
+	const { defaultLocale, locales, repository, routingStrategy } = opts;
 
 	const sourceLocaleIndex = fileContentIndex[defaultLocale.lang];
 	const translationStatus: FileTranslationStatus[] = [];
 
 	const allLangs = [defaultLocale, ...locales].map((locale) => locale.lang);
+	const gitHostingLinks = getGitHostingLinks(repository);
 
 	if (!sourceLocaleIndex) {
 		console.error(
@@ -60,11 +61,7 @@ export async function getTranslationStatus(
 			const fileStatus: FileTranslationStatus = {
 				sharedPath,
 				sourcePage: sourceFile,
-				gitHubURL: getGitHubURL({
-					repository: repository,
-					rootDir: rootDir,
-					filePath: sourceFile.filePath,
-				}),
+				gitHostingFileURL: gitHostingLinks.source(sourceFile.filePath),
 				translations: {},
 			};
 
@@ -77,18 +74,9 @@ export async function getTranslationStatus(
 						lang
 					);
 
-					const existingPageURL = getGitHubURL({
-						repository: repository,
-						rootDir: rootDir,
-						filePath: translationFile?.filePath,
-					});
-
-					const missingPageURL = getGitHubURL({
-						repository: repository,
-						rootDir: rootDir,
-						type: 'new',
-						query: normalizeURL(`?filename=${localeFilePath}`),
-					});
+					const fileSourceURL = translationFile
+						? gitHostingLinks.source(translationFile.filePath)
+						: gitHostingLinks.create(localeFilePath);
 
 					fileStatus.translations[lang] = {
 						file: translationFile,
@@ -102,13 +90,11 @@ export async function getTranslationStatus(
 						isOutdated:
 							(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
 							false,
-						gitHubURL: !translationFile ? missingPageURL : existingPageURL,
-						sourceHistoryURL: getGitHubURL({
-							repository: repository,
-							rootDir: rootDir,
-							filePath: sourceFile.filePath,
-							query: translationFile ? `?since=${translationFile.lastMajorChange}` : '',
-						}),
+						gitHostingFileURL: fileSourceURL,
+						gitHostingHistoryURL: gitHostingLinks.history(
+							sourceFile.filePath,
+							translationFile?.lastMajorChange ?? ''
+						),
 					};
 				})
 			);
@@ -120,8 +106,14 @@ export async function getTranslationStatus(
 }
 
 export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolean) {
-	const { translatableProperty, rootDir, defaultLocale, locales, ignoreKeywords, routingStrategy } =
-		opts;
+	const {
+		translatableProperty,
+		defaultLocale,
+		locales,
+		ignoreKeywords,
+		routingStrategy,
+		repository,
+	} = opts;
 
 	const allLocales = [defaultLocale, ...locales];
 	const allLangs = allLocales.map((locale) => locale.lang);
@@ -146,7 +138,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 					fileData: await getFileData(
 						filePath,
 						isShallowRepo,
-						rootDir,
+						repository.rootDir,
 						translatableProperty,
 						ignoreKeywords
 					),
@@ -179,7 +171,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 							fileData: await getFileData(
 								filePath,
 								isShallowRepo,
-								rootDir,
+								repository.rootDir,
 								translatableProperty,
 								ignoreKeywords
 							),
@@ -228,12 +220,10 @@ async function getFileData(
 	ignoreKeywords: string[]
 ): Promise<FileData> {
 	/** On shallow monorepos the entire repository is cloned,
-	 * that means we have to consider the project's root
+	 * which means we have to consider the project's root
 	 * directory to avoid errors while searching the git history.
 	 */
-
-	// TODO: Test on shallow repo on to see if this is working!
-	const monorepoSafePath = join(isShallowRepo ? rootDir : '', filePath);
+	const monorepoSafePath = isShallowRepo ? join(rootDir, filePath) : filePath;
 	const historyData = await getPageHistory(monorepoSafePath);
 
 	const allCommits = historyData.all;
@@ -244,7 +234,7 @@ async function getFileData(
 			new Error(
 				`Failed to retrive last commit data from ${resolve(
 					monorepoSafePath
-				)}. Your working copy should not contain uncommitted new pages when running this script. This might also happen when developing locally on a monorepo.`
+				)}. Your working copy should not contain uncommitted new pages when running this script. This might also happen when developing locally on a monorepo without the \`repository.rootDir\` option set.`
 			)
 		);
 		process.exit(1);
@@ -263,12 +253,82 @@ async function getFileData(
 	};
 }
 
+export function getGitHostingLinks(repository: LunariaConfig['repository']) {
+	const { name, branch, hosting, rootDir } = repository;
+
+	if (hosting === 'github')
+		return {
+			create: (filePath: string) =>
+				`https://github.com/${name}/new/${branch}?filename=${joinURL(rootDir, filePath)}`,
+			source: (filePath: string) =>
+				`https://github.com/${name}/blob/${branch}/${joinURL(rootDir, filePath)}`,
+			history: (filePath: string, sinceDate: string) =>
+				`https://github.com/${name}/commits/${branch}/${joinURL(
+					rootDir,
+					filePath
+				)}?since=${sinceDate}`,
+			clone: () => `https://github.com/${name}.git`,
+		};
+
+	if (hosting === 'gitlab')
+		return {
+			create: (filePath: string) =>
+				`https://gitlab.com/${name}/-/new/${branch}?file_name=${joinURL(rootDir, filePath)}`,
+			source: (filePath: string) =>
+				`https://gitlab.com/${name}/-/blob/${branch}/${joinURL(rootDir, filePath)}`,
+			history: (filePath: string, sinceDate: string) =>
+				`https://gitlab.com/${name}/-/commits/${branch}/${joinURL(
+					rootDir,
+					filePath
+				)}?since=${sinceDate}`,
+			clone: () => `https://gitlab.com/${name}.git`,
+		};
+
+	return {
+		create: (filePath: string) =>
+			hosting.create
+				? getTextFromFormat(hosting.create, {
+						':name': name,
+						':branch': branch,
+						':path': joinURL(rootDir, filePath),
+				  })
+				: null,
+		source: (filePath: string) =>
+			hosting.source
+				? getTextFromFormat(hosting.source, {
+						':name': name,
+						':branch': branch,
+						':path': joinURL(rootDir, filePath),
+				  })
+				: null,
+		history: (filePath: string, sinceDate: string) =>
+			hosting.history
+				? getTextFromFormat(hosting.history, {
+						':name': name,
+						':branch': branch,
+						':path': joinURL(rootDir, filePath),
+						':since': sinceDate,
+				  })
+				: null,
+		clone: () =>
+			getTextFromFormat(hosting.clone, {
+				':name': name,
+			}),
+	};
+}
+
 export function getPathResolver(
 	routingStrategy: LunariaConfig['routingStrategy'],
 	allLangs: string[]
 ) {
+	const localesRegexPartial = allLangs.join('|');
+
 	if (routingStrategy === 'directory') {
-		const directoryRegExp = getRegexWithVariable('(:lunaria-locales)/', allLangs);
+		const directoryRegExp = new RegExp(
+			getTextFromFormat('(:locales)/', {
+				':locales': localesRegexPartial,
+			})
+		);
 
 		return {
 			toLocalePath: (path: string, lang: string) => path.replace(directoryRegExp, `${lang}/`),
@@ -278,31 +338,36 @@ export function getPathResolver(
 
 	/** TODO: Test this with Nextra to see if it's 100% compatible. */
 	if (routingStrategy === 'file') {
-		const fileRegExp = getRegexWithVariable('.(:lunaria-locales).', allLangs);
+		const fileRegExp = new RegExp(
+			getTextFromFormat('.(:locales).', {
+				':locale': localesRegexPartial,
+			})
+		);
 
 		return {
 			toLocalePath: (path: string, lang: string) => path.replace(fileRegExp, `.${lang}.`),
-			toSharedPath: (path: string) => path.replace(fileRegExp, ''),
+			toSharedPath: (path: string) => path.replace(fileRegExp, '.'),
 		};
 	}
 
 	const { regex, sharedPathReplaceWith, localePathReplaceWith } = routingStrategy;
 
-	const customLocalePathRegExp = getRegexWithVariable(regex, allLangs);
-	const customSharedPathRegExp = getRegexWithVariable(regex, allLangs);
+	const customRoutingRegExp = new RegExp(
+		getTextFromFormat(regex, {
+			':locales': localesRegexPartial,
+		})
+	);
 
 	return {
 		toLocalePath: (path: string, lang: string) =>
-			path.replace(customLocalePathRegExp, localePathReplaceWith.replace(':lunaria-locale', lang)),
-		toSharedPath: (path: string) => path.replace(customSharedPathRegExp, sharedPathReplaceWith),
+			path.replace(
+				customRoutingRegExp,
+				getTextFromFormat(localePathReplaceWith, {
+					':locale': lang,
+				})
+			),
+		toSharedPath: (path: string) => path.replace(customRoutingRegExp, sharedPathReplaceWith),
 	};
-}
-
-function getRegexWithVariable(regex: string, allLangs: string[]) {
-	const allLangsRegexPartial = allLangs.join('|');
-	const regexStringWithVariable = regex.replaceAll(':lunaria-locales', allLangsRegexPartial);
-
-	return new RegExp(regexStringWithVariable);
 }
 
 function findLastMajorCommit(
@@ -330,7 +395,6 @@ function findLastMajorCommit(
 	const IGNORE_KEYWORDS = new RegExp(`(${ignoreKeywords.join('|')})`, 'i');
 
 	return allCommits.find((entry) => {
-		// TODO: Test if that has 100% compatibility with i18n Tracker in Astro Docs.
 		if (entry.message.match(IGNORE_KEYWORDS)) return false;
 
 		const trackerDirectiveMatch: RegExpGroups<'directive' | 'pathsOrGlobs'> =
