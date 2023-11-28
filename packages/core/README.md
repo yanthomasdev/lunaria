@@ -28,9 +28,8 @@ The example below contains all of the **required** options to generate a dashboa
 ```json
 // lunaria.config.json
 {
-  "repository": "https://github.com/me/cool-docs",
-  "dashboard": {
-    "url": "https://tracker.cool-docs.com"
+  "repository": {
+    "name": "me/cool-docs"
   },
   "defaultLocale": {
     "label": "English",
@@ -55,7 +54,7 @@ The example below contains all of the **required** options to generate a dashboa
       }
     }
   ]
-});
+}
 ```
 
 Now, you need to add a new script to your `package.json` file to trigger a dashboard build during your website's deploy process, like so:
