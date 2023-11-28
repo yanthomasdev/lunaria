@@ -140,6 +140,11 @@ export const DashboardSchema = z
 			.describe(
 				'The deployed URL of your translation dashboard, used in the meta tags of the page.'
 			),
+		/** Array of path bases to hide from the rendered dashboard links. */
+		basesToHide: z
+			.array(z.string())
+			.optional()
+			.describe('Array of path bases to hide from the rendered dashboard links.'),
 		/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
 		ui: DashboardUiSchema,
 	})
