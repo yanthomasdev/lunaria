@@ -127,8 +127,8 @@ export const LocaleDetails = (
 								(page) => html`
 									<li>
 										${page.gitHostingFileURL
-											? Link(page.gitHostingFileURL, page.sharedPath)
-											: page.sharedPath}
+											? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
+											: getCollapsedPath(dashboard, page.sharedPath)}
 										${page.translations[lang]?.gitHostingFileURL
 											? CreatePageLink(
 													page.translations[lang]?.gitHostingFileURL!,
@@ -223,7 +223,11 @@ export const TableBody = (
 				(page) =>
 					html`
 				<tr>
-					<td>${page.gitHostingFileURL ? Link(page.gitHostingFileURL, page.sharedPath) : page.sharedPath}</td>
+					<td>${
+						page.gitHostingFileURL
+							? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
+							: getCollapsedPath(dashboard, page.sharedPath)
+					}</td>
 						${locales.map(({ lang }) => {
 							return TableContentStatus(page.translations, lang, dashboard);
 						})}
@@ -256,7 +260,9 @@ export const ContentDetailsLinks = (
 	dashboard: Dashboard
 ) => {
 	return html`
-		${page.gitHostingFileURL ? Link(page.gitHostingFileURL, page.sharedPath) : page.sharedPath}
+		${page.gitHostingFileURL
+			? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
+			: getCollapsedPath(dashboard, page.sharedPath)}
 		${page.translations[lang]
 			? page.translations[lang]?.gitHostingFileURL || page.translations[lang]?.gitHostingHistoryURL
 				? html`(${page.translations[lang]?.gitHostingFileURL
@@ -334,3 +340,18 @@ export const ProgressBar = (
 		</span>
 	`;
 };
+
+function getCollapsedPath(dashboard: Dashboard, path: string) {
+	const { basesToHide } = dashboard;
+
+	if (!basesToHide) return path;
+
+	for (const base of basesToHide) {
+		const newPath = path.replace(base, '');
+
+		if (newPath === path) continue;
+		return newPath;
+	}
+
+	return path;
+}
