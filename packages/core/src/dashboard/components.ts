@@ -42,10 +42,10 @@ export const Meta = (dashboard: Dashboard) => html`
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 	<title>${dashboard.title}</title>
 	<meta name="description" content="${dashboard.description}" />
-	<link rel="canonical" href="${dashboard.url}" />
+	${dashboard.site ? html`<link rel="canonical" href="${dashboard.site}" />` : ''}
 	<meta property="og:title" content="${dashboard.title}" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="${dashboard.url}" />
+	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : ''}
 	<meta property="og:description" content="${dashboard.description}" />
 `;
 

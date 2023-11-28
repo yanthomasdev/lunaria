@@ -116,26 +116,33 @@ const DashboardUiSchema = z
 	})
 	.default({});
 
-export const DashboardSchema = z.object({
-	/** The title of your translation dashboard, used as both the main heading and meta title of the page. */
-	title: z
-		.string()
-		.default('Translation Status')
-		.describe(
-			'The title of your translation dashboard, used as both the main heading and meta title of the page.'
-		),
-	/** The description of your translation dashboard, used in the meta tags of the page. */
-	description: z
-		.string()
-		.default('Online translation status dashboard of the project ')
-		.describe('The description of your translation dashboard, used in the meta tags of the page.'),
-	/** The deployed URL of your translation dashboard, used in the meta tags of the page. */
-	url: z
-		.string()
-		.url()
-		.describe('The deployed URL of your translation dashboard, used in the meta tags of the page.'),
-	/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
-	ui: DashboardUiSchema,
-});
+export const DashboardSchema = z
+	.object({
+		/** The title of your translation dashboard, used as both the main heading and meta title of the page. */
+		title: z
+			.string()
+			.default('Translation Status')
+			.describe(
+				'The title of your translation dashboard, used as both the main heading and meta title of the page.'
+			),
+		/** The description of your translation dashboard, used in the meta tags of the page. */
+		description: z
+			.string()
+			.default('Online translation status dashboard of the project ')
+			.describe(
+				'The description of your translation dashboard, used in the meta tags of the page.'
+			),
+		/** The deployed URL of your translation dashboard, used in the meta tags of the page. */
+		site: z
+			.string()
+			.url()
+			.optional()
+			.describe(
+				'The deployed URL of your translation dashboard, used in the meta tags of the page.'
+			),
+		/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
+		ui: DashboardUiSchema,
+	})
+	.default({});
 
 export type Dashboard = z.output<typeof DashboardSchema>;
