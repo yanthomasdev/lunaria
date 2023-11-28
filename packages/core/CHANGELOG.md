@@ -1,5 +1,16 @@
 # @lunariajs/core
 
+## 0.0.19
+
+### Patch Changes
+
+- 060b99a: Update README
+- 92bee73: Add new repository hosting API
+- d39d031: Add `dashboard.basesToHide` option
+- 8fea07a: Reworked core configuration system
+- f57c9f1: Add new `routingStrategy` API
+- 0994668: Rework `dashboard.site` option
+
 ## 0.0.18
 
 ### Patch Changes
