@@ -28,6 +28,7 @@ The example below contains all of the **required** options to generate a dashboa
 ```json
 // lunaria.config.json
 {
+  "$schema": "./node_modules/@lunariajs/core/config.schema.json",
   "repository": {
     "name": "me/cool-docs"
   },
