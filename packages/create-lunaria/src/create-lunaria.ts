@@ -6,8 +6,13 @@ import { join, resolve } from 'node:path';
 import { addDependency, detectPackageManager, installDependencies } from 'nypm';
 import color from 'picocolors';
 
-// TODO: Add JSON Schema here!
-const cleanConfigContent = '{\n    \n}';
+const cleanConfigContent = JSON.stringify(
+	{
+		$schema: './node_modules/@lunariajs/core/config.schema.json',
+	},
+	null,
+	2
+);
 
 async function main() {
 	console.clear();
@@ -24,7 +29,7 @@ async function main() {
 						if (value[0] !== '.') return 'Please enter a relative path.';
 					},
 				}),
-			install: ({ results }) =>
+			install: () =>
 				p.confirm({
 					message: 'Install dependencies?',
 					initialValue: false,
