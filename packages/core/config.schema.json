@@ -46,10 +46,7 @@
                 },
                 "dir": {
                   "type": "string",
-                  "enum": [
-                    "ltr",
-                    "rtl"
-                  ],
+                  "enum": ["ltr", "rtl"],
                   "default": "ltr",
                   "description": "The directionality of the page's text, used as the page's `dir` attribute. It can be either `'ltr'` (left-to-right) or `'rtl'` (right-to-left)."
                 },
@@ -172,42 +169,25 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": [
-                    "github",
-                    "gitlab"
-                  ]
+                  "enum": ["github", "gitlab"]
                 },
                 {
                   "type": "object",
                   "properties": {
                     "create": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "source": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "history": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "clone": {
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "create",
-                    "source",
-                    "history",
-                    "clone"
-                  ],
+                  "required": ["create", "source", "history", "clone"],
                   "additionalProperties": false
                 }
               ],
@@ -215,9 +195,7 @@
               "description": "The git hosting platform used by your project, e.g. `\"github\"` or `\"gitlab\"`."
             }
           },
-          "required": [
-            "name"
-          ],
+          "required": ["name"],
           "additionalProperties": false
         },
         "defaultLocale": {
@@ -259,9 +237,7 @@
                   "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional. While defining on the default locale's object applies it to all languages, you can pass additional keys as part of the specific locale's `optionalKeys` field."
                 }
               },
-              "required": [
-                "location"
-              ],
+              "required": ["location"],
               "additionalProperties": false
             },
             "content": {
@@ -280,17 +256,11 @@
                   "description": "Array of glob patterns to be ignored from matching."
                 }
               },
-              "required": [
-                "location"
-              ],
+              "required": ["location"],
               "additionalProperties": false
             }
           },
-          "required": [
-            "label",
-            "lang",
-            "content"
-          ],
+          "required": ["label", "lang", "content"],
           "additionalProperties": false
         },
         "locales": {
@@ -305,11 +275,7 @@
           "items": {
             "type": "string"
           },
-          "default": [
-            "en-only",
-            "i18nIgnore",
-            "fix typo"
-          ],
+          "default": ["en-only", "i18nIgnore", "fix typo"],
           "description": "Array of commit keywords that avoid a commit from trigerring status changes."
         },
         "translatableProperty": {
@@ -320,10 +286,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "directory",
-                "file"
-              ]
+              "enum": ["directory", "file"]
             },
             {
               "type": "object",
@@ -341,11 +304,7 @@
                   "description": "The content that will be replaced into the `toSharedPath` regex's match."
                 }
               },
-              "required": [
-                "regex",
-                "localePathReplaceWith",
-                "sharedPathReplaceWith"
-              ],
+              "required": ["regex", "localePathReplaceWith", "sharedPathReplaceWith"],
               "additionalProperties": false
             }
           ],
@@ -370,11 +329,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "repository",
-        "defaultLocale",
-        "locales"
-      ],
+      "required": ["repository", "defaultLocale", "locales"],
       "additionalProperties": false
     }
   },
