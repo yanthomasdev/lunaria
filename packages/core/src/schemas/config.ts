@@ -135,7 +135,6 @@ export const LunariaRendererConfigSchema = z.object({
 	overrides: z
 		.object({
 			meta: createComponentSchema<CustomComponent>().optional(),
-			styles: createComponentSchema<CustomComponent>().optional(),
 			body: createComponentSchema<CustomStatusComponent>().optional(),
 			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
 			statusByContent: createComponentSchema<CustomStatusComponent>().optional(),

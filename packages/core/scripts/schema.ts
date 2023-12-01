@@ -11,8 +11,8 @@ const mergedSchema = LunariaConfigSchema.merge(
 		.describe('A path or URL to a valid Lunaria JSON Schema.')
 );
 
-const jsonSchema = JSON.stringify(zodToJsonSchema(mergedSchema, 'LunariaConfigSchema'));
+const jsonSchema = JSON.stringify(zodToJsonSchema(mergedSchema, 'LunariaConfigSchema'), null, 2);
 
-writeFileSync('./dist/config.schema.json', jsonSchema);
+writeFileSync('./config.schema.json', jsonSchema);
 
 console.log('Lunaria JSON schema generated!');

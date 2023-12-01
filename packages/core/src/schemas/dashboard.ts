@@ -1,3 +1,5 @@
+import { extname } from 'node:path';
+import { isRelative } from 'ufo';
 import { z } from 'zod';
 
 const DashboardUiSchema = z
@@ -145,6 +147,18 @@ export const DashboardSchema = z
 			.array(z.string())
 			.optional()
 			.describe('Array of path bases to hide from the rendered dashboard links.'),
+		/** Array of relative paths to CSS files to be inlined into the dashboard. */
+		customCss: z
+			.array(z.string())
+			.optional()
+			.refine(
+				(paths) =>
+					paths ? paths.every((path) => isRelative(path) && extname(path) === '.css') : true,
+				{
+					message: 'All `customCss` paths should be relative and point to a `.css` file.',
+				}
+			)
+			.describe('Array of relative paths to CSS files to be inlined into the dashboard.'),
 		/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
 		ui: DashboardUiSchema,
 	})
