@@ -9,6 +9,7 @@ import type {
 } from '../types.js';
 import { getTextFromFormat } from '../utils/misc.js';
 import { Styles } from './styles.js';
+import { getCollapsedPath, inlineCustomCssFiles } from './utils.js';
 
 export const Page = (
 	opts: LunariaConfig,
@@ -17,6 +18,7 @@ export const Page = (
 ) => {
 	const { dashboard } = opts;
 	const { slots, overrides } = rendererOpts;
+	const inlinedCssFiles = inlineCustomCssFiles(dashboard.customCss);
 
 	return html`
 		<!doctype html>
@@ -26,8 +28,17 @@ export const Page = (
 				${overrides.meta?.(opts) ?? Meta(dashboard)}
 				<!-- Additional head tags -->
 				${slots.head?.(opts) ?? ''}
-				<!-- Built-in/custom styles -->
-				${overrides.styles?.(opts) ?? Styles}
+				<!-- Built-in styles -->
+				${Styles}
+				<!-- Custom styles -->
+				${inlinedCssFiles
+					? inlinedCssFiles.map(
+							(css) =>
+								html` <style>
+									${css}
+								</style>`
+					  )
+					: ''}
 			</head>
 			<body>
 				<!-- Built-in/custom body content -->
@@ -340,18 +351,3 @@ export const ProgressBar = (
 		</span>
 	`;
 };
-
-function getCollapsedPath(dashboard: Dashboard, path: string) {
-	const { basesToHide } = dashboard;
-
-	if (!basesToHide) return path;
-
-	for (const base of basesToHide) {
-		const newPath = path.replace(base, '');
-
-		if (newPath === path) continue;
-		return newPath;
-	}
-
-	return path;
-}
