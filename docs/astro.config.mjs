@@ -1,5 +1,5 @@
-import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
 
 const site = 'https://lunaria.dev/';
 
@@ -38,8 +38,25 @@ export default defineConfig({
 							label: 'Getting Started',
 							link: 'getting-started',
 						},
+						{
+							label: 'Manual Installation',
+							link: 'manual-installation',
+						},
+						/*{
+							label: 'Workflow',
+							link: 'workflow',
+						},*/
 					],
 				},
+				/*{
+					label: 'Features',
+					items: [
+						{
+							label: 'Tracking',
+							link: 'features/tracking',
+						},
+					],
+				},*/
 			],
 			customCss: ['./src/styles/theme.css', './src/styles/landing.css'],
 		}),
