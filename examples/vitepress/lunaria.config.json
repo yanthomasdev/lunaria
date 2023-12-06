@@ -33,16 +33,6 @@
       "dictionaries": {
         "location": "ui/pt/*.{js,cjs,mjs,ts,yml,json}"
       }
-    },
-    {
-      "label": "Spanish",
-      "lang": "es",
-      "content": {
-        "location": "es/**/*.md"
-      },
-      "dictionaries": {
-        "location": "ui/es/*.{js,cjs,mjs,ts,yml,json}"
-      }
     }
   ],
   "translatableProperty": "i18nReady",

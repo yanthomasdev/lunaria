@@ -1,0 +1,140 @@
+---
+title: Manual Installation
+description: Learn how to install Lunaria within your project
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+The most efficient way to add Lunaria to your project is using the `create-lunaria` package, as shown in the [Getting Started guide](/getting-started/). If you prefer to do this process manually, follow this guide instead.
+
+## 1. Add the `@lunariajs/core` package
+
+Lunaria is published through the `@lunariajs/core` package in the npm registry. Add it to your project by running the following command in its root directory:
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm install @lunariajs/core
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm install @lunariajs/core
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn add @lunariajs/core
+```
+
+</TabItem>
+</Tabs>
+
+Then, add the `lunaria` executable script as part of your `package.json`'s `scripts` field:
+
+```json title="package.json" ins={5}
+"scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lunaria": "lunaria"
+}
+```
+
+## 2. Create `lunaria.config.json`
+
+Lunaria is configured using `lunaria.config.json`. This file is required so Lunaria knows about your repository structure and what should be tracked.
+
+```json title="lunaria.config.json" mark={2}
+{
+	"$schema": "./node_modules/@lunariajs/core/config.schema.json"
+}
+```
+
+:::tip
+`@lunariajs/core` comes with a JSON Schema you can refer to with the optional `$schema` property to add IntelliSense support in your code editor.
+:::
+
+## 3. Configure the package
+
+Before generating your first localization dashboard, you have to set up the `repository`, `defaultLocale`, and `locales` fields of your `lunaria.config.json` file.
+
+The following example sets up Lunaria to track Markdown/MDX content for both English and Portuguese in a sample Astro project, hosted on `https://github.com/me/cool-project/`:
+
+```json title="lunaria.config.json"
+{
+	"$schema": "./node_modules/@lunariajs/core/config.schema.json",
+	"repository": {
+		"name": "me/cool-project"
+	},
+	"defaultLocale": {
+		"label": "English",
+		"lang": "en",
+		"content": {
+			"location": "src/content/en/**/*.{md,mdx}"
+		}
+	},
+	"locales": [
+		{
+			"label": "Português",
+			"lang": "pt",
+			"content": {
+				"location": "src/content/en/**/*.{md,mdx}"
+			}
+		}
+	]
+}
+```
+
+Learn more about all the available options in the [Configuration Reference guide](/configuration-reference/).
+
+:::tip
+Visit the [Lunaria repository's examples directory](https://github.com/Yan-Thomas/lunaria/tree/main/examples/) to see configuration examples for different frameworks and projects.
+:::
+
+## 4. Run Lunaria
+
+Finally, you can generate your localization dashboard by running the `lunaria` script in the command line with your preferred package manager.
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm run lunaria
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm run lunaria
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn run lunaria
+```
+
+</TabItem>
+</Tabs>
+
+By default, the localization dashboard will be built to an `index.html` file in the `./dist/translation-status/` directory. This file can then be deployed to the hosting platform of your choice and shared across your contributors.
+
+## Next Steps
+
+Hooray! Your project's localization is now fully tracked by Lunaria! 🌛
+
+Lunaria comes with several features you can explore to make it suit your project best. Here are a few pages you can read next, in any order, to know more about it:
+
+🌒 **Customize your dashboard:** Learn how to add custom styles, components, and more in our [Dashboard Customization guide](/features/dashboard-customization/).
+
+🌓 **Improve your workflow:** Learn about Lunaria's recommended workflow to improve your contributors' and maintainers' lives in our [Workflow guide](/workflow/).
+
+🌔 **Understand tracking:** Learn more on how Lunaria's tracking works and how to take over when necessary in our [Tracking guide](/features/tracking/).
