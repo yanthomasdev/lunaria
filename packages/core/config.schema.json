@@ -260,7 +260,7 @@
               "additionalProperties": false
             }
           },
-          "required": ["label", "lang", "content"],
+          "required": ["label", "lang"],
           "additionalProperties": false
         },
         "locales": {
