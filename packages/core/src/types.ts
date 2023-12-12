@@ -2,23 +2,23 @@ import type { TemplateResult } from 'lit-html';
 import type { LunariaConfig } from './schemas/config.js';
 import type { OptionalKeys } from './schemas/locale.js';
 
-type DictionaryContentData = {
+type DictionaryContentMeta = {
 	type: 'dictionary';
 	optionalKeys: OptionalKeys;
 };
 
-type GenericContentData = {
+type GenericContentMeta = {
 	type: 'generic';
 };
 
-type AdditionalContentData = DictionaryContentData | GenericContentData;
+type ContentMeta = DictionaryContentMeta | GenericContentMeta;
 
 export type * from './schemas/config.js';
 export type * from './schemas/dashboard.js';
 export type * from './schemas/locale.js';
 export type * from './schemas/misc.js';
 
-export type AugmentedFileData = FileData & AdditionalContentData;
+export type AugmentedFileData = FileData & ContentMeta;
 export type FileContentIndex = Record<string, Record<string, AugmentedFileData>>;
 
 export type IndexData = {
@@ -26,7 +26,7 @@ export type IndexData = {
 	filePath: string;
 	sharedPath: string;
 	fileData: FileData;
-	additionalData: AdditionalContentData;
+	meta: ContentMeta;
 };
 
 export type FileData = {

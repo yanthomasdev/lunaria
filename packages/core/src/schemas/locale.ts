@@ -41,24 +41,28 @@ const ContentSchema = z.object({
 		.describe('Array of glob patterns to be ignored from matching.'),
 });
 
-export const LocaleSchema = z.object({
-	/** The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"`. */
-	label: z
-		.string()
-		.describe(
-			'The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"`.'
-		),
-	/** The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English). */
-	lang: z
-		.string()
-		.describe(
-			'The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English).'
-		),
-	/** Information about any of your UI dictionaries. */
-	dictionaries: DictionariesSchema,
-	/** Information about your content. */
-	content: ContentSchema,
-});
+export const LocaleSchema = z
+	.object({
+		/** The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"`. */
+		label: z
+			.string()
+			.describe(
+				'The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"`.'
+			),
+		/** The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English). */
+		lang: z
+			.string()
+			.describe(
+				'The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English).'
+			),
+		/** Information about any of your UI dictionaries. */
+		dictionaries: DictionariesSchema.optional(),
+		/** Information about your content. */
+		content: ContentSchema.optional(),
+	})
+	.refine((locale) => locale.content || locale.dictionaries, {
+		message: 'A locale needs to include a `dictionaries` or `content` field to be tracked.',
+	});
 
 export type Locale = z.output<typeof LocaleSchema>;
 export type OptionalKeys = z.infer<typeof OptionalKeysSchema>;

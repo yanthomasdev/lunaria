@@ -122,35 +122,41 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 	const pathResolver = getPathResolver(routingStrategy, allLangs);
 
 	for (const { lang, content, dictionaries } of allLocales) {
-		const localeContentPaths = await glob(content.location, {
-			cwd: process.cwd(),
-			ignore: ['node_modules', ...content.ignore],
-		});
+		const genericContentIndex = [];
+		if (content) {
+			const { location, ignore } = content;
 
-		const genericContentIndex = await Promise.all(
-			localeContentPaths.sort().map(async (filePath) => {
-				const sharedPath = pathResolver.toSharedPath(filePath);
+			const localeContentPaths = await glob(location, {
+				cwd: process.cwd(),
+				ignore: ['node_modules', ...ignore],
+			});
 
-				return {
-					lang,
-					filePath,
-					sharedPath,
-					fileData: await getFileData(
-						filePath,
-						isShallowRepo,
-						repository.rootDir,
-						translatableProperty,
-						ignoreKeywords
-					),
-					additionalData: {
-						type: 'generic',
-					},
-				} as IndexData;
-			})
-		);
+			genericContentIndex.push(
+				...(await Promise.all(
+					localeContentPaths.sort().map(async (filePath) => {
+						const sharedPath = pathResolver.toSharedPath(filePath);
+
+						return {
+							lang,
+							filePath,
+							sharedPath,
+							fileData: await getFileData(
+								filePath,
+								isShallowRepo,
+								repository.rootDir,
+								translatableProperty,
+								ignoreKeywords
+							),
+							meta: {
+								type: 'generic',
+							},
+						} as IndexData;
+					})
+				))
+			);
+		}
 
 		const dictionaryContentIndex = [];
-
 		if (dictionaries) {
 			const { location, ignore, optionalKeys } = dictionaries;
 
@@ -175,7 +181,7 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 								translatableProperty,
 								ignoreKeywords
 							),
-							additionalData: {
+							meta: {
 								type: 'dictionary',
 								optionalKeys: optionalKeys,
 							},
@@ -186,12 +192,12 @@ export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolea
 		}
 
 		[...dictionaryContentIndex, ...genericContentIndex].forEach(
-			({ lang, sharedPath, fileData, additionalData }) => {
+			({ lang, sharedPath, fileData, meta }) => {
 				fileContentIndex[lang] = {
 					...fileContentIndex[lang],
 					[sharedPath]: {
 						...fileData,
-						...additionalData,
+						...meta,
 					},
 				};
 			}
