@@ -30,6 +30,9 @@ export const Styles = html`
 			--table-head-background: var(--dark-accent);
 			--table-background: var(--dark-white);
 			--table-border: var(--dark-accent);
+			--done-bar: #a855f7;
+			--outdated-bar: #f97316;
+			--missing-bar: #9ca3af;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -41,6 +44,7 @@ export const Styles = html`
 				--table-head-background: var(--light-accent);
 				--table-background: var(--light-black);
 				--table-border: var(--light-accent);
+				--missing-bar: #f9fafb;
 			}
 		}
 
@@ -232,7 +236,36 @@ export const Styles = html`
 		}
 
 		.progress-bar {
-			font-size: 0.6875rem;
+			display: flex;
+			flex-direction: row;
+			margin-top: 0.5rem;
+		}
+
+		.progress-bar div:first-of-type {
+			border-radius: 36px 0px 0px 36px;
+		}
+
+		.progress-bar div:last-of-type {
+			border-radius: 0px 36px 36px 0px;
+		}
+
+		.done-bar,
+		.outdated-bar,
+		.missing-bar {
+			width: 1rem;
+			height: 1rem;
+		}
+
+		.done-bar {
+			background-color: var(--done-bar);
+		}
+
+		.outdated-bar {
+			background-color: var(--outdated-bar);
+		}
+
+		.missing-bar {
+			background-color: var(--missing-bar);
 		}
 
 		.capitalize {
