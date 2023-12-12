@@ -335,19 +335,22 @@ export const ProgressBar = (
 	missing: number,
 	{ size = 20 }: { size?: number } = {}
 ) => {
-	const outdatedBlocks = Math.round((outdated / total) * size);
-	const missingBlocks = Math.round((missing / total) * size);
-	const doneBlocks = size - outdatedBlocks - missingBlocks;
+	const outdatedSize = Math.round((outdated / total) * size);
+	const missingSize = Math.round((missing / total) * size);
+	const doneSize = size - outdatedSize - missingSize;
+
+	const getBlocks = (size: number, type: 'done' | 'missing' | 'outdated') => {
+		const items = [];
+		for (let i = 0; i < size; i++) {
+			items.push(html`<div class="${type}-bar"></div>`);
+		}
+		return items;
+	};
+
 	return html`
-		<span class="progress-bar" aria-hidden="true">
-			${[
-				[doneBlocks, '🟪'],
-				[outdatedBlocks, '🟧'],
-				[missingBlocks, '⬜'],
-			]
-				.map(([length, icon]) => Array(length).fill(icon))
-				.flat()
-				.join('')}
-		</span>
+		<div class="progress-bar" aria-hidden="true">
+			${getBlocks(doneSize, 'done')} ${getBlocks(outdatedSize, 'outdated')}
+			${getBlocks(missingSize, 'missing')}
+		</div>
 	`;
 };
