@@ -82,7 +82,7 @@ export const LunariaConfigSchema = z.object({
 	/** Array of commit keywords that avoid a commit from trigerring status changes. */
 	ignoreKeywords: z
 		.array(z.string())
-		.default(['en-only', 'i18nIgnore', 'fix typo'])
+		.default(['lunaria-ignore', 'fix typo'])
 		.describe('Array of commit keywords that avoid a commit from trigerring status changes.'),
 	/** Name of the frontmatter property used to mark a page as translatable
 	 * and include it as part of the status dashboard. Keep it empty if you
