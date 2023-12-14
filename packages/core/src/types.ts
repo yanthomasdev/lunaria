@@ -1,4 +1,4 @@
-import type { TemplateResult } from 'lit-html';
+import type { TemplateResult } from 'lit';
 import type { LunariaConfig } from './schemas/config.js';
 import type { OptionalKeys } from './schemas/locale.js';
 
@@ -74,12 +74,12 @@ export type RegExpGroups<T extends string> =
 	  })
 	| null;
 
-export type CustomComponent = (opts: LunariaConfig) => TemplateResult<1>;
+export type CustomComponent = (opts: LunariaConfig) => TemplateResult;
 
 export type CustomStatusComponent = (
 	opts: LunariaConfig,
 	translationStatus: FileTranslationStatus[]
-) => TemplateResult<1>;
+) => TemplateResult;
 
 export type DictionaryObject = {
 	[key: string]: string | DictionaryObject;

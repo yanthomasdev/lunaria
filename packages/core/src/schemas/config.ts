@@ -10,7 +10,7 @@ function createComponentSchema<ComponentType extends CustomComponent | CustomSta
 			return val()['_$litType$'] ? true : false;
 		}
 		return false;
-	}, 'Custom components need to be a function returning a valid `lit-html` template.');
+	}, 'Custom components need to be a function returning a valid Lit template.');
 }
 
 export const customRoutingStrategyOptionsSchema = z.object({

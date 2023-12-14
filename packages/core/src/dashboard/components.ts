@@ -1,4 +1,5 @@
-import { html } from 'lit-html';
+import { nothing, type TemplateResult } from 'lit';
+import { html, unsafeStatic } from 'lit/static-html.js';
 import type {
 	Dashboard,
 	FileTranslationStatus,
@@ -15,30 +16,30 @@ export const Page = (
 	opts: LunariaConfig,
 	rendererOpts: LunariaRendererConfig,
 	translationStatus: FileTranslationStatus[]
-) => {
+): TemplateResult => {
 	const { dashboard } = opts;
 	const { slots, overrides } = rendererOpts;
 	const inlinedCssFiles = inlineCustomCssFiles(dashboard.customCss);
 
 	return html`
 		<!doctype html>
-		<html dir="${dashboard.ui.dir}" lang="${dashboard.ui.lang}">
+		<html dir="${unsafeStatic(dashboard.ui.dir)}" lang="${unsafeStatic(dashboard.ui.lang)}">
 			<head>
 				<!-- Built-in/custom meta tags -->
 				${overrides.meta?.(opts) ?? Meta(dashboard)}
 				<!-- Additional head tags -->
-				${slots.head?.(opts) ?? ''}
+				${slots.head?.(opts) ?? nothing}
 				<!-- Built-in styles -->
 				${Styles}
 				<!-- Custom styles -->
 				${inlinedCssFiles
 					? inlinedCssFiles.map(
 							(css) =>
-								html` <style>
-									${css}
+								html`<style>
+									${unsafeStatic(css)}
 								</style>`
 					  )
-					: ''}
+					: nothing}
 			</head>
 			<body>
 				<!-- Built-in/custom body content -->
@@ -48,15 +49,15 @@ export const Page = (
 	`;
 };
 
-export const Meta = (dashboard: Dashboard) => html`
+export const Meta = (dashboard: Dashboard): TemplateResult => html`
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-	<title>${dashboard.title}</title>
+	<title>${unsafeStatic(dashboard.title)}</title>
 	<meta name="description" content="${dashboard.description}" />
-	${dashboard.site ? html`<link rel="canonical" href="${dashboard.site}" />` : ''}
+	${dashboard.site ? html`<link rel="canonical" href="${dashboard.site}" />` : nothing}
 	<meta property="og:title" content="${dashboard.title}" />
 	<meta property="og:type" content="website" />
-	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : ''}
+	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : nothing}
 	<meta property="og:description" content="${dashboard.description}" />
 `;
 
@@ -64,16 +65,16 @@ export const Body = (
 	opts: LunariaConfig,
 	rendererOpts: LunariaRendererConfig,
 	translationStatus: FileTranslationStatus[]
-) => {
+): TemplateResult => {
 	const { dashboard } = opts;
 	const { slots, overrides } = rendererOpts;
 
 	return html`
 		<main>
 			<div class="limit-to-viewport">
-				${slots.beforeTitle?.(opts) ?? ''}
+				${slots.beforeTitle?.(opts) ?? nothing}
 				<h1>${dashboard.title}</h1>
-				${slots.afterTitle?.(opts) ?? ''}
+				${slots.afterTitle?.(opts) ?? nothing}
 				${overrides.statusByLocale?.(opts, translationStatus) ??
 				StatusByLocale(opts, translationStatus)}
 			</div>
@@ -83,7 +84,10 @@ export const Body = (
 	`;
 };
 
-export const StatusByLocale = (opts: LunariaConfig, translationStatus: FileTranslationStatus[]) => {
+export const StatusByLocale = (
+	opts: LunariaConfig,
+	translationStatus: FileTranslationStatus[]
+): TemplateResult => {
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-locale">
@@ -97,7 +101,7 @@ export const LocaleDetails = (
 	translationStatus: FileTranslationStatus[],
 	dashboard: Dashboard,
 	locale: Locale
-) => {
+): TemplateResult => {
 	const { label, lang } = locale;
 
 	const missingPages = translationStatus.filter((content) => content.translations[lang]?.isMissing);
@@ -130,7 +134,7 @@ export const LocaleDetails = (
 				<br />
 				${ProgressBar(translationStatus.length, outdatedPages.length, missingPages.length)}
 			</summary>
-			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : ''}
+			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : nothing}
 			${missingPages.length > 0
 				? html`<h3 class="capitalize">${dashboard.ui['status.missing']}</h3>
 						<ul>
@@ -145,15 +149,15 @@ export const LocaleDetails = (
 													page.translations[lang]?.gitHostingFileURL!,
 													dashboard.ui['statusByLocale.createFileLink']
 											  )
-											: ''}
+											: nothing}
 									</li>
 								`
 							)}
 						</ul>`
-				: ''}
+				: nothing}
 			${missingPages.length == 0 && outdatedPages.length == 0
 				? html`<p>${dashboard.ui['statusByLocale.completeTranslation']}</p>`
-				: ''}
+				: nothing}
 		</details>
 	`;
 };
@@ -162,7 +166,7 @@ export const OutdatedPages = (
 	outdatedPages: FileTranslationStatus[],
 	lang: string,
 	dashboard: Dashboard
-) => {
+): TemplateResult => {
 	return html`
 		<h3 class="capitalize">${dashboard.ui['status.outdated']}</h3>
 		<ul>
@@ -194,7 +198,7 @@ export const OutdatedPages = (
 export const StatusByContent = (
 	opts: LunariaConfig,
 	translationStatus: FileTranslationStatus[]
-) => {
+): TemplateResult => {
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-content">
@@ -227,7 +231,7 @@ export const TableBody = (
 	translationStatus: FileTranslationStatus[],
 	locales: Locale[],
 	dashboard: Dashboard
-) => {
+): TemplateResult => {
 	return html`
 		<tbody>
 			${translationStatus.map(
@@ -253,7 +257,7 @@ export const TableContentStatus = (
 	translations: { [locale: string]: TranslationStatus },
 	lang: string,
 	dashboard: Dashboard
-) => {
+): TemplateResult => {
 	return html`
 		<td>
 			${translations[lang]?.isMissing
@@ -269,7 +273,7 @@ export const ContentDetailsLinks = (
 	page: FileTranslationStatus,
 	lang: string,
 	dashboard: Dashboard
-) => {
+): TemplateResult => {
 	return html`
 		${page.gitHostingFileURL
 			? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
@@ -283,15 +287,15 @@ export const ContentDetailsLinks = (
 									? dashboard.ui['statusByLocale.incompleteTranslationLink']
 									: dashboard.ui['statusByLocale.outdatedTranslationLink']
 						  )
-						: ''},
+						: nothing},
 				  ${page.translations[lang]?.gitHostingHistoryURL
 						? Link(
 								page.translations[lang]?.gitHostingHistoryURL!,
 								dashboard.ui['statusByLocale.sourceChangeHistoryLink']
 						  )
-						: ''})`
-				: ''
-			: ''}
+						: nothing})`
+				: nothing
+			: nothing}
 	`;
 };
 
@@ -299,7 +303,7 @@ export const EmojiFileLink = (
 	ui: Dashboard['ui'],
 	href: string | null,
 	status: 'missing' | 'outdated' | 'done'
-) => {
+): TemplateResult => {
 	const statusTextOpts = {
 		missing: 'status.missing',
 		outdated: 'status.outdated',
@@ -321,11 +325,11 @@ export const EmojiFileLink = (
 		  </span>`;
 };
 
-export const Link = (href: string, text: string) => {
+export const Link = (href: string, text: string): TemplateResult => {
 	return html`<a href="${href}">${text}</a>`;
 };
 
-export const CreatePageLink = (href: string, text: string) => {
+export const CreatePageLink = (href: string, text: string): TemplateResult => {
 	return html`<a class="create-button" href="${href}">${text}</a>`;
 };
 
@@ -334,7 +338,7 @@ export const ProgressBar = (
 	outdated: number,
 	missing: number,
 	{ size = 20 }: { size?: number } = {}
-) => {
+): TemplateResult => {
 	const outdatedSize = Math.round((outdated / total) * size);
 	const missingSize = Math.round((missing / total) * size);
 	const doneSize = size - outdatedSize - missingSize;
