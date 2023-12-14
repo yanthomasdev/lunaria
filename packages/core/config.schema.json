@@ -44,20 +44,25 @@
                   "properties": {
                     "link": {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "description": "The URL of the external favicon asset."
                     },
                     "sizes": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The size of the favicon, e.g. `\"16x16\"`. "
                     }
                   },
                   "required": ["link", "sizes"],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "description": "The external favicon to be used."
                 },
                 "inline": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Path to an SVG to be inlined into the dashboard."
                 }
               },
-              "additionalProperties": false
+              "additionalProperties": false,
+              "description": "The favicon(s) to be used by your dashboard."
             },
             "ui": {
               "type": "object",

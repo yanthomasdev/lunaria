@@ -159,27 +159,35 @@ export const DashboardSchema = z
 				}
 			)
 			.describe('Array of relative paths to CSS files to be inlined into the dashboard.'),
+		/** The favicon(s) to be used by your dashboard. */
 		favicon: z
 			.object({
+				/* The external favicon to be used. */
 				external: z
 					.object({
-						link: z.string().url(),
-						sizes: z.string(),
+						/* The URL of the external favicon asset. */
+						link: z.string().url().describe('The URL of the external favicon asset.'),
+						/* The size of the favicon, e.g. `"16x16"`. */
+						sizes: z.string().describe('The size of the favicon, e.g. `"16x16"`. '),
 					})
-					.optional(),
+					.optional()
+					.describe('The external favicon to be used.'),
+				/* Path to an SVG to be inlined into the dashboard.  */
 				inline: z
 					.string()
 					.refine((path) => isRelative(path) && extname(path) === '.svg', {
 						message:
 							'The `favicon.inline` path should be relative and point to a valid `.svg` file.',
 					})
-					.optional(),
+					.optional()
+					.describe('Path to an SVG to be inlined into the dashboard.'),
 			})
 			.optional()
 			.refine((props) => !props || props?.external || props?.inline, {
 				message:
 					'The `favicon` object needs to receive either a valid `inline` or `external` property.',
-			}),
+			})
+			.describe('The favicon(s) to be used by your dashboard.'),
 		/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
 		ui: DashboardUiSchema,
 	})
