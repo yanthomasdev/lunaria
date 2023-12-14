@@ -2,6 +2,18 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Dashboard } from '../types.js';
 
+export function readAsset(path: string) {
+	const absolutePath = resolve(path);
+
+	if (!existsSync(absolutePath)) {
+		console.error(new Error(`Could not find asset file at ${absolutePath}. Does it exist?`));
+		process.exit(1);
+	}
+
+	const asset = readFileSync(absolutePath, 'utf-8');
+	return asset;
+}
+
 export function getCollapsedPath(dashboard: Dashboard, path: string) {
 	const { basesToHide } = dashboard;
 
@@ -21,14 +33,7 @@ export function inlineCustomCssFiles(customCssPaths: Dashboard['customCss']) {
 	if (!customCssPaths) return null;
 
 	const inlinedCss = customCssPaths.map((path) => {
-		const absolutePath = resolve(path);
-
-		if (!existsSync(absolutePath)) {
-			console.error(new Error(`Could not find the CSS file at ${absolutePath}. Does it exist?`));
-			process.exit(1);
-		}
-
-		const css = readFileSync(absolutePath, 'utf-8');
+		const css = readAsset(path);
 		return css;
 	});
 

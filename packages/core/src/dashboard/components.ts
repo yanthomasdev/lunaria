@@ -10,7 +10,7 @@ import type {
 } from '../types.js';
 import { getTextFromFormat } from '../utils/misc.js';
 import { Styles } from './styles.js';
-import { getCollapsedPath, inlineCustomCssFiles } from './utils.js';
+import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './utils.js';
 
 export const Page = (
 	opts: LunariaConfig,
@@ -59,7 +59,23 @@ export const Meta = (dashboard: Dashboard): TemplateResult => html`
 	<meta property="og:type" content="website" />
 	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : nothing}
 	<meta property="og:description" content="${dashboard.description}" />
+	${Favicon(dashboard)}
 `;
+
+export const Favicon = (dashboard: Dashboard): TemplateResult => {
+	const { favicon } = dashboard;
+
+	const svg = favicon?.inline ? readAsset(favicon.inline) : '';
+	const inlineSvg = 'data:image/svg+xml;utf8,' + svg;
+
+	const ExternalFavicon = favicon?.external
+		? html`<link rel="icon" href="${favicon.external.link}" sizes="${favicon.external.sizes}" />`
+		: nothing;
+
+	const InlineFavicon = favicon?.inline ? html`<link rel="icon" href="${inlineSvg}" />` : nothing;
+
+	return html`${ExternalFavicon} ${InlineFavicon}`;
+};
 
 export const Body = (
 	opts: LunariaConfig,
