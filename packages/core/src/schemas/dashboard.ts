@@ -159,6 +159,27 @@ export const DashboardSchema = z
 				}
 			)
 			.describe('Array of relative paths to CSS files to be inlined into the dashboard.'),
+		favicon: z
+			.object({
+				external: z
+					.object({
+						link: z.string().url(),
+						sizes: z.string(),
+					})
+					.optional(),
+				inline: z
+					.string()
+					.refine((path) => isRelative(path) && extname(path) === '.svg', {
+						message:
+							'The `favicon.inline` path should be relative and point to a valid `.svg` file.',
+					})
+					.optional(),
+			})
+			.optional()
+			.refine((props) => !props || props?.external || props?.inline, {
+				message:
+					'The `favicon` object needs to receive either a valid `inline` or `external` property.',
+			}),
 		/** UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page. */
 		ui: DashboardUiSchema,
 	})

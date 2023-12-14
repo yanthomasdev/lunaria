@@ -36,6 +36,29 @@
               },
               "description": "Array of relative paths to CSS files to be inlined into the dashboard."
             },
+            "favicon": {
+              "type": "object",
+              "properties": {
+                "external": {
+                  "type": "object",
+                  "properties": {
+                    "link": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "sizes": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["link", "sizes"],
+                  "additionalProperties": false
+                },
+                "inline": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
             "ui": {
               "type": "object",
               "properties": {
