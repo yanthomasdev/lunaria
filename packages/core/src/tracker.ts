@@ -1,3 +1,5 @@
+import { render } from '@lit-labs/ssr';
+import { collectResult } from '@lit-labs/ssr/lib/render-result.js';
 import destr from 'destr';
 import glob from 'fast-glob';
 import micromatch from 'micromatch';
@@ -28,7 +30,6 @@ import {
 	getFrontmatterProperty,
 	getTextFromFormat,
 	loadFile,
-	renderToString,
 	toUtcString,
 } from './utils/misc.js';
 
@@ -212,9 +213,10 @@ export async function generateDashboardHtml(
 	rendererOpts: LunariaRendererConfig,
 	translationStatus: FileTranslationStatus[]
 ) {
+	const result = render(Page(opts, rendererOpts, translationStatus));
 	const html = await rehype()
 		.use(rehypeFormat)
-		.process(renderToString(Page(opts, rendererOpts, translationStatus)));
+		.process(await collectResult(result));
 	return String(html);
 }
 

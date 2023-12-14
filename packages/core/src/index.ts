@@ -1,6 +1,8 @@
 import type { LunariaUserRendererConfig } from './types.js';
 
-export { html } from 'lit-html';
+export { nothing } from 'lit';
+export { html, svg, unsafeStatic } from 'lit/static-html.js';
+
 export type * from './types.js';
 
 export function defineRendererConfig(opts: LunariaUserRendererConfig) {

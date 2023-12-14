@@ -5,28 +5,6 @@ import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
 import type { FrontmatterFromFile, FrontmatterProperty } from '../types.js';
 
-export function renderToString(data: any) {
-	const { strings, values } = data;
-
-	const value_list = [...values, '']; // + last empty part
-	let output = '';
-	for (let i = 0; i < strings.length; i++) {
-		let v = value_list[i];
-		if (v._$litType$ !== undefined) {
-			v = renderToString(v); // embedded template
-		} else if (v instanceof Array) {
-			// array of strings or templates.
-			let new_v = '';
-			for (const inner_v of [...v]) {
-				new_v += renderToString(inner_v);
-			}
-			v = new_v;
-		}
-		output += strings[i] + v;
-	}
-	return output;
-}
-
 export function getFrontmatterFromFile(absolutePath: string): FrontmatterFromFile {
 	if (!frontmatterFileExtensions.includes(extname(absolutePath))) {
 		return {

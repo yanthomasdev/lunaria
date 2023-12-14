@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html } from 'lit/static-html.js';
 
 export const Styles = html`
 	<style>
@@ -181,6 +181,10 @@ export const Styles = html`
 
 		.status-by-content tr:first-of-type td {
 			padding-top: 0.5rem;
+		}
+
+		.status-by-content tr:last-of-type td {
+			padding-bottom: 0.5rem;
 		}
 
 		.status-by-content tr td:first-of-type {
