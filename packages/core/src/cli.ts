@@ -2,12 +2,18 @@
 import { destr } from 'destr';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { fromZodError } from 'zod-validation-error';
 import { LunariaConfigSchema, LunariaRendererConfigSchema } from './schemas/config.js';
 import { generateDashboardHtml, getContentIndex, getTranslationStatus } from './tracker.js';
 import { handleShallowRepo } from './utils/git.js';
 import { loadFile } from './utils/misc.js';
 
 const configPath = './lunaria.config.json';
+const errorOpts = {
+	prefix: '- ',
+	prefixSeparator: '',
+	issueSeparator: '\n- ',
+};
 
 if (!existsSync(configPath)) {
 	console.error(
@@ -19,11 +25,10 @@ const configContents = destr(readFileSync(configPath, 'utf-8'));
 const parsedConfig = LunariaConfigSchema.safeParse(configContents);
 
 if (!parsedConfig.success) {
-	console.error(
-		new Error(
-			'Invalid configuration options passed to `@lunariajs/core`\n' +
-				parsedConfig.error.issues.map((i) => i).join('\n')
-		)
+	const validationError = fromZodError(parsedConfig.error, errorOpts);
+
+	console.log(
+		new Error('Invalid configuration options passed to `@lunariajs/core`:\n' + validationError)
 	);
 	process.exit(1);
 }
@@ -43,10 +48,11 @@ const rendererConfigContents = userConfig.renderer ? loadFile(userConfig.rendere
 const parsedRendererConfig = LunariaRendererConfigSchema.safeParse(rendererConfigContents);
 
 if (!parsedRendererConfig.success) {
+	const validationError = fromZodError(parsedRendererConfig.error, errorOpts);
+
 	console.error(
 		new Error(
-			'Invalid renderer configuration options passed to `@lunariajs/core`\n' +
-				parsedRendererConfig.error.issues.map((i) => i).join('\n')
+			'Invalid renderer configuration options passed to `@lunariajs/core`:\n' + validationError
 		)
 	);
 	process.exit(1);

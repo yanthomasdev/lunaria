@@ -1,17 +1,12 @@
 import { writeFileSync } from 'node:fs';
-import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { LunariaConfigSchema } from '../src/schemas/config.js';
 
-const mergedSchema = LunariaConfigSchema.merge(
-	z
-		.object({
-			$schema: z.string().optional(),
-		})
-		.describe('A path or URL to a valid Lunaria JSON Schema.')
+const jsonSchema = JSON.stringify(
+	zodToJsonSchema(LunariaConfigSchema, 'LunariaConfigSchema'),
+	null,
+	2
 );
-
-const jsonSchema = JSON.stringify(zodToJsonSchema(mergedSchema, 'LunariaConfigSchema'), null, 2);
 
 writeFileSync('./config.schema.json', jsonSchema);
 

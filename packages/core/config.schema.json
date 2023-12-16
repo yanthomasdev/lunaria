@@ -4,37 +4,41 @@
     "LunariaConfigSchema": {
       "type": "object",
       "properties": {
+        "$schema": {
+          "type": "string",
+          "description": "The location of your Lunaria JSON schema"
+        },
         "dashboard": {
           "type": "object",
           "properties": {
             "title": {
               "type": "string",
               "default": "Translation Status",
-              "description": "The title of your translation dashboard, used as both the main heading and meta title of the page."
+              "description": "The title of your translation dashboard, used as both the main heading and meta title of the page"
             },
             "description": {
               "type": "string",
               "default": "Online translation status dashboard of the project ",
-              "description": "The description of your translation dashboard, used in the meta tags of the page."
+              "description": "The description of your translation dashboard, used in the meta tags of the page"
             },
             "site": {
               "type": "string",
               "format": "uri",
-              "description": "The deployed URL of your translation dashboard, used in the meta tags of the page."
+              "description": "The deployed URL of your translation dashboard, used in the meta tags of the page"
             },
             "basesToHide": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "Array of path bases to hide from the rendered dashboard links."
+              "description": "Array of path bases to hide from the rendered dashboard links"
             },
             "customCss": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "Array of relative paths to CSS files to be inlined into the dashboard."
+              "description": "Array of relative paths to CSS files to be inlined into the dashboard"
             },
             "favicon": {
               "type": "object",
@@ -45,24 +49,27 @@
                     "link": {
                       "type": "string",
                       "format": "uri",
-                      "description": "The URL of the external favicon asset."
+                      "description": "The URL of the external favicon asset"
                     },
                     "sizes": {
                       "type": "string",
-                      "description": "The size of the favicon, e.g. `\"16x16\"`. "
+                      "description": "The size of the favicon, e.g. `\"16x16\"`"
                     }
                   },
-                  "required": ["link", "sizes"],
+                  "required": [
+                    "link",
+                    "sizes"
+                  ],
                   "additionalProperties": false,
-                  "description": "The external favicon to be used."
+                  "description": "The external favicon to be used"
                 },
                 "inline": {
                   "type": "string",
-                  "description": "Path to an SVG to be inlined into the dashboard."
+                  "description": "Path to an SVG to be inlined into the dashboard"
                 }
               },
               "additionalProperties": false,
-              "description": "The favicon(s) to be used by your dashboard."
+              "description": "The favicon(s) to be used by your dashboard"
             },
             "ui": {
               "type": "object",
@@ -70,179 +77,204 @@
                 "lang": {
                   "type": "string",
                   "default": "en",
-                  "description": "The BCP-47 tag of the dashboard's UI, used as the page's `lang` attribute, e.g. `'en'` or `'pt-BR'`."
+                  "description": "The BCP-47 tag of the dashboard's UI, used as the page's `lang` attribute, e.g. `'en'` or `'pt-BR'`"
                 },
                 "dir": {
                   "type": "string",
-                  "enum": ["ltr", "rtl"],
+                  "enum": [
+                    "ltr",
+                    "rtl"
+                  ],
                   "default": "ltr",
-                  "description": "The directionality of the page's text, used as the page's `dir` attribute. It can be either `'ltr'` (left-to-right) or `'rtl'` (right-to-left)."
+                  "description": "The directionality of the page's text, used as the page's `dir` attribute. It can be either `'ltr'` (left-to-right) or `'rtl'` (right-to-left)"
                 },
                 "status.done": {
                   "type": "string",
                   "default": "done",
-                  "description": "The dashboard status of 'done'."
+                  "description": "The dashboard status of 'done'"
                 },
                 "status.outdated": {
                   "type": "string",
                   "default": "outdated",
-                  "description": "The dashboard status of 'outdated'."
+                  "description": "The dashboard status of 'outdated'"
                 },
                 "status.missing": {
                   "type": "string",
                   "default": "missing",
-                  "description": "The dashboard status 'missing'."
+                  "description": "The dashboard status 'missing'"
                 },
                 "status.emojiDone": {
                   "type": "string",
                   "default": "✔",
-                  "description": "The dashboard status emoji for 'done'."
+                  "description": "The dashboard status emoji for 'done'"
                 },
                 "status.emojiOutdated": {
                   "type": "string",
                   "default": "🔄",
-                  "description": "The dashboard status emoji for 'outdated'."
+                  "description": "The dashboard status emoji for 'outdated'"
                 },
                 "status.emojiMissing": {
                   "type": "string",
                   "default": "❌",
-                  "description": "The dashboard status emoji for 'missing'."
+                  "description": "The dashboard status emoji for 'missing'"
                 },
                 "statusByLocale.heading": {
                   "type": "string",
                   "default": "Translation progress by locale",
-                  "description": "The heading text that precedes the dropdown lists of each locale's individual progress."
+                  "description": "The heading text that precedes the dropdown lists of each locale's individual progress"
                 },
                 "statusByLocale.detailsSummaryFormat": {
                   "type": "string",
                   "default": "{done_amount} {done_word}, {outdated_amount} {outdated_word}, {missing_amount} {missing_word}",
-                  "description": "The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of pages (e.g. '10') in the status and the status word (e.g. 'done'), respectively."
+                  "description": "The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of pages (e.g. '10') in the status and the status word (e.g. 'done'), respectively"
                 },
                 "statusByLocale.detailsTitleFormat": {
                   "type": "string",
                   "default": "{locale_name} ({locale_tag})",
-                  "description": "The locale's details title format. The `{locale_name} and `{locale_tag}` are placeholder valuesfor the locale's name (e.g. English) and the locale's BCP-47 tag (e.g. en), respectively."
+                  "description": "The locale's details title format. The `{locale_name} and `{locale_tag}` are placeholder valuesfor the locale's name (e.g. English) and the locale's BCP-47 tag (e.g. en), respectively"
                 },
                 "statusByLocale.outdatedTranslationLink": {
                   "type": "string",
                   "default": "outdated translation",
-                  "description": "The text for the locale's details oudated translation link."
+                  "description": "The text for the locale's details oudated translation link"
                 },
                 "statusByLocale.incompleteTranslationLink": {
                   "type": "string",
                   "default": "incomplete translation",
-                  "description": "The text for the locale's details incomplete translation link."
+                  "description": "The text for the locale's details incomplete translation link"
                 },
                 "statusByLocale.createFileLink": {
                   "type": "string",
                   "default": "Create page",
-                  "description": "The text for the locale's details create file link."
+                  "description": "The text for the locale's details create file link"
                 },
                 "statusByLocale.sourceChangeHistoryLink": {
                   "type": "string",
                   "default": "source change history",
-                  "description": "The text for the locale's details source change history link."
+                  "description": "The text for the locale's details source change history link"
                 },
                 "statusByLocale.missingKeys": {
                   "type": "string",
                   "default": "Missing keys",
-                  "description": "The text for the locale's details UI dictionary missing keys heading."
+                  "description": "The text for the locale's details UI dictionary missing keys heading"
                 },
                 "statusByLocale.completeTranslation": {
                   "type": "string",
                   "default": "This translation is complete, amazing job! 🎉",
-                  "description": "The text shown in the locale's details when it is complete."
+                  "description": "The text shown in the locale's details when it is complete"
                 },
                 "statusByContent.heading": {
                   "type": "string",
                   "default": "Translation status by content",
-                  "description": "The heading text that precedes the table with all locale's status by content."
+                  "description": "The heading text that precedes the table with all locale's status by content"
                 },
                 "statusByContent.tableRowPage": {
                   "type": "string",
                   "default": "Content",
-                  "description": "The text for the status dashboard table's 'content' row head."
+                  "description": "The text for the status dashboard table's 'content' row head"
                 },
                 "statusByContent.tableSummaryFormat": {
                   "type": "string",
                   "default": "{missing_emoji} {missing_word} {outdated_emoji} {outdated_word} {done_emoji} {done_word}",
-                  "description": "The dashboard table's summary format. The `{*_emoji}` and `{*_word}` are placeholder values for the status emoji (e.g. '❌') and its word (e.g. 'missing')."
+                  "description": "The dashboard table's summary format. The `{*_emoji}` and `{*_word}` are placeholder values for the status emoji (e.g. '❌') and its word (e.g. 'missing')"
                 }
               },
               "additionalProperties": false,
-              "default": {}
+              "default": {},
+              "description": "UI dictionary of the dashboard, including the desired `lang` and `dir` attributes of the page"
             }
           },
           "additionalProperties": false,
-          "default": {}
+          "default": {},
+          "description": "Options about your generated dashboard"
         },
         "repository": {
           "type": "object",
           "properties": {
             "name": {
               "type": "string",
-              "description": "The unique name of your repository in your git hosting platform, e.g. `\"Yan-Thomas/lunaria\"`."
+              "description": "The unique name of your repository in your git hosting platform, e.g. `\"Yan-Thomas/lunaria\"`"
             },
             "branch": {
               "type": "string",
               "default": "main",
-              "description": "The currently tracked branch of your repository."
+              "description": "The currently tracked branch of your repository"
             },
             "rootDir": {
               "type": "string",
               "default": "",
-              "description": "The root directory of the project being tracked, must be set when using a monorepo."
+              "description": "The root directory of the project being tracked, must be set when using a monorepo"
             },
             "hosting": {
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["github", "gitlab"]
+                  "enum": [
+                    "github",
+                    "gitlab"
+                  ]
                 },
                 {
                   "type": "object",
                   "properties": {
                     "create": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "source": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "history": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "clone": {
                       "type": "string"
                     }
                   },
-                  "required": ["create", "source", "history", "clone"],
+                  "required": [
+                    "create",
+                    "source",
+                    "history",
+                    "clone"
+                  ],
                   "additionalProperties": false
                 }
               ],
               "default": "github",
-              "description": "The git hosting platform used by your project, e.g. `\"github\"` or `\"gitlab\"`."
+              "description": "The git hosting platform used by your project, e.g. `\"github\"` or `\"gitlab\"`"
             }
           },
-          "required": ["name"],
-          "additionalProperties": false
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "description": "Information about your project's repository"
         },
         "defaultLocale": {
           "type": "object",
           "properties": {
             "label": {
               "type": "string",
-              "description": "The label of the locale to show in the status dashboard, e.g. `\"English\"`, `\"Português\"`, or `\"Español\"`."
+              "description": "The label of the locale to show in the status dashboard, e.g. `\"English\"`, `\"Português\"`, or `\"Español\"`"
             },
             "lang": {
               "type": "string",
-              "description": "The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `\"en-US\"` (American English) or `\"en-GB\"` (British English)."
+              "description": "The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `\"en-US\"` (American English) or `\"en-GB\"` (British English)"
             },
             "dictionaries": {
               "type": "object",
               "properties": {
                 "location": {
                   "type": "string",
-                  "description": "A glob pattern of where your UI dictionaries are and its file type(s), e.g. `\"src/i18n/en/**.ts\"`."
+                  "description": "A glob pattern of where your UI dictionaries are and its file type(s), e.g. `\"src/i18n/en/**.ts\"`"
                 },
                 "ignore": {
                   "type": "array",
@@ -250,7 +282,7 @@
                     "type": "string"
                   },
                   "default": [],
-                  "description": "Array of glob patterns to be ignored from matching."
+                  "description": "Array of glob patterns to be ignored from matching"
                 },
                 "optionalKeys": {
                   "type": "object",
@@ -262,18 +294,21 @@
                     "minItems": 1
                   },
                   "default": {},
-                  "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional. While defining on the default locale's object applies it to all languages, you can pass additional keys as part of the specific locale's `optionalKeys` field."
+                  "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional. While defining on the default locale's object applies it to all languages, you can pass additional keys as part of the specific locale's `optionalKeys` field"
                 }
               },
-              "required": ["location"],
-              "additionalProperties": false
+              "required": [
+                "location"
+              ],
+              "additionalProperties": false,
+              "description": "Information about your UI dictionaries"
             },
             "content": {
               "type": "object",
               "properties": {
                 "location": {
                   "type": "string",
-                  "description": "A glob pattern of where your content for the locale is and its file type(s), e.g. `\"src/content/docs/en/**.mdx\"`."
+                  "description": "A glob pattern of where your content for the locale is and its file type(s), e.g. `\"src/content/docs/en/**.mdx\"`"
                 },
                 "ignore": {
                   "type": "array",
@@ -281,68 +316,86 @@
                     "type": "string"
                   },
                   "default": [],
-                  "description": "Array of glob patterns to be ignored from matching."
+                  "description": "Array of glob patterns to be ignored from matching"
                 }
               },
-              "required": ["location"],
-              "additionalProperties": false
+              "required": [
+                "location"
+              ],
+              "additionalProperties": false,
+              "description": "Information about your content"
             }
           },
-          "required": ["label", "lang"],
-          "additionalProperties": false
+          "required": [
+            "label",
+            "lang"
+          ],
+          "additionalProperties": false,
+          "description": "The default locale of your content that is going to be localized"
         },
         "locales": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/LunariaConfigSchema/properties/defaultLocale"
           },
-          "minItems": 1
+          "minItems": 1,
+          "description": "Array of the localized locales"
         },
         "ignoreKeywords": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "default": ["lunaria-ignore", "fix typo"],
-          "description": "Array of commit keywords that avoid a commit from trigerring status changes."
+          "default": [
+            "lunaria-ignore",
+            "fix typo"
+          ],
+          "description": "Array of commit keywords that avoid a commit from trigerring status changes"
         },
         "translatableProperty": {
           "type": "string",
-          "description": "Name of the frontmatter property used to mark a page as ready for translation."
+          "description": "Name of the frontmatter property used to mark a page as ready for translation"
         },
         "routingStrategy": {
           "anyOf": [
             {
               "type": "string",
-              "enum": ["directory", "file"]
+              "enum": [
+                "directory",
+                "file"
+              ]
             },
             {
               "type": "object",
               "properties": {
                 "regex": {
                   "type": "string",
-                  "description": "The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`."
+                  "description": "The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`"
                 },
                 "localePathReplaceWith": {
                   "type": "string",
-                  "description": "The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with."
+                  "description": "The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with"
                 },
                 "sharedPathReplaceWith": {
                   "type": "string",
-                  "description": "The content that will be replaced into the `toSharedPath` regex's match."
+                  "description": "The content that will be replaced into the `toSharedPath` regex's match"
                 }
               },
-              "required": ["regex", "localePathReplaceWith", "sharedPathReplaceWith"],
+              "required": [
+                "regex",
+                "localePathReplaceWith",
+                "sharedPathReplaceWith"
+              ],
               "additionalProperties": false
             }
           ],
           "default": "directory",
-          "description": "The routing strategy used by your framework, used to properly generate paths from a locale's path."
+          "description": "The routing strategy used by your framework, used to properly generate paths from a locale's path"
         },
         "outDir": {
           "type": "string",
           "default": "./dist/translation-status/index.html",
-          "description": "A relative directory path of where your dashboard will build to, e.g. `\"./dist/translation-status/index.html\"`."
+          "description": "A relative directory path of where your dashboard will build to, e.g. `\"./dist/translation-status/index.html\"`"
         },
         "cloneDir": {
           "type": "string",
@@ -351,13 +404,14 @@
         },
         "renderer": {
           "type": "string",
-          "description": "The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration."
-        },
-        "$schema": {
-          "type": "string"
+          "description": "The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration"
         }
       },
-      "required": ["repository", "defaultLocale", "locales"],
+      "required": [
+        "repository",
+        "defaultLocale",
+        "locales"
+      ],
       "additionalProperties": false
     }
   },
