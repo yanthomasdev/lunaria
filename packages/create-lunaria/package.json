@@ -1,7 +1,7 @@
 {
   "name": "create-lunaria",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "bin": "./dist/create-lunaria.mjs",
   "exports": {
     ".": "./dist/create-lunaria.mjs"

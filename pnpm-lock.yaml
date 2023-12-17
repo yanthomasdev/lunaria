@@ -39,7 +39,7 @@ importers:
   examples/vitepress:
     dependencies:
       '@lunariajs/core':
-        specifier: workspace:0.0.19
+        specifier: workspace:0.0.20
         version: link:../../packages/core
     devDependencies:
       ts-node:

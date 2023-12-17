@@ -1,5 +1,19 @@
 # @lunariajs/core
 
+## 0.0.20
+
+### Patch Changes
+
+- 442517d: Add new `customCss` dashboard option
+- c05f229: Add new progress bar design
+- eaaa966: Improve color schema and variables
+- a1d05f4: Add configuration JSON Schema support
+- 535e6e6: Change `ignoreKeywords` defaults
+- 2d6e7a0: Improve configuration errors
+- 95267a4: Fix component rendering issues
+- a778d74: Add support for tracking only dictionaries
+- 7e63f52: Add favicon support
+
 ## 0.0.19
 
 ### Patch Changes
