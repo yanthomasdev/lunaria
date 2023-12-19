@@ -93,9 +93,11 @@ export const Body = (
 				${slots.afterTitle?.(opts) ?? nothing}
 				${overrides.statusByLocale?.(opts, translationStatus) ??
 				StatusByLocale(opts, translationStatus)}
+				${slots.afterStatusByLocale?.(opts) ?? nothing}
 			</div>
 			${overrides.statusByContent?.(opts, translationStatus) ??
 			StatusByContent(opts, translationStatus)}
+			${slots.afterStatusByContent?.(opts) ?? nothing}
 		</main>
 	`;
 };

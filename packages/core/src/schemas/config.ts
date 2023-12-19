@@ -50,7 +50,6 @@ export const repositorySchema = z.object({
 	/** The currently tracked branch of your repository */
 	branch: z.string().default('main').describe('The currently tracked branch of your repository'),
 	/** The root directory of the project being tracked, must be set when using a monorepo */
-	/** TODO: Fix rootDir usage when not using a monorepo! */
 	rootDir: z
 		.string()
 		.default('.')
@@ -145,6 +144,8 @@ export const LunariaRendererConfigSchema = z.object({
 			head: createComponentSchema<CustomComponent>().optional(),
 			beforeTitle: createComponentSchema<CustomComponent>().optional(),
 			afterTitle: createComponentSchema<CustomComponent>().optional(),
+			afterStatusByLocale: createComponentSchema<CustomComponent>().optional(),
+			afterStatusByContent: createComponentSchema<CustomComponent>().optional(),
 		})
 		.default({}),
 	overrides: z
