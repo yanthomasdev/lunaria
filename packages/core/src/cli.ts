@@ -3,17 +3,13 @@ import { destr } from 'destr';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fromZodError } from 'zod-validation-error';
+import { errorOpts } from './constants.js';
 import { LunariaConfigSchema, LunariaRendererConfigSchema } from './schemas/config.js';
 import { generateDashboardHtml, getContentIndex, getTranslationStatus } from './tracker.js';
 import { handleShallowRepo } from './utils/git.js';
 import { loadFile } from './utils/misc.js';
 
 const configPath = './lunaria.config.json';
-const errorOpts = {
-	prefix: '- ',
-	prefixSeparator: '',
-	issueSeparator: '\n- ',
-};
 
 if (!existsSync(configPath)) {
 	console.error(
@@ -27,7 +23,7 @@ const parsedConfig = LunariaConfigSchema.safeParse(configContents);
 if (!parsedConfig.success) {
 	const validationError = fromZodError(parsedConfig.error, errorOpts);
 
-	console.log(
+	console.error(
 		new Error('Invalid configuration options passed to `@lunariajs/core`:\n' + validationError)
 	);
 	process.exit(1);
