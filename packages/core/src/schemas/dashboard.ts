@@ -79,7 +79,7 @@ const DashboardUiSchema = z
 		/** The text for the locale's details create file link */
 		'statusByLocale.createFileLink': z
 			.string()
-			.default('Create page')
+			.default('Create file')
 			.describe("The text for the locale's details create file link"),
 		/** The text for the locale's details source change history link */
 		'statusByLocale.sourceChangeHistoryLink': z
@@ -110,7 +110,7 @@ const DashboardUiSchema = z
 		'statusByContent.tableSummaryFormat': z
 			.string()
 			.default(
-				'{missing_emoji} {missing_word} {outdated_emoji} {outdated_word} {done_emoji} {done_word}'
+				'{missing_emoji} {missing_word} &nbsp; {outdated_emoji} {outdated_word} &nbsp; {done_emoji} {done_word}'
 			)
 			.describe(
 				"The dashboard table's summary format. The `{*_emoji}` and `{*_word}` are placeholder values for the status emoji (e.g. '❌') and its word (e.g. 'missing')"

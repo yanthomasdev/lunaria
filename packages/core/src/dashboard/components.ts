@@ -107,7 +107,7 @@ export const StatusByLocale = (
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-locale">
-			<a href="#by-locale">${dashboard.ui['statusByLocale.heading']}</a>
+			<a href="#by-locale">${unsafeStatic(dashboard.ui['statusByLocale.heading'])}</a>
 		</h2>
 		${locales.map((locale) => LocaleDetails(translationStatus, dashboard, locale))}
 	`;
@@ -131,28 +131,32 @@ export const LocaleDetails = (
 		<details>
 			<summary>
 				<strong
-					>${getTextFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
-						'{locale_name}': label,
-						'{locale_tag}': lang,
-					})}</strong
+					>${unsafeStatic(
+						getTextFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
+							'{locale_name}': label,
+							'{locale_tag}': lang,
+						})
+					)}</strong
 				>
 				<br />
 				<span class="progress-summary"
-					>${getTextFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
-						'{done_amount}': doneLength.toString(),
-						'{done_word}': dashboard.ui['status.done'],
-						'{outdated_amount}': outdatedPages.length.toString(),
-						'{outdated_word}': dashboard.ui['status.outdated'],
-						'{missing_amount}': missingPages.length.toString(),
-						'{missing_word}': dashboard.ui['status.missing'],
-					})}</span
+					>${unsafeStatic(
+						getTextFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
+							'{done_amount}': doneLength.toString(),
+							'{done_word}': dashboard.ui['status.done'],
+							'{outdated_amount}': outdatedPages.length.toString(),
+							'{outdated_word}': dashboard.ui['status.outdated'],
+							'{missing_amount}': missingPages.length.toString(),
+							'{missing_word}': dashboard.ui['status.missing'],
+						})
+					)}</span
 				>
 				<br />
 				${ProgressBar(translationStatus.length, outdatedPages.length, missingPages.length)}
 			</summary>
 			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : nothing}
 			${missingPages.length > 0
-				? html`<h3 class="capitalize">${dashboard.ui['status.missing']}</h3>
+				? html`<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.missing'])}</h3>
 						<ul>
 							${missingPages.map(
 								(page) => html`
@@ -172,7 +176,7 @@ export const LocaleDetails = (
 						</ul>`
 				: nothing}
 			${missingPages.length == 0 && outdatedPages.length == 0
-				? html`<p>${dashboard.ui['statusByLocale.completeTranslation']}</p>`
+				? html`<p>${unsafeStatic(dashboard.ui['statusByLocale.completeTranslation'])}</p>`
 				: nothing}
 		</details>
 	`;
@@ -184,7 +188,7 @@ export const OutdatedPages = (
 	dashboard: Dashboard
 ): TemplateResult => {
 	return html`
-		<h3 class="capitalize">${dashboard.ui['status.outdated']}</h3>
+		<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.outdated'])}</h3>
 		<ul>
 			${outdatedPages.map(
 				(page) => html`
@@ -194,7 +198,7 @@ export const OutdatedPages = (
 									<details>
 										<summary>${ContentDetailsLinks(page, lang, dashboard)}</summary>
 										${html`
-											<h4>${dashboard.ui['statusByLocale.missingKeys']}</h4>
+											<h4>${unsafeStatic(dashboard.ui['statusByLocale.missingKeys'])}</h4>
 											<ul>
 												${page.translations[lang]?.completeness.missingKeys!.map(
 													(key) => html`<li>${key}</li>`
@@ -218,7 +222,7 @@ export const StatusByContent = (
 	const { dashboard, locales } = opts;
 	return html`
 		<h2 id="by-content">
-			<a href="#by-content">${dashboard.ui['statusByContent.heading']}</a>
+			<a href="#by-content">${unsafeStatic(dashboard.ui['statusByContent.heading'])}</a>
 		</h2>
 		<table class="status-by-content">
 			<thead>
@@ -231,14 +235,16 @@ export const StatusByContent = (
 			${TableBody(translationStatus, locales, dashboard)}
 		</table>
 		<sup class="capitalize"
-			>${getTextFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
-				'{missing_emoji}': dashboard.ui['status.emojiMissing'],
-				'{missing_word}': dashboard.ui['status.missing'],
-				'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
-				'{outdated_word}': dashboard.ui['status.outdated'],
-				'{done_emoji}': dashboard.ui['status.emojiDone'],
-				'{done_word}': dashboard.ui['status.done'],
-			})}
+			>${unsafeStatic(
+				getTextFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
+					'{missing_emoji}': dashboard.ui['status.emojiMissing'],
+					'{missing_word}': dashboard.ui['status.missing'],
+					'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
+					'{outdated_word}': dashboard.ui['status.outdated'],
+					'{done_emoji}': dashboard.ui['status.emojiDone'],
+					'{done_word}': dashboard.ui['status.done'],
+				})
+			)}
 		</sup>
 	`;
 };
@@ -342,11 +348,11 @@ export const EmojiFileLink = (
 };
 
 export const Link = (href: string, text: string): TemplateResult => {
-	return html`<a href="${href}">${text}</a>`;
+	return html`<a href="${href}">${unsafeStatic(text)}</a>`;
 };
 
 export const CreatePageLink = (href: string, text: string): TemplateResult => {
-	return html`<a class="create-button" href="${href}">${text}</a>`;
+	return html`<a class="create-button" href="${href}">${unsafeStatic(text)}</a>`;
 };
 
 export const ProgressBar = (
