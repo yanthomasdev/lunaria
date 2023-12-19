@@ -196,7 +196,7 @@
             },
             "rootDir": {
               "type": "string",
-              "default": "",
+              "default": ".",
               "description": "The root directory of the project being tracked, must be set when using a monorepo"
             },
             "hosting": {

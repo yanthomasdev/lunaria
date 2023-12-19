@@ -50,10 +50,11 @@ export const repositorySchema = z.object({
 	/** The currently tracked branch of your repository */
 	branch: z.string().default('main').describe('The currently tracked branch of your repository'),
 	/** The root directory of the project being tracked, must be set when using a monorepo */
+	/** TODO: Fix rootDir usage when not using a monorepo! */
 	rootDir: z
 		.string()
-		.default('')
-		.refine((path) => !isRelative(path) || path === '', {
+		.default('.')
+		.refine((path) => !isRelative(path), {
 			message:
 				'The root directory should not be a relative path, it should follow the example: `examples/vitepress`',
 		})
