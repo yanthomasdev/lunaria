@@ -1,5 +1,13 @@
 # @lunariajs/core
 
+## 0.0.21
+
+### Patch Changes
+
+- f87f91a: Fix `rootDir` issues
+- 1821c06: Allow user labels to include HTML
+- 4ad2709: Add new slot options
+
 ## 0.0.20
 
 ### Patch Changes
