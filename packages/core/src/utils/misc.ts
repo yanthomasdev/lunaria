@@ -1,6 +1,7 @@
 import jiti from 'jiti';
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
+import { joinURL } from 'ufo';
 import { parse } from 'ultramatter';
 import { frontmatterFileExtensions } from '../constants.js';
 import type { FrontmatterFromFile, FrontmatterProperty } from '../types.js';
@@ -72,3 +73,9 @@ export const loadFile = jiti(process.cwd(), {
 	interopDefault: true,
 	esmResolve: true,
 });
+
+export function cleanJoinURL(base: string, ...paths: string[]) {
+	return joinURL(base, ...paths)
+		.replace('../', '')
+		.replace('./', '');
+}
