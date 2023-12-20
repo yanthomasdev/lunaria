@@ -1,0 +1,37 @@
+---
+title: Lunaria 🌘 La herramienta de gestión de localización que faltaba para proyectos de código abierto
+description: Recarga tu flujo de trabajo de localización
+template: splash
+editUrl: false
+hero:
+  title: Recarga tu flujo de trabajo de localización
+  tagline: Lunaria es la forma de gestionar la localización de tu proyecto de código abierto. Genial para los mantenedores. Aún mejor para los contribuyentes.
+  image:
+    file: ../../../assets/luna.svg
+  actions:
+    - text: Get started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Tu contenido, tu framework" icon="document">
+		¿Estás usando MDX, JSON, Markdoc? VitePress, Nextra, Starlight? Trae tus propias 
+		herramientas, son bienvenidas.
+	</Card>
+	<Card title="Para todos los involucrados" icon="open-book">
+		No importa si eres un mantenedor o un colaborador, toda la cadena de herramientas
+		está diseñada para que tu experiencia sea lo más fluida posible.
+	</Card>
+	<Card title="Muy, muy rápido" icon="rocket">
+		Lo suficientemente rápido como para construir un panel de seguimiento +1000 
+		páginas en más de 12 locales en sólo 30 segundos.
+	</Card>
+	<Card title="Integrado con GitHub" icon="github">
+		Obtén una visión general e información útil sobre cómo las PRs van a afectar el
+		estado de localización sin salir de GitHub.
+	</Card>
+</CardGrid>
