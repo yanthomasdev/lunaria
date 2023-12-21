@@ -121,7 +121,7 @@ async function main() {
 	p.note(
 		`${project.path == '.' ? '' : `cd ${project.path}        \n`}${
 			project.install ? '' : `${packageManager.name} install\n`
-		}pnpm run lunaria`,
+		}${packageManager.name} run lunaria`,
 		'Next steps: '
 	);
 
