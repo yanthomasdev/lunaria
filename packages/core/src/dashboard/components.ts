@@ -1,5 +1,6 @@
 import { nothing, type TemplateResult } from 'lit';
 import { html, unsafeStatic } from 'lit/static-html.js';
+import redent from 'redent';
 import type {
 	Dashboard,
 	FileTranslationStatus,
@@ -35,9 +36,9 @@ export const Page = (
 				${inlinedCssFiles
 					? inlinedCssFiles.map(
 							(css) =>
-								html`<style>
-									${unsafeStatic(css)}
-								</style>`
+								html`${unsafeStatic(
+									redent(`<style>${redent('\n' + css, 1, { indent: '\t' })}</style>`, 4)
+								)}`
 					  )
 					: nothing}
 			</head>
