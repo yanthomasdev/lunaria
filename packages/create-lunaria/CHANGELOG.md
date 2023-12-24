@@ -1,5 +1,11 @@
 # create-lunaria
 
+## 0.0.4
+
+### Patch Changes
+
+- 2c41070: Display `packageManager.name` instead of hardcoding `pnpm`
+
 ## 0.0.3
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @lunariajs/core
 
+## 0.0.23
+
+### Patch Changes
+
+- b95d480: Rework content source API
+- f76b8a4: Update output defaults
+- 5feafc8: Fix inline styles indentation
+- f3c9fee: Allow multiple `external` favicons
+
 ## 0.0.22
 
 ### Patch Changes

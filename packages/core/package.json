@@ -1,7 +1,7 @@
 {
   "name": "@lunariajs/core",
   "type": "module",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Translation management system for open-source projects",
   "types": "./dist/index.d.ts",
   "bin": {
