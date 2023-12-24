@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/@lunariajs/core/config.schema.json",
+  "repository": {
+    "name": "Yan-Thomas/lunaria",
+    "rootDir": "examples/nextra"
+  },
+  "files": [
+    {
+      "location": "pages/**/*.mdx",
+      "pattern": "pages/@path.@lang.mdx"
+    }
+  ],
+  "defaultLocale": {
+    "label": "English",
+    "lang": "en"
+  },
+  "locales": [
+    {
+      "label": "Simplified Chinese",
+      "lang": "zh"
+    }
+  ],
+  "dashboard": {
+    "basesToHide": ["pages/"]
+  }
+}
