@@ -140,7 +140,7 @@ export const Styles = html`
 			font-size: 0.875rem;
 		}
 
-		details {
+		.progress-details {
 			margin-bottom: 1.25rem;
 		}
 

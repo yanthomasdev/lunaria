@@ -133,7 +133,7 @@ export const LocaleDetails = (
 	const doneLength = translationStatus.length - outdatedPages.length - missingPages.length;
 
 	return html`
-		<details>
+		<details class="progress-details">
 			<summary>
 				<strong
 					>${unsafeStatic(
