@@ -70,7 +70,9 @@ export const Favicon = (dashboard: Dashboard): TemplateResult => {
 	const inlineSvg = 'data:image/svg+xml;utf8,' + svg;
 
 	const ExternalFavicon = favicon?.external
-		? html`<link rel="icon" href="${favicon.external.link}" sizes="${favicon.external.sizes}" />`
+		? html`${favicon.external.map(
+				(icon) => html`<link rel="icon" href="${icon.link}" type="${icon.type}" />`
+		  )}`
 		: nothing;
 
 	const InlineFavicon = favicon?.inline ? html`<link rel="icon" href="${inlineSvg}" />` : nothing;

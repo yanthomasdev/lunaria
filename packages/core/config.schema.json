@@ -44,21 +44,25 @@
               "type": "object",
               "properties": {
                 "external": {
-                  "type": "object",
-                  "properties": {
-                    "link": {
-                      "type": "string",
-                      "format": "uri",
-                      "description": "The URL of the external favicon asset"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "link": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The URL of the external favicon asset"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The type attribute of the favicon, e.g. `\"image/x-icon\"` or `\"image/svg+xml\"`"
+                      }
                     },
-                    "sizes": {
-                      "type": "string",
-                      "description": "The size of the favicon, e.g. `\"16x16\"`"
-                    }
+                    "required": ["link", "type"],
+                    "additionalProperties": false
                   },
-                  "required": ["link", "sizes"],
-                  "additionalProperties": false,
-                  "description": "The external favicon to be used"
+                  "minItems": 1,
+                  "description": "Array of the external favicon(s) to be used"
                 },
                 "inline": {
                   "type": "string",
