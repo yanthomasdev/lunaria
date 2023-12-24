@@ -285,10 +285,12 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 export function getPathResolver(pattern: string, defaultLocale: Locale, locales: Locale[]) {
 	const langs = [defaultLocale, ...locales].map(({ lang }) => lang);
 
-	const langPattern = `:lang(${langs.join('|')})?`;
-	const langPatternDir = `{:lang(${langs.join('|')})/}?`;
-	const pathPattern = ':path+';
+	const localesPartial = langs.join('|');
+	const langPattern = `:lang(${localesPartial})?`;
+	const langPatternDir = `{:lang(${localesPartial})/}?`;
+	const pathPattern = ':path(.*)';
 	const augmentedPattern = getStringFromFormat(pattern, {
+		'@locales': localesPartial,
 		'@lang/': langPatternDir,
 		'@lang': langPattern,
 		'@path': pathPattern,
