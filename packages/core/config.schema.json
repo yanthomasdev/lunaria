@@ -330,13 +330,13 @@
         },
         "outDir": {
           "type": "string",
-          "default": "./dist/translation-status/index.html",
-          "description": "A relative directory path of where your dashboard will build to, e.g. `\"./dist/translation-status/index.html\"`"
+          "default": "./dist/lunaria",
+          "description": "A relative directory path of where your dashboard will build to, e.g. `\"./dist/lunaria\"`"
         },
         "cloneDir": {
           "type": "string",
-          "default": "./dist/history",
-          "description": "The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `\"./dist/history\"`"
+          "default": "./dist/lunaria/history",
+          "description": "The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `\"./dist/lunaria/history\"`"
         },
         "renderer": {
           "type": "string",

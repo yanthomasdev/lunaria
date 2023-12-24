@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fromZodError } from 'zod-validation-error';
 import { errorOpts } from './constants.js';
 import { LunariaConfigSchema, LunariaRendererConfigSchema } from './schemas/config.js';
@@ -54,23 +54,23 @@ if (!parsedRendererConfig.success) {
 }
 
 const userRendererConfig = parsedRendererConfig.data;
-
 const isShallowRepo = await handleShallowRepo(userConfig);
 
+const outputDir = resolve(userConfig.outDir);
+const output = resolve(join(userConfig.outDir, '/index.html'));
+
 console.time('⌛ Building translation dashboard');
-console.log(`➡️  Dashboard output path: ${resolve(userConfig.outDir)}`);
+console.log(`➡️  Dashboard output path: ${output}`);
 
 const contentIndex = await getContentIndex(userConfig, isShallowRepo);
 const translationStatus = await getTranslationStatus(userConfig, contentIndex);
 const html = await generateDashboardHtml(userConfig, userRendererConfig, translationStatus);
 
-const outputDir = dirname(userConfig.outDir);
-
 if (!existsSync(outputDir)) {
 	mkdirSync(outputDir, { recursive: true });
 }
 
-writeFileSync(userConfig.outDir, html);
+writeFileSync(output, html);
 
 console.timeEnd('⌛ Building translation dashboard');
 console.log('✅ Translation dashboard built successfully!');

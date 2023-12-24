@@ -122,19 +122,19 @@ export const LunariaConfigSchema = z
 			.string()
 			.optional()
 			.describe('Name of the frontmatter property used to mark a page as ready for translation'),
-		/** The relative directory path of where your dashboard will build to, e.g. `"./dist/translation-status/index.html"` */
+		/** The relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"` */
 		outDir: z
 			.string()
-			.default('./dist/translation-status/index.html')
+			.default('./dist/lunaria')
 			.describe(
-				'A relative directory path of where your dashboard will build to, e.g. `"./dist/translation-status/index.html"`'
+				'A relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"`'
 			),
-		/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/history"` */
+		/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"` */
 		cloneDir: z
 			.string()
-			.default('./dist/history')
+			.default('./dist/lunaria/history')
 			.describe(
-				'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/history"`'
+				'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"`'
 			),
 		/** The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration */
 		renderer: z
