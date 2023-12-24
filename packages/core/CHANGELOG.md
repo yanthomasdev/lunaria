@@ -1,5 +1,12 @@
 # @lunariajs/core
 
+## 0.0.24
+
+### Patch Changes
+
+- e885a65: Fix styling of dictionary entries
+- 93b2c5d: Improve content API variables
+
 ## 0.0.23
 
 ### Patch Changes
