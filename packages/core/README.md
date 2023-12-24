@@ -32,27 +32,24 @@ The example below contains all of the **required** options to generate a dashboa
   "repository": {
     "name": "me/cool-docs"
   },
+  "files": [
+    {
+      "location": "content/**/*.md",
+      "pattern": "content/@lang/@path"
+    }
+  ],
   "defaultLocale": {
     "label": "English",
-    "lang": "en",
-    "content": {
-      "location": "content/en/**/*.md"
-    }
+    "lang": "en"
   },
   "locales": [
     {
       "label": "Português",
-      "lang": "pt",
-      "content": {
-        "location": "content/pt/**/*.md"
-      }
+      "lang": "pt"
     },
     {
       "label": "Spanish",
-      "lang": "es",
-      "content": {
-        "location": "content/es/**/*.md"
-      }
+      "lang": "es"
     }
   ]
 }

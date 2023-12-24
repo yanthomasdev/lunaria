@@ -4,14 +4,11 @@
     "name": "Yan-Thomas/lunaria",
     "rootDir": "examples/vitepress"
   },
-  "defaultLocale": {
-    "label": "English",
-    "lang": "en",
-    "content": {
-      "location": "en/**/*.md"
-    },
-    "dictionaries": {
-      "location": "ui/en/*.{js,cjs,mjs,ts,yml,json}",
+  "files": [
+    {
+      "location": "ui/**/*.{json,cjs,mjs,js,mts,ts,yml}",
+      "pattern": "ui/@lang/@path",
+      "type": "dictionary",
       "optionalKeys": {
         "ui/nav.json": ["today"],
         "ui/ui.cjs": ["type"],
@@ -21,28 +18,24 @@
         "ui/ui.ts": ["type"],
         "ui/ui.yml": ["here"]
       }
+    },
+    {
+      "location": "**/*.md",
+      "pattern": "@lang/@path"
     }
+  ],
+  "defaultLocale": {
+    "label": "English",
+    "lang": "en"
   },
   "locales": [
     {
       "label": "Português",
-      "lang": "pt",
-      "content": {
-        "location": "pt/**/*.md"
-      },
-      "dictionaries": {
-        "location": "ui/pt/*.{js,cjs,mjs,ts,yml,json}"
-      }
+      "lang": "pt"
     },
     {
       "label": "Spanish",
-      "lang": "es",
-      "content": {
-        "location": "es/**/*.md"
-      },
-      "dictionaries": {
-        "location": "ui/es/*.{js,cjs,mjs,ts,yml,json}"
-      }
+      "lang": "es"
     }
   ],
   "translatableProperty": "i18nReady",

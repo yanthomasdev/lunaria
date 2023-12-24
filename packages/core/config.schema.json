@@ -243,58 +243,6 @@
             "lang": {
               "type": "string",
               "description": "The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `\"en-US\"` (American English) or `\"en-GB\"` (British English)"
-            },
-            "dictionaries": {
-              "type": "object",
-              "properties": {
-                "location": {
-                  "type": "string",
-                  "description": "A glob pattern of where your UI dictionaries are and its file type(s), e.g. `\"src/i18n/en/**.ts\"`"
-                },
-                "ignore": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "default": [],
-                  "description": "Array of glob patterns to be ignored from matching"
-                },
-                "optionalKeys": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "minItems": 1
-                  },
-                  "default": {},
-                  "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional. While defining on the default locale's object applies it to all languages, you can pass additional keys as part of the specific locale's `optionalKeys` field"
-                }
-              },
-              "required": ["location"],
-              "additionalProperties": false,
-              "description": "Information about your UI dictionaries"
-            },
-            "content": {
-              "type": "object",
-              "properties": {
-                "location": {
-                  "type": "string",
-                  "description": "A glob pattern of where your content for the locale is and its file type(s), e.g. `\"src/content/docs/en/**.mdx\"`"
-                },
-                "ignore": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "default": [],
-                  "description": "Array of glob patterns to be ignored from matching"
-                }
-              },
-              "required": ["location"],
-              "additionalProperties": false,
-              "description": "Information about your content"
             }
           },
           "required": ["label", "lang"],
@@ -304,10 +252,65 @@
         "locales": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/LunariaConfigSchema/properties/defaultLocale"
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "#/definitions/LunariaConfigSchema/properties/defaultLocale/properties/label"
+              },
+              "lang": {
+                "$ref": "#/definitions/LunariaConfigSchema/properties/defaultLocale/properties/lang"
+              }
+            },
+            "required": ["label", "lang"],
+            "additionalProperties": false
           },
           "minItems": 1,
           "description": "Array of the localized locales"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "The glob pattern of where your content including the file type(s) is, e.g. `\"src/content/docs/**/*.mdx\"`"
+              },
+              "ignore": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [],
+                "description": "Array of glob patterns to be ignored from matching"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "A path-to-regexp-like pattern describing your content paths"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["universal", "dictionary"],
+                "default": "universal",
+                "description": "The desired type of tracking for this content"
+              },
+              "optionalKeys": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                },
+                "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional"
+              }
+            },
+            "required": ["location", "pattern"],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "description": "Array of files to be tracked"
         },
         "ignoreKeywords": {
           "type": "array",
@@ -315,40 +318,11 @@
             "type": "string"
           },
           "default": ["lunaria-ignore", "fix typo"],
-          "description": "Array of commit keywords that avoid a commit from trigerring status changes"
+          "description": "Array of commit keywords that avoid a commit from triggering status changes"
         },
         "translatableProperty": {
           "type": "string",
           "description": "Name of the frontmatter property used to mark a page as ready for translation"
-        },
-        "routingStrategy": {
-          "anyOf": [
-            {
-              "type": "string",
-              "enum": ["directory", "file"]
-            },
-            {
-              "type": "object",
-              "properties": {
-                "regex": {
-                  "type": "string",
-                  "description": "The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`"
-                },
-                "localePathReplaceWith": {
-                  "type": "string",
-                  "description": "The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with"
-                },
-                "sharedPathReplaceWith": {
-                  "type": "string",
-                  "description": "The content that will be replaced into the `toSharedPath` regex's match"
-                }
-              },
-              "required": ["regex", "localePathReplaceWith", "sharedPathReplaceWith"],
-              "additionalProperties": false
-            }
-          ],
-          "default": "directory",
-          "description": "The routing strategy used by your framework, used to properly generate paths from a locale's path"
         },
         "outDir": {
           "type": "string",
@@ -365,7 +339,7 @@
           "description": "The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration"
         }
       },
-      "required": ["repository", "defaultLocale", "locales"],
+      "required": ["repository", "defaultLocale", "locales", "files"],
       "additionalProperties": false
     }
   },

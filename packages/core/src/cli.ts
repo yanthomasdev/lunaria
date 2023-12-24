@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { destr } from 'destr';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fromZodError } from 'zod-validation-error';
@@ -17,7 +16,7 @@ if (!existsSync(configPath)) {
 	);
 }
 
-const configContents = destr(readFileSync(configPath, 'utf-8'));
+const configContents = JSON.parse(readFileSync(configPath, 'utf-8'));
 const parsedConfig = LunariaConfigSchema.safeParse(configContents);
 
 if (!parsedConfig.success) {
