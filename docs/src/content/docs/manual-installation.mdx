@@ -64,28 +64,28 @@ Lunaria is configured using `lunaria.config.json`. This file is required so Luna
 
 Before generating your first localization dashboard, you have to set up the `repository`, `defaultLocale`, and `locales` fields of your `lunaria.config.json` file.
 
-The following example sets up Lunaria to track Markdown/MDX content for both English and Portuguese in a sample Astro project, hosted on `https://github.com/me/cool-project/`:
+The following example sets up Lunaria to track Markdown/MDX content for both English and Portuguese in a sample project, hosted on `https://github.com/me/cool-project/`:
 
 ```json title="lunaria.config.json"
 {
 	"$schema": "./node_modules/@lunariajs/core/config.schema.json",
 	"repository": {
-		"name": "me/cool-project"
+		"name": "me/cool-docs"
 	},
+	"files": [
+		{
+			"location": "content/**/*.md",
+			"pattern": "content/@lang/@path"
+		}
+	],
 	"defaultLocale": {
 		"label": "English",
-		"lang": "en",
-		"content": {
-			"location": "src/content/en/**/*.{md,mdx}"
-		}
+		"lang": "en"
 	},
 	"locales": [
 		{
 			"label": "Português",
-			"lang": "pt",
-			"content": {
-				"location": "src/content/pt/**/*.{md,mdx}"
-			}
+			"lang": "pt"
 		}
 	]
 }
@@ -125,7 +125,7 @@ yarn run lunaria
 </TabItem>
 </Tabs>
 
-By default, the localization dashboard will be built to an `index.html` file in the `./dist/translation-status/` directory. This file can then be deployed to the hosting platform of your choice and shared across your contributors.
+By default, the localization dashboard will be built to an `index.html` file in the `./dist/lunaria/` directory. This file can then be deployed to the hosting platform of your choice and shared across your contributors.
 
 ## Next Steps
 
