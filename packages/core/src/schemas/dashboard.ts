@@ -160,16 +160,23 @@ export const DashboardSchema = z
 		/** The favicon(s) to be used by your dashboard */
 		favicon: z
 			.object({
-				/* The external favicon to be used */
+				/* Array of the external favicon(s) to be used */
 				external: z
-					.object({
-						/* The URL of the external favicon asset */
-						link: z.string().url().describe('The URL of the external favicon asset'),
-						/* The size of the favicon, e.g. `"16x16"` */
-						sizes: z.string().describe('The size of the favicon, e.g. `"16x16"`'),
-					})
+					.array(
+						z.object({
+							/* The URL of the external favicon asset */
+							link: z.string().url().describe('The URL of the external favicon asset'),
+							/* The type attribute of the favicon, e.g. `"image/x-icon"`' */
+							type: z
+								.string()
+								.describe(
+									'The type attribute of the favicon, e.g. `"image/x-icon"` or `"image/svg+xml"`'
+								),
+						})
+					)
+					.nonempty()
 					.optional()
-					.describe('The external favicon to be used'),
+					.describe('Array of the external favicon(s) to be used'),
 				/* Path to an SVG to be inlined into the dashboard.  */
 				inline: z
 					.string()
