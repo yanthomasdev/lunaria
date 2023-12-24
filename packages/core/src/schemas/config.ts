@@ -1,7 +1,6 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../schemas/dashboard.js';
-import { LocaleSchema } from '../schemas/locale.js';
 import type { CustomComponent, CustomStatusComponent } from '../types.js';
 
 function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
@@ -13,33 +12,14 @@ function createComponentSchema<ComponentType extends CustomComponent | CustomSta
 	}, 'Custom components need to be a function returning a valid Lit template');
 }
 
-export const customRoutingStrategyOptionsSchema = z.object({
-	/** The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'` */
-	regex: z
-		.string()
-		.describe(
-			"The regex pattern to find the path section to be replaced. You can use :locales to dynamically add a list of all the locales in the format `'es|pt|ar'`"
-		),
-	/** The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with */
-	localePathReplaceWith: z
-		.string()
-		.describe(
-			"The content that will be replaced into the `toLocalePath` regex's match. You can use :locale to dynamically add the current locale for you to replace with"
-		),
-	/** The content that will be replaced into the `toSharedPath` regex's match */
-	sharedPathReplaceWith: z
-		.string()
-		.describe("The content that will be replaced into the `toSharedPath` regex's match"),
-});
-
-export const customGitHostingOptionsSchema = z.object({
+const CustomGitHostingSchema = z.object({
 	create: z.string().or(z.null()),
 	source: z.string().or(z.null()),
 	history: z.string().or(z.null()),
 	clone: z.string(),
 });
 
-export const repositorySchema = z.object({
+const RepositorySchema = z.object({
 	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
 	name: z
 		.string()
@@ -63,9 +43,54 @@ export const repositorySchema = z.object({
 	hosting: z
 		.literal('github')
 		.or(z.literal('gitlab'))
-		.or(customGitHostingOptionsSchema)
+		.or(CustomGitHostingSchema)
 		.default('github')
 		.describe('The git hosting platform used by your project, e.g. `"github"` or `"gitlab"`'),
+});
+
+const OptionalKeysSchema = z
+	.record(z.string(), z.array(z.string()).nonempty())
+	.describe(
+		'Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional'
+	);
+
+const FileSchema = z.object({
+	/** The glob pattern of where your content including the file type(s) is */
+	location: z
+		.string()
+		.describe(
+			'The glob pattern of where your content including the file type(s) is, e.g. `"src/content/docs/**/*.mdx"`'
+		),
+	/** Array of glob patterns to be ignored from matching */
+	ignore: z
+		.array(z.string())
+		.default([])
+		.describe('Array of glob patterns to be ignored from matching'),
+	/** A path-to-regexp-like pattern of your content paths */
+	pattern: z.string().describe('A path-to-regexp-like pattern describing your content paths'),
+	/** The desired type of tracking for this content */
+	type: z
+		.literal('universal')
+		.or(z.literal('dictionary'))
+		.default('universal')
+		.describe('The desired type of tracking for this content'),
+	/** Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional */
+	optionalKeys: OptionalKeysSchema.optional(),
+});
+
+const LocaleSchema = z.object({
+	/** The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"` */
+	label: z
+		.string()
+		.describe(
+			'The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"`'
+		),
+	/** The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English) */
+	lang: z
+		.string()
+		.describe(
+			'The BCP-47 tag of the locale, both to use in smaller widths and to differentiate regional variants, e.g. `"en-US"` (American English) or `"en-GB"` (British English)'
+		),
 });
 
 export const LunariaConfigSchema = z
@@ -75,18 +100,20 @@ export const LunariaConfigSchema = z
 		/** Options about your generated dashboard */
 		dashboard: DashboardSchema.describe('Options about your generated dashboard'),
 		/** Information about your project's repository */
-		repository: repositorySchema.describe("Information about your project's repository"),
+		repository: RepositorySchema.describe("Information about your project's repository"),
 		/** The default locale of your content that is going to be localized */
 		defaultLocale: LocaleSchema.describe(
 			'The default locale of your content that is going to be localized'
 		),
 		/** Array of the localized locales */
 		locales: z.array(LocaleSchema).nonempty().describe('Array of the localized locales'),
-		/** Array of commit keywords that avoid a commit from trigerring status changes */
+		/** Array of files to be tracked */
+		files: z.array(FileSchema).nonempty().describe('Array of files to be tracked'),
+		/** Array of commit keywords that avoid a commit from triggering status changes */
 		ignoreKeywords: z
 			.array(z.string())
 			.default(['lunaria-ignore', 'fix typo'])
-			.describe('Array of commit keywords that avoid a commit from trigerring status changes'),
+			.describe('Array of commit keywords that avoid a commit from triggering status changes'),
 		/** Name of the frontmatter property used to mark a page as translatable
 		 * and include it as part of the status dashboard. Keep it empty if you
 		 * want every page to be unconditionally translatable.
@@ -95,15 +122,6 @@ export const LunariaConfigSchema = z
 			.string()
 			.optional()
 			.describe('Name of the frontmatter property used to mark a page as ready for translation'),
-		/** The routing strategy used by your framework, used to properly generate paths from a locale's path */
-		routingStrategy: z
-			.literal('directory')
-			.or(z.literal('file'))
-			.or(customRoutingStrategyOptionsSchema)
-			.default('directory')
-			.describe(
-				"The routing strategy used by your framework, used to properly generate paths from a locale's path"
-			),
 		/** The relative directory path of where your dashboard will build to, e.g. `"./dist/translation-status/index.html"` */
 		outDir: z
 			.string()
@@ -157,6 +175,9 @@ export const LunariaRendererConfigSchema = z.object({
 		})
 		.default({}),
 });
+
+export type OptionalKeys = z.infer<typeof OptionalKeysSchema>;
+export type Locale = z.infer<typeof LocaleSchema>;
 
 export type LunariaConfig = z.infer<typeof LunariaConfigSchema>;
 export type LunariaUserConfig = z.input<typeof LunariaConfigSchema>;

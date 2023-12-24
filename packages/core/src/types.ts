@@ -1,32 +1,40 @@
 import type { TemplateResult } from 'lit';
-import type { LunariaConfig } from './schemas/config.js';
-import type { OptionalKeys } from './schemas/locale.js';
+import type { MatchResult } from 'path-to-regexp';
+import type { LunariaConfig, OptionalKeys } from './schemas/config.js';
 
-type DictionaryContentMeta = {
+type PathResolver = {
+	isMatch: (path: string) => MatchResult;
+	toLocalePath: (path: string, lang: string) => string;
+	toSharedPath: (path: string) => string;
+};
+
+type BaseFileMeta = {
+	pathResolver: PathResolver;
+};
+
+type DictionaryFileMeta = {
 	type: 'dictionary';
-	optionalKeys: OptionalKeys;
+	optionalKeys?: OptionalKeys;
 };
 
-type GenericContentMeta = {
-	type: 'generic';
+type UniversalFileMeta = {
+	type: 'universal';
 };
 
-type ContentMeta = DictionaryContentMeta | GenericContentMeta;
+export type FileMeta = BaseFileMeta & (DictionaryFileMeta | UniversalFileMeta);
 
 export type * from './schemas/config.js';
 export type * from './schemas/dashboard.js';
-export type * from './schemas/locale.js';
 export type * from './schemas/misc.js';
 
-export type AugmentedFileData = FileData & ContentMeta;
+export type AugmentedFileData = FileData & FileMeta;
 export type FileContentIndex = Record<string, Record<string, AugmentedFileData>>;
 
 export type IndexData = {
 	lang: string;
-	filePath: string;
 	sharedPath: string;
 	fileData: FileData;
-	meta: ContentMeta;
+	meta: FileMeta;
 };
 
 export type FileData = {
@@ -49,7 +57,7 @@ export type GitHubURL = {
 
 export type FileTranslationStatus = {
 	sharedPath: string;
-	sourcePage: FileData;
+	sourceFile: FileData;
 	gitHostingFileURL: string | null;
 	translations: {
 		[locale: string]: TranslationStatus;

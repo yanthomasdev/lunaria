@@ -54,7 +54,7 @@ export function toUtcString(date: string) {
 	return new Date(date).toISOString();
 }
 
-export function getTextFromFormat(
+export function getStringFromFormat(
 	format: string,
 	placeholders: {
 		[part: string]: string;

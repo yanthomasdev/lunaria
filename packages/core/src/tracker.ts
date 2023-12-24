@@ -1,10 +1,10 @@
 import { render } from '@lit-labs/ssr';
 import { collectResult } from '@lit-labs/ssr/lib/render-result.js';
-import destr from 'destr';
 import glob from 'fast-glob';
 import micromatch from 'micromatch';
 import { readFileSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
+import { compile, match, type MatchResult } from 'path-to-regexp';
 import { rehype } from 'rehype';
 import rehypeFormat from 'rehype-format';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
@@ -16,8 +16,10 @@ import type {
 	DictionaryObject,
 	FileContentIndex,
 	FileData,
+	FileMeta,
 	FileTranslationStatus,
 	IndexData,
+	Locale,
 	LunariaConfig,
 	LunariaRendererConfig,
 	OptionalKeys,
@@ -28,7 +30,7 @@ import {
 	cleanJoinURL,
 	getFrontmatterFromFile,
 	getFrontmatterProperty,
-	getTextFromFormat,
+	getStringFromFormat,
 	loadFile,
 	toUtcString,
 } from './utils/misc.js';
@@ -37,12 +39,11 @@ export async function getTranslationStatus(
 	opts: LunariaConfig,
 	fileContentIndex: FileContentIndex
 ) {
-	const { defaultLocale, locales, repository, routingStrategy } = opts;
-
+	const { defaultLocale, locales, repository } = opts;
 	const sourceLocaleIndex = fileContentIndex[defaultLocale.lang];
+
 	const translationStatus: FileTranslationStatus[] = [];
 
-	const allLangs = [defaultLocale, ...locales].map((locale) => locale.lang);
 	const gitHostingLinks = getGitHostingLinks(repository);
 
 	if (!sourceLocaleIndex) {
@@ -54,157 +55,113 @@ export async function getTranslationStatus(
 		process.exit(1);
 	}
 
-	await Promise.all(
-		Object.keys(sourceLocaleIndex).map(async (sharedPath) => {
-			const sourceFile = sourceLocaleIndex[sharedPath];
-			if (!sourceFile || !sourceFile.isTranslatable) return;
+	for (const sharedPath of Object.keys(sourceLocaleIndex)) {
+		const sourceFile = sourceLocaleIndex[sharedPath];
+		if (!sourceFile || !sourceFile.isTranslatable) continue;
 
-			const fileStatus: FileTranslationStatus = {
-				sharedPath,
-				sourcePage: sourceFile,
-				gitHostingFileURL: gitHostingLinks.source(sourceFile.filePath),
-				translations: {},
+		const translations: FileTranslationStatus['translations'] = {};
+
+		const fileStatus: FileTranslationStatus = {
+			sharedPath,
+			sourceFile,
+			gitHostingFileURL: gitHostingLinks.source(sourceFile.filePath),
+			translations,
+		};
+
+		for (const { lang } of locales) {
+			const translationFile = fileContentIndex[lang]?.[sharedPath];
+			const localeFilePath = sourceFile.pathResolver.toLocalePath(sourceFile.filePath, lang);
+
+			const fileSourceURL = translationFile
+				? gitHostingLinks.source(translationFile.filePath)
+				: gitHostingLinks.create(localeFilePath);
+
+			translations[lang] = {
+				file: translationFile,
+				completeness: await getDictionaryCompletion(
+					sourceFile.type === 'dictionary' ? sourceFile.optionalKeys : undefined,
+					translationFile,
+					sourceFile.filePath,
+					sharedPath
+				),
+				isMissing: !translationFile,
+				isOutdated:
+					(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
+					false,
+				gitHostingFileURL: fileSourceURL,
+				gitHostingHistoryURL: gitHostingLinks.history(
+					sourceFile.filePath,
+					translationFile?.lastMajorChange ?? ''
+				),
 			};
-
-			await Promise.all(
-				locales.map(async ({ lang }) => {
-					const translationFile = fileContentIndex[lang]?.[sharedPath];
-
-					const localeFilePath = getPathResolver(routingStrategy, allLangs).toLocalePath(
-						sourceFile.filePath,
-						lang
-					);
-
-					const fileSourceURL = translationFile
-						? gitHostingLinks.source(translationFile.filePath)
-						: gitHostingLinks.create(localeFilePath);
-
-					fileStatus.translations[lang] = {
-						file: translationFile,
-						completeness: await getDictionaryTranslationStatus(
-							defaultLocale.dictionaries?.optionalKeys,
-							translationFile,
-							sourceFile.filePath,
-							sharedPath
-						),
-						isMissing: !translationFile,
-						isOutdated:
-							(translationFile && sourceFile.lastMajorChange > translationFile.lastMajorChange) ??
-							false,
-						gitHostingFileURL: fileSourceURL,
-						gitHostingHistoryURL: gitHostingLinks.history(
-							sourceFile.filePath,
-							translationFile?.lastMajorChange ?? ''
-						),
-					};
-				})
-			);
-
-			translationStatus.push(fileStatus);
-		})
-	);
+		}
+		translationStatus.push(fileStatus);
+	}
 	return translationStatus;
 }
 
 export async function getContentIndex(opts: LunariaConfig, isShallowRepo: boolean) {
-	const {
-		translatableProperty,
-		defaultLocale,
-		locales,
-		ignoreKeywords,
-		routingStrategy,
-		repository,
-	} = opts;
-
-	const allLocales = [defaultLocale, ...locales];
-	const allLangs = allLocales.map((locale) => locale.lang);
+	const { files, defaultLocale, locales, translatableProperty, ignoreKeywords, repository } = opts;
 
 	const fileContentIndex: FileContentIndex = {};
-	const pathResolver = getPathResolver(routingStrategy, allLangs);
 
-	for (const { lang, content, dictionaries } of allLocales) {
-		const genericContentIndex = [];
-		if (content) {
-			const { location, ignore } = content;
+	for (const file of files) {
+		const { location, ignore, pattern } = file;
 
-			const localeContentPaths = await glob(location, {
-				cwd: process.cwd(),
-				ignore: ['node_modules', ...ignore],
-			});
+		const pathResolver = getPathResolver(pattern, defaultLocale, locales);
 
-			genericContentIndex.push(
-				...(await Promise.all(
-					localeContentPaths.sort().map(async (filePath) => {
-						const sharedPath = pathResolver.toSharedPath(filePath);
+		const contentPaths = await glob(location, {
+			cwd: process.cwd(),
+			ignore: ['node_modules', ...ignore],
+		});
 
-						return {
-							lang,
-							filePath,
-							sharedPath,
-							fileData: await getFileData(
-								filePath,
-								isShallowRepo,
-								repository.rootDir,
-								translatableProperty,
-								ignoreKeywords
-							),
-							meta: {
-								type: 'generic',
-							},
-						} as IndexData;
-					})
-				))
-			);
-		}
+		const fileIndexData = await Promise.all(
+			contentPaths.sort().map(async (path): Promise<IndexData> => {
+				const params = pathResolver.isMatch(path).params;
 
-		const dictionaryContentIndex = [];
-		if (dictionaries) {
-			const { location, ignore, optionalKeys } = dictionaries;
+				if (!params) {
+					console.error(
+						new Error(`Failed to extract path params from pattern ${pattern}. Is there a typo?`)
+					);
+					process.exit(1);
+				}
 
-			const localeDictionariesPaths = await glob(location, {
-				cwd: process.cwd(),
-				ignore: ['node_modules', ...ignore],
-			});
+				const lang = params.lang || defaultLocale.lang;
+				const sharedPath = pathResolver.toSharedPath(path);
 
-			dictionaryContentIndex.push(
-				...(await Promise.all(
-					localeDictionariesPaths.sort().map(async (filePath) => {
-						const sharedPath = pathResolver.toSharedPath(filePath);
-						// Create or update page data for the page
-						return {
-							lang,
-							filePath,
-							sharedPath,
-							fileData: await getFileData(
-								filePath,
-								isShallowRepo,
-								repository.rootDir,
-								translatableProperty,
-								ignoreKeywords
-							),
-							meta: {
-								type: 'dictionary',
-								optionalKeys: optionalKeys,
-							},
-						} as IndexData;
-					})
-				))
-			);
-		}
+				const fileData = await getFileData(
+					path,
+					isShallowRepo,
+					repository.rootDir,
+					translatableProperty,
+					ignoreKeywords
+				);
 
-		[...dictionaryContentIndex, ...genericContentIndex].forEach(
-			({ lang, sharedPath, fileData, meta }) => {
-				fileContentIndex[lang] = {
-					...fileContentIndex[lang],
-					[sharedPath]: {
-						...fileData,
-						...meta,
-					},
+				const meta: FileMeta = {
+					pathResolver: pathResolver,
+					type: file.type,
+					...(file.type === 'dictionary' && { optionalKeys: file.optionalKeys }),
 				};
-			}
-		);
-	}
 
+				return {
+					lang,
+					sharedPath,
+					fileData,
+					meta,
+				};
+			})
+		);
+
+		fileIndexData.forEach(({ lang, sharedPath, fileData, meta }) => {
+			fileContentIndex[lang] = {
+				...fileContentIndex[lang],
+				[sharedPath]: {
+					...fileData,
+					...meta,
+				},
+			};
+		});
+	}
 	return fileContentIndex;
 }
 
@@ -295,7 +252,7 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 	return {
 		create: (filePath: string) =>
 			hosting.create
-				? getTextFromFormat(hosting.create, {
+				? getStringFromFormat(hosting.create, {
 						':name': name,
 						':branch': branch,
 						':path': cleanJoinURL(rootDir, filePath),
@@ -303,7 +260,7 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 				: null,
 		source: (filePath: string) =>
 			hosting.source
-				? getTextFromFormat(hosting.source, {
+				? getStringFromFormat(hosting.source, {
 						':name': name,
 						':branch': branch,
 						':path': cleanJoinURL(rootDir, filePath),
@@ -311,7 +268,7 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 				: null,
 		history: (filePath: string, sinceDate: string) =>
 			hosting.history
-				? getTextFromFormat(hosting.history, {
+				? getStringFromFormat(hosting.history, {
 						':name': name,
 						':branch': branch,
 						':path': cleanJoinURL(rootDir, filePath),
@@ -319,62 +276,46 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 				  })
 				: null,
 		clone: () =>
-			getTextFromFormat(hosting.clone, {
+			getStringFromFormat(hosting.clone, {
 				':name': name,
 			}),
 	};
 }
 
-export function getPathResolver(
-	routingStrategy: LunariaConfig['routingStrategy'],
-	allLangs: string[]
-) {
-	const localesRegexPartial = allLangs.join('|');
+export function getPathResolver(pattern: string, defaultLocale: Locale, locales: Locale[]) {
+	const langs = [defaultLocale, ...locales].map(({ lang }) => lang);
 
-	if (routingStrategy === 'directory') {
-		const directoryRegExp = new RegExp(
-			getTextFromFormat('(:locales)/', {
-				':locales': localesRegexPartial,
-			})
-		);
+	const langPattern = `:lang(${langs.join('|')})?`;
+	const langPatternDir = `{:lang(${langs.join('|')})/}?`;
+	const pathPattern = ':path+';
+	const augmentedPattern = getStringFromFormat(pattern, {
+		'@lang/': langPatternDir,
+		'@lang': langPattern,
+		'@path': pathPattern,
+	});
 
-		return {
-			toLocalePath: (path: string, lang: string) => path.replace(directoryRegExp, `${lang}/`),
-			toSharedPath: (path: string) => path.replace(directoryRegExp, ''),
-		};
-	}
+	const matcher = match(augmentedPattern) as (
+		path: string
+	) => MatchResult<{ lang?: string; path: string }>;
+	const toPath = compile<{ lang?: string; path: string }>(augmentedPattern);
 
-	/** TODO: Test this with Nextra to see if it's 100% compatible. */
-	if (routingStrategy === 'file') {
-		const fileRegExp = new RegExp(
-			getTextFromFormat('.(:locales).', {
-				':locale': localesRegexPartial,
-			})
-		);
-
-		return {
-			toLocalePath: (path: string, lang: string) => path.replace(fileRegExp, `.${lang}.`),
-			toSharedPath: (path: string) => path.replace(fileRegExp, '.'),
-		};
-	}
-
-	const { regex, sharedPathReplaceWith, localePathReplaceWith } = routingStrategy;
-
-	const customRoutingRegExp = new RegExp(
-		getTextFromFormat(regex, {
-			':locales': localesRegexPartial,
-		})
-	);
+	const getParams = (path: string) => {
+		return matcher(path).params;
+	};
 
 	return {
-		toLocalePath: (path: string, lang: string) =>
-			path.replace(
-				customRoutingRegExp,
-				getTextFromFormat(localePathReplaceWith, {
-					':locale': lang,
-				})
-			),
-		toSharedPath: (path: string) => path.replace(customRoutingRegExp, sharedPathReplaceWith),
+		isMatch: matcher,
+		toLocalePath: (path: string, lang: string) => {
+			return toPath({
+				path: getParams(path).path,
+				lang,
+			});
+		},
+		toSharedPath: (path: string) => {
+			return toPath({
+				path: getParams(path).path,
+			});
+		},
 	};
 }
 
@@ -448,16 +389,19 @@ function isTranslatable(filePath: string, translatableProperty: string | undefin
 	return frontmatterObj.property;
 }
 
-async function getDictionaryTranslationStatus(
-	defaultOptionalKeys: OptionalKeys | undefined,
-	dictionary: AugmentedFileData | undefined,
+async function getDictionaryCompletion(
+	optionalKeys: OptionalKeys | undefined,
+	translationFile: AugmentedFileData | undefined,
 	sourceFilePath: string,
 	sharedPath: string
 ) {
-	if (!dictionary || dictionary.type === 'generic') return { complete: true, missingKeys: [] };
-	const { filePath, optionalKeys } = dictionary;
+	if (!translationFile || translationFile.type === 'universal')
+		return { complete: true, missingKeys: [] };
 
-	const [sourceData, translationData] = await getDictionaryFilesData(sourceFilePath, filePath);
+	const [sourceData, translationData] = await getDictionaryFilesData(
+		sourceFilePath,
+		translationFile.filePath
+	);
 
 	if (!sourceData || !translationData) {
 		console.error(
@@ -467,10 +411,7 @@ async function getDictionaryTranslationStatus(
 	}
 
 	const missingKeys = Object.keys(sourceData).flatMap((key) => {
-		const isOptionalKey =
-			(defaultOptionalKeys?.[sharedPath]?.includes(key) ??
-				optionalKeys[sharedPath]?.includes(key)) === true;
-
+		const isOptionalKey = optionalKeys?.[sharedPath]?.includes(key) === true;
 		if (!translationData.hasOwnProperty(key) && !isOptionalKey) return key;
 		return [];
 	});
@@ -507,9 +448,9 @@ async function getDictionaryFilesData(
 		const sourceDictionaryFile = readFileSync(resolve(sourceFilePath), 'utf-8');
 		const translationDictionaryFile = readFileSync(resolve(translationFilePath), 'utf-8');
 
-		const sourceDictionaryData = parseDictionary(destr(sourceDictionaryFile), sourceFilePath);
+		const sourceDictionaryData = parseDictionary(JSON.parse(sourceDictionaryFile), sourceFilePath);
 		const translationDictionaryData = parseDictionary(
-			destr(translationDictionaryFile),
+			JSON.parse(translationDictionaryFile),
 			translationFilePath
 		);
 

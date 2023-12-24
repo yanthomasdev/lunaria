@@ -8,7 +8,7 @@ import type {
 	LunariaRendererConfig,
 	TranslationStatus,
 } from '../types.js';
-import { getTextFromFormat } from '../utils/misc.js';
+import { getStringFromFormat } from '../utils/misc.js';
 import { Styles } from './styles.js';
 import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './utils.js';
 
@@ -134,7 +134,7 @@ export const LocaleDetails = (
 			<summary>
 				<strong
 					>${unsafeStatic(
-						getTextFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
+						getStringFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
 							'{locale_name}': label,
 							'{locale_tag}': lang,
 						})
@@ -143,7 +143,7 @@ export const LocaleDetails = (
 				<br />
 				<span class="progress-summary"
 					>${unsafeStatic(
-						getTextFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
+						getStringFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
 							'{done_amount}': doneLength.toString(),
 							'{done_word}': dashboard.ui['status.done'],
 							'{outdated_amount}': outdatedPages.length.toString(),
@@ -238,7 +238,7 @@ export const StatusByContent = (
 		</table>
 		<sup class="capitalize"
 			>${unsafeStatic(
-				getTextFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
+				getStringFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
 					'{missing_emoji}': dashboard.ui['status.emojiMissing'],
 					'{missing_word}': dashboard.ui['status.missing'],
 					'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
