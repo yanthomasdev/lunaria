@@ -57,6 +57,7 @@
     "lit": "^3.1.0",
     "micromatch": "^4.0.5",
     "path-to-regexp": "^6.2.1",
+    "redent": "^4.0.0",
     "rehype": "^13.0.1",
     "rehype-format": "^5.0.0",
     "simple-git": "^3.20.0",
