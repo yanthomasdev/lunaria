@@ -1,6 +1,6 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
-import { DashboardSchema } from '../schemas/dashboard.js';
+import { DashboardSchema } from '../dashboard/schemas.js';
 import type { CustomComponent, CustomStatusComponent } from '../types.js';
 
 function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
@@ -114,14 +114,15 @@ export const LunariaConfigSchema = z
 			.array(z.string())
 			.default(['lunaria-ignore', 'fix typo'])
 			.describe('Array of commit keywords that avoid a commit from triggering status changes'),
-		/** Name of the frontmatter property used to mark a page as translatable
-		 * and include it as part of the status dashboard. Keep it empty if you
-		 * want every page to be unconditionally translatable.
+		/** Name of the frontmatter property used to mark a file as localizable
+		 * and include it as part of the status dashboard. Keep empty for every file to be unconditionally localizable
 		 */
-		translatableProperty: z
+		localizableProperty: z
 			.string()
 			.optional()
-			.describe('Name of the frontmatter property used to mark a page as ready for translation'),
+			.describe(
+				'Name of the frontmatter property used to mark a file as ready for localization. Keep empty for every file to be unconditionally localizable'
+			),
 		/** The relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"` */
 		outDir: z
 			.string()
@@ -144,8 +145,8 @@ export const LunariaConfigSchema = z
 				'The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration'
 			),
 	})
-	.superRefine((opts, ctx) => {
-		const allLocales = [opts.defaultLocale, ...opts.locales];
+	.superRefine((config, ctx) => {
+		const allLocales = [config.defaultLocale, ...config.locales];
 		const allLangs = allLocales.map(({ lang }) => lang);
 
 		if (new Set(allLangs).size !== allLocales.length) {
@@ -163,7 +164,7 @@ export const LunariaRendererConfigSchema = z.object({
 			beforeTitle: createComponentSchema<CustomComponent>().optional(),
 			afterTitle: createComponentSchema<CustomComponent>().optional(),
 			afterStatusByLocale: createComponentSchema<CustomComponent>().optional(),
-			afterStatusByContent: createComponentSchema<CustomComponent>().optional(),
+			afterStatusByFile: createComponentSchema<CustomComponent>().optional(),
 		})
 		.default({}),
 	overrides: z
@@ -171,7 +172,7 @@ export const LunariaRendererConfigSchema = z.object({
 			meta: createComponentSchema<CustomComponent>().optional(),
 			body: createComponentSchema<CustomStatusComponent>().optional(),
 			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
-			statusByContent: createComponentSchema<CustomStatusComponent>().optional(),
+			statusByFile: createComponentSchema<CustomStatusComponent>().optional(),
 		})
 		.default({}),
 });

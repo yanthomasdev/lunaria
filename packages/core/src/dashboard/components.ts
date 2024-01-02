@@ -3,23 +3,24 @@ import { html, unsafeStatic } from 'lit/static-html.js';
 import redent from 'redent';
 import type {
 	Dashboard,
-	FileTranslationStatus,
+	FileStatus,
 	Locale,
+	LocalizationStatus,
 	LunariaConfig,
 	LunariaRendererConfig,
-	TranslationStatus,
+	Status,
 } from '../types.js';
-import { getStringFromFormat } from '../utils/misc.js';
+import { getStringFromFormat } from '../utils.js';
+import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './helpers.js';
 import { Styles } from './styles.js';
-import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './utils.js';
 
 export const Page = (
-	opts: LunariaConfig,
-	rendererOpts: LunariaRendererConfig,
-	translationStatus: FileTranslationStatus[]
+	config: LunariaConfig,
+	rendererConfig: LunariaRendererConfig | undefined,
+	status: LocalizationStatus[]
 ): TemplateResult => {
-	const { dashboard } = opts;
-	const { slots, overrides } = rendererOpts;
+	const { dashboard } = config;
+
 	const inlinedCssFiles = inlineCustomCssFiles(dashboard.customCss);
 
 	return html`
@@ -27,9 +28,9 @@ export const Page = (
 		<html dir="${unsafeStatic(dashboard.ui.dir)}" lang="${unsafeStatic(dashboard.ui.lang)}">
 			<head>
 				<!-- Built-in/custom meta tags -->
-				${overrides.meta?.(opts) ?? Meta(dashboard)}
+				${rendererConfig?.overrides.meta?.(config) ?? Meta(dashboard)}
 				<!-- Additional head tags -->
-				${slots.head?.(opts) ?? nothing}
+				${rendererConfig?.slots.head?.(config) ?? nothing}
 				<!-- Built-in styles -->
 				${Styles}
 				<!-- Custom styles -->
@@ -44,7 +45,7 @@ export const Page = (
 			</head>
 			<body>
 				<!-- Built-in/custom body content -->
-				${overrides.body?.(opts, translationStatus) ?? Body(opts, rendererOpts, translationStatus)}
+				${rendererConfig?.overrides.body?.(config, status) ?? Body(config, rendererConfig, status)}
 			</body>
 		</html>
 	`;
@@ -81,56 +82,54 @@ export const Favicon = (dashboard: Dashboard): TemplateResult => {
 };
 
 export const Body = (
-	opts: LunariaConfig,
-	rendererOpts: LunariaRendererConfig,
-	translationStatus: FileTranslationStatus[]
+	config: LunariaConfig,
+	rendererConfig: LunariaRendererConfig | undefined,
+	status: LocalizationStatus[]
 ): TemplateResult => {
-	const { dashboard } = opts;
-	const { slots, overrides } = rendererOpts;
+	const { dashboard } = config;
 
 	return html`
 		<main>
 			<div class="limit-to-viewport">
-				${slots.beforeTitle?.(opts) ?? nothing}
+				${rendererConfig?.slots.beforeTitle?.(config) ?? nothing}
 				<h1>${dashboard.title}</h1>
-				${slots.afterTitle?.(opts) ?? nothing}
-				${overrides.statusByLocale?.(opts, translationStatus) ??
-				StatusByLocale(opts, translationStatus)}
-				${slots.afterStatusByLocale?.(opts) ?? nothing}
+				${rendererConfig?.slots.afterTitle?.(config) ?? nothing}
+				${rendererConfig?.overrides.statusByLocale?.(config, status) ??
+				StatusByLocale(config, status)}
+				${rendererConfig?.slots.afterStatusByLocale?.(config) ?? nothing}
 			</div>
-			${overrides.statusByContent?.(opts, translationStatus) ??
-			StatusByContent(opts, translationStatus)}
-			${slots.afterStatusByContent?.(opts) ?? nothing}
+			${rendererConfig?.overrides.statusByFile?.(config, status) ?? StatusByFile(config, status)}
+			${rendererConfig?.slots.afterStatusByFile?.(config) ?? nothing}
 		</main>
 	`;
 };
 
 export const StatusByLocale = (
-	opts: LunariaConfig,
-	translationStatus: FileTranslationStatus[]
+	config: LunariaConfig,
+	status: LocalizationStatus[]
 ): TemplateResult => {
-	const { dashboard, locales } = opts;
+	const { dashboard, locales } = config;
 	return html`
 		<h2 id="by-locale">
 			<a href="#by-locale">${unsafeStatic(dashboard.ui['statusByLocale.heading'])}</a>
 		</h2>
-		${locales.map((locale) => LocaleDetails(translationStatus, dashboard, locale))}
+		${locales.map((locale) => LocaleDetails(status, dashboard, locale))}
 	`;
 };
 
 export const LocaleDetails = (
-	translationStatus: FileTranslationStatus[],
+	status: LocalizationStatus[],
 	dashboard: Dashboard,
 	locale: Locale
 ): TemplateResult => {
 	const { label, lang } = locale;
 
-	const missingPages = translationStatus.filter((content) => content.translations[lang]?.isMissing);
-	const outdatedPages = translationStatus.filter(
+	const missingFiles = status.filter((content) => content.localizations[lang]?.isMissing);
+	const outdatedFiles = status.filter(
 		(content) =>
-			content.translations[lang]?.isOutdated || !content.translations[lang]?.completeness.complete
+			content.localizations[lang]?.isOutdated || !content.localizations[lang]?.completeness.complete
 	);
-	const doneLength = translationStatus.length - outdatedPages.length - missingPages.length;
+	const doneLength = status.length - outdatedFiles.length - missingFiles.length;
 
 	return html`
 		<details class="progress-details">
@@ -149,29 +148,29 @@ export const LocaleDetails = (
 						getStringFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
 							'{done_amount}': doneLength.toString(),
 							'{done_word}': dashboard.ui['status.done'],
-							'{outdated_amount}': outdatedPages.length.toString(),
+							'{outdated_amount}': outdatedFiles.length.toString(),
 							'{outdated_word}': dashboard.ui['status.outdated'],
-							'{missing_amount}': missingPages.length.toString(),
+							'{missing_amount}': missingFiles.length.toString(),
 							'{missing_word}': dashboard.ui['status.missing'],
 						})
 					)}</span
 				>
 				<br />
-				${ProgressBar(translationStatus.length, outdatedPages.length, missingPages.length)}
+				${ProgressBar(status.length, outdatedFiles.length, missingFiles.length)}
 			</summary>
-			${outdatedPages.length > 0 ? OutdatedPages(outdatedPages, lang, dashboard) : nothing}
-			${missingPages.length > 0
+			${outdatedFiles.length > 0 ? OutdatedFiles(outdatedFiles, lang, dashboard) : nothing}
+			${missingFiles.length > 0
 				? html`<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.missing'])}</h3>
 						<ul>
-							${missingPages.map(
-								(page) => html`
+							${missingFiles.map(
+								(file) => html`
 									<li>
-										${page.gitHostingFileURL
-											? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
-											: getCollapsedPath(dashboard, page.sharedPath)}
-										${page.translations[lang]?.gitHostingFileURL
-											? CreatePageLink(
-													page.translations[lang]?.gitHostingFileURL!,
+										${file.gitHostingFileURL
+											? Link(file.gitHostingFileURL, getCollapsedPath(dashboard, file.sharedPath))
+											: getCollapsedPath(dashboard, file.sharedPath)}
+										${file.localizations[lang]?.gitHostingFileURL
+											? CreateFileLink(
+													file.localizations[lang]?.gitHostingFileURL!,
 													dashboard.ui['statusByLocale.createFileLink']
 											  )
 											: nothing}
@@ -180,39 +179,39 @@ export const LocaleDetails = (
 							)}
 						</ul>`
 				: nothing}
-			${missingPages.length == 0 && outdatedPages.length == 0
-				? html`<p>${unsafeStatic(dashboard.ui['statusByLocale.completeTranslation'])}</p>`
+			${missingFiles.length == 0 && outdatedFiles.length == 0
+				? html`<p>${unsafeStatic(dashboard.ui['statusByLocale.completeLocalization'])}</p>`
 				: nothing}
 		</details>
 	`;
 };
 
-export const OutdatedPages = (
-	outdatedPages: FileTranslationStatus[],
+export const OutdatedFiles = (
+	outdatedFiles: LocalizationStatus[],
 	lang: string,
 	dashboard: Dashboard
 ): TemplateResult => {
 	return html`
 		<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.outdated'])}</h3>
 		<ul>
-			${outdatedPages.map(
-				(page) => html`
+			${outdatedFiles.map(
+				(file) => html`
 					<li>
-						${!page.translations[lang]?.completeness.complete
+						${!file.localizations[lang]?.completeness.complete
 							? html`
 									<details>
-										<summary>${ContentDetailsLinks(page, lang, dashboard)}</summary>
+										<summary>${ContentDetailsLinks(file, lang, dashboard)}</summary>
 										${html`
 											<h4>${unsafeStatic(dashboard.ui['statusByLocale.missingKeys'])}</h4>
 											<ul>
-												${page.translations[lang]?.completeness.missingKeys!.map(
+												${file.localizations[lang]?.completeness.missingKeys!.map(
 													(key) => html`<li>${key}</li>`
 												)}
 											</ul>
 										`}
 									</details>
 							  `
-							: html` ${ContentDetailsLinks(page, lang, dashboard)} `}
+							: html` ${ContentDetailsLinks(file, lang, dashboard)} `}
 					</li>
 				`
 			)}
@@ -220,28 +219,28 @@ export const OutdatedPages = (
 	`;
 };
 
-export const StatusByContent = (
-	opts: LunariaConfig,
-	translationStatus: FileTranslationStatus[]
+export const StatusByFile = (
+	config: LunariaConfig,
+	status: LocalizationStatus[]
 ): TemplateResult => {
-	const { dashboard, locales } = opts;
+	const { dashboard, locales } = config;
 	return html`
-		<h2 id="by-content">
-			<a href="#by-content">${unsafeStatic(dashboard.ui['statusByContent.heading'])}</a>
+		<h2 id="by-file">
+			<a href="#by-file">${unsafeStatic(dashboard.ui['statusByFile.heading'])}</a>
 		</h2>
-		<table class="status-by-content">
+		<table class="status-by-file">
 			<thead>
 				<tr>
-					${[dashboard.ui['statusByContent.tableRowPage'], ...locales.map(({ lang }) => lang)].map(
+					${[dashboard.ui['statusByFile.tableRowFile'], ...locales.map(({ lang }) => lang)].map(
 						(col) => html`<th>${col}</th>`
 					)}
 				</tr>
 			</thead>
-			${TableBody(translationStatus, locales, dashboard)}
+			${TableBody(status, locales, dashboard)}
 		</table>
 		<sup class="capitalize"
 			>${unsafeStatic(
-				getStringFromFormat(dashboard.ui['statusByContent.tableSummaryFormat'], {
+				getStringFromFormat(dashboard.ui['statusByFile.tableSummaryFormat'], {
 					'{missing_emoji}': dashboard.ui['status.emojiMissing'],
 					'{missing_word}': dashboard.ui['status.missing'],
 					'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
@@ -255,23 +254,23 @@ export const StatusByContent = (
 };
 
 export const TableBody = (
-	translationStatus: FileTranslationStatus[],
+	status: LocalizationStatus[],
 	locales: Locale[],
 	dashboard: Dashboard
 ): TemplateResult => {
 	return html`
 		<tbody>
-			${translationStatus.map(
-				(page) =>
+			${status.map(
+				(file) =>
 					html`
 				<tr>
 					<td>${
-						page.gitHostingFileURL
-							? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
-							: getCollapsedPath(dashboard, page.sharedPath)
+						file.gitHostingFileURL
+							? Link(file.gitHostingFileURL, getCollapsedPath(dashboard, file.sharedPath))
+							: getCollapsedPath(dashboard, file.sharedPath)
 					}</td>
 						${locales.map(({ lang }) => {
-							return TableContentStatus(page.translations, lang, dashboard);
+							return TableContentStatus(file.localizations, lang, dashboard);
 						})}
 					</td>
 				</tr>`
@@ -281,43 +280,44 @@ export const TableBody = (
 };
 
 export const TableContentStatus = (
-	translations: { [locale: string]: TranslationStatus },
+	localizations: { [locale: string]: FileStatus },
 	lang: string,
 	dashboard: Dashboard
 ): TemplateResult => {
 	return html`
 		<td>
-			${translations[lang]?.isMissing
-				? EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'missing')
-				: translations[lang]?.isOutdated || !translations[lang]?.completeness.complete
-				? EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'outdated')
-				: EmojiFileLink(dashboard.ui, translations[lang]?.gitHostingFileURL!, 'done')}
+			${localizations[lang]?.isMissing
+				? EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'missing')
+				: localizations[lang]?.isOutdated || !localizations[lang]?.completeness.complete
+				? EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'outdated')
+				: EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'done')}
 		</td>
 	`;
 };
 
 export const ContentDetailsLinks = (
-	page: FileTranslationStatus,
+	fileStatus: LocalizationStatus,
 	lang: string,
 	dashboard: Dashboard
 ): TemplateResult => {
 	return html`
-		${page.gitHostingFileURL
-			? Link(page.gitHostingFileURL, getCollapsedPath(dashboard, page.sharedPath))
-			: getCollapsedPath(dashboard, page.sharedPath)}
-		${page.translations[lang]
-			? page.translations[lang]?.gitHostingFileURL || page.translations[lang]?.gitHostingHistoryURL
-				? html`(${page.translations[lang]?.gitHostingFileURL
+		${fileStatus.gitHostingFileURL
+			? Link(fileStatus.gitHostingFileURL, getCollapsedPath(dashboard, fileStatus.sharedPath))
+			: getCollapsedPath(dashboard, fileStatus.sharedPath)}
+		${fileStatus.localizations[lang]
+			? fileStatus.localizations[lang]?.gitHostingFileURL ||
+			  fileStatus.localizations[lang]?.gitHostingHistoryURL
+				? html`(${fileStatus.localizations[lang]?.gitHostingFileURL
 						? Link(
-								page.translations[lang]?.gitHostingFileURL!,
-								!page.translations[lang]?.completeness.complete
-									? dashboard.ui['statusByLocale.incompleteTranslationLink']
-									: dashboard.ui['statusByLocale.outdatedTranslationLink']
+								fileStatus.localizations[lang]?.gitHostingFileURL!,
+								!fileStatus.localizations[lang]?.completeness.complete
+									? dashboard.ui['statusByLocale.incompleteLocalizationLink']
+									: dashboard.ui['statusByLocale.outdatedLocalizationLink']
 						  )
 						: nothing},
-				  ${page.translations[lang]?.gitHostingHistoryURL
+				  ${fileStatus.localizations[lang]?.gitHostingHistoryURL
 						? Link(
-								page.translations[lang]?.gitHostingHistoryURL!,
+								fileStatus.localizations[lang]?.gitHostingHistoryURL!,
 								dashboard.ui['statusByLocale.sourceChangeHistoryLink']
 						  )
 						: nothing})`
@@ -329,7 +329,7 @@ export const ContentDetailsLinks = (
 export const EmojiFileLink = (
 	ui: Dashboard['ui'],
 	href: string | null,
-	status: 'missing' | 'outdated' | 'done'
+	type: Status
 ): TemplateResult => {
 	const statusTextOpts = {
 		missing: 'status.missing',
@@ -344,11 +344,11 @@ export const EmojiFileLink = (
 	} as const;
 
 	return href
-		? html`<a href="${href}" title="${ui[statusTextOpts[status]]}">
-				<span aria-hidden="true">${ui[statusEmojiOpts[status]]}</span>
+		? html`<a href="${href}" title="${ui[statusTextOpts[type]]}">
+				<span aria-hidden="true">${ui[statusEmojiOpts[type]]}</span>
 		  </a>`
-		: html`<span title="${ui[statusTextOpts[status]]}">
-				<span aria-hidden="true">${ui[statusEmojiOpts[status]]}</span>
+		: html`<span title="${ui[statusTextOpts[type]]}">
+				<span aria-hidden="true">${ui[statusEmojiOpts[type]]}</span>
 		  </span>`;
 };
 
@@ -356,7 +356,7 @@ export const Link = (href: string, text: string): TemplateResult => {
 	return html`<a href="${href}">${unsafeStatic(text)}</a>`;
 };
 
-export const CreatePageLink = (href: string, text: string): TemplateResult => {
+export const CreateFileLink = (href: string, text: string): TemplateResult => {
 	return html`<a class="create-button" href="${href}">${unsafeStatic(text)}</a>`;
 };
 
@@ -370,7 +370,7 @@ export const ProgressBar = (
 	const missingSize = Math.round((missing / total) * size);
 	const doneSize = size - outdatedSize - missingSize;
 
-	const getBlocks = (size: number, type: 'done' | 'missing' | 'outdated') => {
+	const getBlocks = (size: number, type: Status) => {
 		const items = [];
 		for (let i = 0; i < size; i++) {
 			items.push(html`<div class="${type}-bar"></div>`);

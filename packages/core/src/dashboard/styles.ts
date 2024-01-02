@@ -178,7 +178,7 @@ export const Styles = html`
 			font-size: 0.75rem;
 		}
 
-		.status-by-content {
+		.status-by-file {
 			margin-bottom: 1rem;
 			border-collapse: collapse;
 			border: 1px solid var(--ln-color-table-border);
@@ -186,19 +186,19 @@ export const Styles = html`
 			column-gap: 64px;
 		}
 
-		.status-by-content tr:first-of-type td {
+		.status-by-file tr:first-of-type td {
 			padding-top: 0.5rem;
 		}
 
-		.status-by-content tr:last-of-type td {
+		.status-by-file tr:last-of-type td {
 			padding-bottom: 0.5rem;
 		}
 
-		.status-by-content tr td:first-of-type {
+		.status-by-file tr td:first-of-type {
 			padding-inline: 1rem;
 		}
 
-		.status-by-content th {
+		.status-by-file th {
 			border-bottom: 1px solid var(--ln-color-table-border);
 			background: var(--ln-color-table-background);
 			position: sticky;
@@ -207,34 +207,34 @@ export const Styles = html`
 			padding-inline: 0.3rem;
 		}
 
-		.status-by-content th,
-		.status-by-content td {
+		.status-by-file th,
+		.status-by-file td {
 			padding-block: 0.2rem;
 		}
 
-		.status-by-content tbody tr:hover td {
+		.status-by-file tbody tr:hover td {
 			background: var(--ln-color-table-background);
 		}
 
-		.status-by-content th:first-of-type,
-		.status-by-content td:first-of-type {
+		.status-by-file th:first-of-type,
+		.status-by-file td:first-of-type {
 			text-align: left;
 			padding-inline-start: 1rem;
 		}
 
-		.status-by-content th:last-of-type,
-		.status-by-content td:last-of-type {
+		.status-by-file th:last-of-type,
+		.status-by-file td:last-of-type {
 			text-align: center;
 			padding-inline-end: 1rem;
 		}
 
-		.status-by-content td:not(:first-of-type) {
+		.status-by-file td:not(:first-of-type) {
 			min-width: 2rem;
 			text-align: center;
 			cursor: default;
 		}
 
-		.status-by-content td:not(:first-of-type) a {
+		.status-by-file td:not(:first-of-type) a {
 			text-decoration: none;
 		}
 

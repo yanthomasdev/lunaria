@@ -38,6 +38,6 @@
       "lang": "es"
     }
   ],
-  "translatableProperty": "i18nReady",
+  "localizableProperty": "i18nReady",
   "renderer": "./renderer.config.ts"
 }

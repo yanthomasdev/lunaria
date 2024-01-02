@@ -1,6 +1,6 @@
 import type { TemplateResult } from 'lit';
 import type { MatchResult } from 'path-to-regexp';
-import type { LunariaConfig, OptionalKeys } from './schemas/config.js';
+import type { LunariaConfig, OptionalKeys } from './config/schemas.js';
 
 type PathResolver = {
 	isMatch: (path: string) => MatchResult;
@@ -23,12 +23,12 @@ type UniversalFileMeta = {
 
 export type FileMeta = BaseFileMeta & (DictionaryFileMeta | UniversalFileMeta);
 
-export type * from './schemas/config.js';
-export type * from './schemas/dashboard.js';
-export type * from './schemas/misc.js';
+export type * from './config/schemas.js';
+export type * from './dashboard/schemas.js';
+export type * from './status/schemas.js';
 
 export type AugmentedFileData = FileData & FileMeta;
-export type FileContentIndex = Record<string, Record<string, AugmentedFileData>>;
+export type ContentIndex = Record<string, Record<string, AugmentedFileData>>;
 
 export type IndexData = {
 	lang: string;
@@ -39,14 +39,14 @@ export type IndexData = {
 
 export type FileData = {
 	filePath: string;
-	isTranslatable: boolean;
+	isLocalizable: boolean;
 	lastChange: string;
 	lastCommitMessage: string;
 	lastMajorChange: string;
 	lastMajorCommitMessage: string;
 };
 
-export type GitHubURL = {
+export type GitHostingURL = {
 	type?: string;
 	refName?: string;
 	query?: string;
@@ -55,16 +55,16 @@ export type GitHubURL = {
 	rootDir: string;
 };
 
-export type FileTranslationStatus = {
+export type LocalizationStatus = {
 	sharedPath: string;
 	sourceFile: FileData;
 	gitHostingFileURL: string | null;
-	translations: {
-		[locale: string]: TranslationStatus;
+	localizations: {
+		[locale: string]: FileStatus;
 	};
 };
 
-export type TranslationStatus = {
+export type FileStatus = {
 	file: FileData | undefined;
 	completeness: {
 		complete: boolean;
@@ -76,29 +76,21 @@ export type TranslationStatus = {
 	gitHostingHistoryURL: string | null;
 };
 
+export type Status = 'done' | 'outdated' | 'missing';
+
 export type RegExpGroups<T extends string> =
 	| (RegExpMatchArray & {
 			groups?: { [name in T]: string } | { [key: string]: string };
 	  })
 	| null;
 
-export type CustomComponent = (opts: LunariaConfig) => TemplateResult;
+export type CustomComponent = (config: LunariaConfig) => TemplateResult;
 
 export type CustomStatusComponent = (
-	opts: LunariaConfig,
-	translationStatus: FileTranslationStatus[]
+	config: LunariaConfig,
+	status: LocalizationStatus[]
 ) => TemplateResult;
 
-export type DictionaryObject = {
-	[key: string]: string | DictionaryObject;
-};
-
-export type FrontmatterFromFile = {
-	frontmatter: Record<string, any> | undefined;
-	context: 'found' | 'not supported';
-};
-
-export type FrontmatterProperty = {
-	property: any;
-	context: 'found' | 'not found' | 'not supported';
+export type Dictionary = {
+	[key: string]: string | Dictionary;
 };

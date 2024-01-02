@@ -2,10 +2,10 @@
   "name": "@lunariajs/core",
   "type": "module",
   "version": "0.0.24",
-  "description": "Translation management system for open-source projects",
+  "description": "Localization management system for open-source projects",
   "types": "./dist/index.d.ts",
   "bin": {
-    "lunaria": "./dist/cli.mjs"
+    "lunaria": "./dist/cli/index.mjs"
   },
   "exports": {
     ".": {
@@ -18,7 +18,7 @@
     }
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.17.0"
   },
   "files": [
     "dist",
@@ -27,7 +27,9 @@
   ],
   "keywords": [
     "i18n",
+    "l10n",
     "translation",
+    "localization",
     "dashboard",
     "management"
   ],
@@ -57,6 +59,7 @@
     "lit": "^3.1.0",
     "micromatch": "^4.0.5",
     "path-to-regexp": "^6.2.1",
+    "picocolors": "^1.0.0",
     "redent": "^4.0.0",
     "rehype": "^13.0.1",
     "rehype-format": "^5.0.0",
