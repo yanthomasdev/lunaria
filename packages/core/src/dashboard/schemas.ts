@@ -43,12 +43,12 @@ const DashboardUiSchema = z
 		/** The heading text that precedes the dropdown lists of each locale's individual progress */
 		'statusByLocale.heading': z
 			.string()
-			.default('Translation progress by locale')
+			.default('Localization progress by locale')
 			.describe(
 				"The heading text that precedes the dropdown lists of each locale's individual progress"
 			),
 		/** The locale's individual status details summary format. The '{*_amount}' and `{*_word}`
-		 * are placeholder values for the amount of pages (e.g. '10') in the status and the status word
+		 * are placeholder values for the amount of files (e.g. '10') in the status and the status word
 		 * (e.g. 'done'), respectively.  */
 		'statusByLocale.detailsSummaryFormat': z
 			.string()
@@ -56,7 +56,7 @@ const DashboardUiSchema = z
 				'{done_amount} {done_word}, {outdated_amount} {outdated_word}, {missing_amount} {missing_word}'
 			)
 			.describe(
-				"The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of pages (e.g. '10') in the status and the status word (e.g. 'done'), respectively"
+				"The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of files (e.g. '10') in the status and the status word (e.g. 'done'), respectively"
 			),
 		/** The locale's details title format. The `{locale_name} and `{locale_tag}` are placeholder values
 		 *  for the locale's name (e.g. English) and the locale's BCP-47 tag (e.g. en), respectively.  */
@@ -66,16 +66,16 @@ const DashboardUiSchema = z
 			.describe(
 				"The locale's details title format. The `{locale_name} and `{locale_tag}` are placeholder valuesfor the locale's name (e.g. English) and the locale's BCP-47 tag (e.g. en), respectively"
 			),
-		/** The text for the locale's details oudated translation link */
-		'statusByLocale.outdatedTranslationLink': z
+		/** The text for the locale's details oudated localization link */
+		'statusByLocale.outdatedLocalizationLink': z
 			.string()
-			.default('outdated translation')
-			.describe("The text for the locale's details oudated translation link"),
-		/** The text for the locale's details incomplete translation link */
-		'statusByLocale.incompleteTranslationLink': z
+			.default('outdated localization')
+			.describe("The text for the locale's details oudated localization link"),
+		/** The text for the locale's details incomplete localization link */
+		'statusByLocale.incompleteLocalizationLink': z
 			.string()
-			.default('incomplete translation')
-			.describe("The text for the locale's details incomplete translation link"),
+			.default('incomplete localization')
+			.describe("The text for the locale's details incomplete localization link"),
 		/** The text for the locale's details create file link */
 		'statusByLocale.createFileLink': z
 			.string()
@@ -92,22 +92,22 @@ const DashboardUiSchema = z
 			.default('Missing keys')
 			.describe("The text for the locale's details UI dictionary missing keys heading"),
 		/** The text shown in the locale's details when it is complete */
-		'statusByLocale.completeTranslation': z
+		'statusByLocale.completeLocalization': z
 			.string()
-			.default('This translation is complete, amazing job! 🎉')
+			.default('This localization is complete, amazing job! 🎉')
 			.describe("The text shown in the locale's details when it is complete"),
-		/** The heading text that precedes the table with all locale's status by content */
-		'statusByContent.heading': z
+		/** The heading text that precedes the table with all locale's status by file */
+		'statusByFile.heading': z
 			.string()
-			.default('Translation status by content')
-			.describe("The heading text that precedes the table with all locale's status by content"),
-		/** The text for the status dashboard table's 'content' row head */
-		'statusByContent.tableRowPage': z
+			.default('Localization status by file')
+			.describe("The heading text that precedes the table with all locale's status by file"),
+		/** The text for the status dashboard table's 'file' row head */
+		'statusByFile.tableRowFile': z
 			.string()
-			.default('Content')
-			.describe("The text for the status dashboard table's 'content' row head"),
+			.default('File')
+			.describe("The text for the status dashboard table's 'file' row head"),
 		/** The dashboard table's summary format. The `{*_emoji}` and `{*_word}` are placeholder values for the status emoji (e.g. '❌') and its word (e.g. 'missing') */
-		'statusByContent.tableSummaryFormat': z
+		'statusByFile.tableSummaryFormat': z
 			.string()
 			.default(
 				'{missing_emoji} {missing_word} &nbsp; {outdated_emoji} {outdated_word} &nbsp; {done_emoji} {done_word}'
@@ -120,25 +120,27 @@ const DashboardUiSchema = z
 
 export const DashboardSchema = z
 	.object({
-		/** The title of your translation dashboard, used as both the main heading and meta title of the page */
+		/** The title of your localization dashboard, used as both the main heading and meta title of the page */
 		title: z
 			.string()
-			.default('Translation Status')
+			.default('Localization Status')
 			.describe(
-				'The title of your translation dashboard, used as both the main heading and meta title of the page'
+				'The title of your localization dashboard, used as both the main heading and meta title of the page'
 			),
-		/** The description of your translation dashboard, used in the meta tags of the page */
+		/** The description of your localization dashboard, used in the meta tags of the page */
 		description: z
 			.string()
-			.default('Online translation status dashboard of the project ')
-			.describe('The description of your translation dashboard, used in the meta tags of the page'),
-		/** The deployed URL of your translation dashboard, used in the meta tags of the page */
+			.default('Online localization status dashboard of the project ')
+			.describe(
+				'The description of your localization dashboard, used in the meta tags of the page'
+			),
+		/** The deployed URL of your localization dashboard, used in the meta tags of the page */
 		site: z
 			.string()
 			.url()
 			.optional()
 			.describe(
-				'The deployed URL of your translation dashboard, used in the meta tags of the page'
+				'The deployed URL of your localization dashboard, used in the meta tags of the page'
 			),
 		/** Array of path bases to hide from the rendered dashboard links */
 		basesToHide: z

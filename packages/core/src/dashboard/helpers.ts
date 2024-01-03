@@ -1,16 +1,17 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { error } from '../cli/messages.js';
 import type { Dashboard } from '../types.js';
 
 export function readAsset(path: string) {
-	const absolutePath = resolve(path);
+	const resolvedPath = resolve(path);
 
-	if (!existsSync(absolutePath)) {
-		console.error(new Error(`Could not find asset file at ${absolutePath}. Does it exist?`));
+	if (!existsSync(resolvedPath)) {
+		console.error(error(`Could not find asset file at ${resolvedPath}. Does it exist?`));
 		process.exit(1);
 	}
 
-	const asset = readFileSync(absolutePath, 'utf-8');
+	const asset = readFileSync(resolvedPath, 'utf-8');
 	return asset;
 }
 

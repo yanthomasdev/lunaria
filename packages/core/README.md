@@ -62,7 +62,7 @@ Now, you need to add a new script to your `package.json` file to trigger a dashb
     "docs:dev": "vitepress dev .",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
-+   "translation-status": "lunaria"
++   "lunaria:build": "lunaria build"
   },
 ```
 

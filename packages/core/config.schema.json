@@ -13,18 +13,18 @@
           "properties": {
             "title": {
               "type": "string",
-              "default": "Translation Status",
-              "description": "The title of your translation dashboard, used as both the main heading and meta title of the page"
+              "default": "Localization Status",
+              "description": "The title of your localization dashboard, used as both the main heading and meta title of the page"
             },
             "description": {
               "type": "string",
-              "default": "Online translation status dashboard of the project ",
-              "description": "The description of your translation dashboard, used in the meta tags of the page"
+              "default": "Online localization status dashboard of the project ",
+              "description": "The description of your localization dashboard, used in the meta tags of the page"
             },
             "site": {
               "type": "string",
               "format": "uri",
-              "description": "The deployed URL of your translation dashboard, used in the meta tags of the page"
+              "description": "The deployed URL of your localization dashboard, used in the meta tags of the page"
             },
             "basesToHide": {
               "type": "array",
@@ -118,28 +118,28 @@
                 },
                 "statusByLocale.heading": {
                   "type": "string",
-                  "default": "Translation progress by locale",
+                  "default": "Localization progress by locale",
                   "description": "The heading text that precedes the dropdown lists of each locale's individual progress"
                 },
                 "statusByLocale.detailsSummaryFormat": {
                   "type": "string",
                   "default": "{done_amount} {done_word}, {outdated_amount} {outdated_word}, {missing_amount} {missing_word}",
-                  "description": "The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of pages (e.g. '10') in the status and the status word (e.g. 'done'), respectively"
+                  "description": "The locale's individual status details summary format. The '{*_amount}' and `{*_word}` are placeholder values for the amount of files (e.g. '10') in the status and the status word (e.g. 'done'), respectively"
                 },
                 "statusByLocale.detailsTitleFormat": {
                   "type": "string",
                   "default": "{locale_name} ({locale_tag})",
                   "description": "The locale's details title format. The `{locale_name} and `{locale_tag}` are placeholder valuesfor the locale's name (e.g. English) and the locale's BCP-47 tag (e.g. en), respectively"
                 },
-                "statusByLocale.outdatedTranslationLink": {
+                "statusByLocale.outdatedLocalizationLink": {
                   "type": "string",
-                  "default": "outdated translation",
-                  "description": "The text for the locale's details oudated translation link"
+                  "default": "outdated localization",
+                  "description": "The text for the locale's details oudated localization link"
                 },
-                "statusByLocale.incompleteTranslationLink": {
+                "statusByLocale.incompleteLocalizationLink": {
                   "type": "string",
-                  "default": "incomplete translation",
-                  "description": "The text for the locale's details incomplete translation link"
+                  "default": "incomplete localization",
+                  "description": "The text for the locale's details incomplete localization link"
                 },
                 "statusByLocale.createFileLink": {
                   "type": "string",
@@ -156,22 +156,22 @@
                   "default": "Missing keys",
                   "description": "The text for the locale's details UI dictionary missing keys heading"
                 },
-                "statusByLocale.completeTranslation": {
+                "statusByLocale.completeLocalization": {
                   "type": "string",
-                  "default": "This translation is complete, amazing job! 🎉",
+                  "default": "This localization is complete, amazing job! 🎉",
                   "description": "The text shown in the locale's details when it is complete"
                 },
-                "statusByContent.heading": {
+                "statusByFile.heading": {
                   "type": "string",
-                  "default": "Translation status by content",
-                  "description": "The heading text that precedes the table with all locale's status by content"
+                  "default": "Localization status by file",
+                  "description": "The heading text that precedes the table with all locale's status by file"
                 },
-                "statusByContent.tableRowPage": {
+                "statusByFile.tableRowFile": {
                   "type": "string",
-                  "default": "Content",
-                  "description": "The text for the status dashboard table's 'content' row head"
+                  "default": "File",
+                  "description": "The text for the status dashboard table's 'file' row head"
                 },
-                "statusByContent.tableSummaryFormat": {
+                "statusByFile.tableSummaryFormat": {
                   "type": "string",
                   "default": "{missing_emoji} {missing_word} &nbsp; {outdated_emoji} {outdated_word} &nbsp; {done_emoji} {done_word}",
                   "description": "The dashboard table's summary format. The `{*_emoji}` and `{*_word}` are placeholder values for the status emoji (e.g. '❌') and its word (e.g. 'missing')"
@@ -324,9 +324,9 @@
           "default": ["lunaria-ignore", "fix typo"],
           "description": "Array of commit keywords that avoid a commit from triggering status changes"
         },
-        "translatableProperty": {
+        "localizableProperty": {
           "type": "string",
-          "description": "Name of the frontmatter property used to mark a page as ready for translation"
+          "description": "Name of the frontmatter property used to mark a file as ready for localization. Keep empty for every file to be unconditionally localizable"
         },
         "outDir": {
           "type": "string",
