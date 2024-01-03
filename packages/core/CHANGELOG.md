@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.25
+
+### Patch Changes
+
+- d1f6623: Rework CLI
+
 ## 0.0.24
 
 ### Patch Changes
