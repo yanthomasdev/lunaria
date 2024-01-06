@@ -1,16 +1,6 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../dashboard/schemas.js';
-import type { CustomComponent, CustomStatusComponent } from '../types.js';
-
-function createComponentSchema<ComponentType extends CustomComponent | CustomStatusComponent>() {
-	return z.custom<ComponentType>((val) => {
-		if (typeof val === 'function' && typeof val() === 'object') {
-			return val()['_$litType$'] ? true : false;
-		}
-		return false;
-	}, 'Custom components need to be a function returning a valid Lit template');
-}
 
 const CustomGitHostingSchema = z.object({
 	create: z.string().or(z.null()),
@@ -157,22 +147,23 @@ export const LunariaConfigSchema = z
 		}
 	});
 
+/** TODO: Move LocalizationStatus type into its own schema and property type args.  */
 export const LunariaRendererConfigSchema = z.object({
 	slots: z
 		.object({
-			head: createComponentSchema<CustomComponent>().optional(),
-			beforeTitle: createComponentSchema<CustomComponent>().optional(),
-			afterTitle: createComponentSchema<CustomComponent>().optional(),
-			afterStatusByLocale: createComponentSchema<CustomComponent>().optional(),
-			afterStatusByFile: createComponentSchema<CustomComponent>().optional(),
+			head: z.function().returns(z.string()).optional(),
+			beforeTitle: z.function().returns(z.string()).optional(),
+			afterTitle: z.function().returns(z.string()).optional(),
+			afterStatusByLocale: z.function().returns(z.string()).optional(),
+			afterStatusByFile: z.function().returns(z.string()).optional(),
 		})
 		.default({}),
 	overrides: z
 		.object({
-			meta: createComponentSchema<CustomComponent>().optional(),
-			body: createComponentSchema<CustomStatusComponent>().optional(),
-			statusByLocale: createComponentSchema<CustomStatusComponent>().optional(),
-			statusByFile: createComponentSchema<CustomStatusComponent>().optional(),
+			meta: z.function().returns(z.string()).optional(),
+			body: z.function().returns(z.string()).optional(),
+			statusByLocale: z.function().returns(z.string()).optional(),
+			statusByFile: z.function().returns(z.string()).optional(),
 		})
 		.default({}),
 });

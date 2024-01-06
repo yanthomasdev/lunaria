@@ -1,4 +1,4 @@
-import { html } from 'lit/static-html.js';
+import { html } from './index.js';
 
 export const Styles = html`
 	<style>

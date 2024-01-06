@@ -1,6 +1,3 @@
-import { nothing, type TemplateResult } from 'lit';
-import { html, unsafeStatic } from 'lit/static-html.js';
-import redent from 'redent';
 import type {
 	Dashboard,
 	FileStatus,
@@ -12,36 +9,35 @@ import type {
 } from '../types.js';
 import { getStringFromFormat } from '../utils.js';
 import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './helpers.js';
+import { html } from './index.js';
 import { Styles } from './styles.js';
 
 export const Page = (
 	config: LunariaConfig,
 	rendererConfig: LunariaRendererConfig | undefined,
 	status: LocalizationStatus[]
-): TemplateResult => {
+): string => {
 	const { dashboard } = config;
 
 	const inlinedCssFiles = inlineCustomCssFiles(dashboard.customCss);
 
 	return html`
 		<!doctype html>
-		<html dir="${unsafeStatic(dashboard.ui.dir)}" lang="${unsafeStatic(dashboard.ui.lang)}">
+		<html dir="${dashboard.ui.dir}" lang="${dashboard.ui.lang}">
 			<head>
 				<!-- Built-in/custom meta tags -->
 				${rendererConfig?.overrides.meta?.(config) ?? Meta(dashboard)}
 				<!-- Additional head tags -->
-				${rendererConfig?.slots.head?.(config) ?? nothing}
+				${rendererConfig?.slots.head?.(config) ?? ''}
 				<!-- Built-in styles -->
 				${Styles}
 				<!-- Custom styles -->
-				${inlinedCssFiles
-					? inlinedCssFiles.map(
-							(css) =>
-								html`${unsafeStatic(
-									redent(`<style>${redent('\n' + css, 1, { indent: '\t' })}</style>`, 4)
-								)}`
-					  )
-					: nothing}
+				${inlinedCssFiles?.map(
+					(css) =>
+						html`<style>
+							${css}
+						</style>`
+				) ?? ''}
 			</head>
 			<body>
 				<!-- Built-in/custom body content -->
@@ -51,20 +47,20 @@ export const Page = (
 	`;
 };
 
-export const Meta = (dashboard: Dashboard): TemplateResult => html`
+export const Meta = (dashboard: Dashboard): string => html`
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-	<title>${unsafeStatic(dashboard.title)}</title>
+	<title>${dashboard.title}</title>
 	<meta name="description" content="${dashboard.description}" />
-	${dashboard.site ? html`<link rel="canonical" href="${dashboard.site}" />` : nothing}
+	${dashboard.site ? html`<link rel="canonical" href="${dashboard.site}" />` : ''}
 	<meta property="og:title" content="${dashboard.title}" />
 	<meta property="og:type" content="website" />
-	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : nothing}
+	${dashboard.site ? html`<meta property="og:url" content="${dashboard.site}" />` : ''}
 	<meta property="og:description" content="${dashboard.description}" />
 	${Favicon(dashboard)}
 `;
 
-export const Favicon = (dashboard: Dashboard): TemplateResult => {
+export const Favicon = (dashboard: Dashboard): string => {
 	const { favicon } = dashboard;
 
 	const svg = favicon?.inline ? readAsset(favicon.inline) : '';
@@ -74,9 +70,9 @@ export const Favicon = (dashboard: Dashboard): TemplateResult => {
 		? html`${favicon.external.map(
 				(icon) => html`<link rel="icon" href="${icon.link}" type="${icon.type}" />`
 		  )}`
-		: nothing;
+		: '';
 
-	const InlineFavicon = favicon?.inline ? html`<link rel="icon" href="${inlineSvg}" />` : nothing;
+	const InlineFavicon = favicon?.inline ? html`<link rel="icon" href="${inlineSvg}" />` : '';
 
 	return html`${ExternalFavicon} ${InlineFavicon}`;
 };
@@ -85,33 +81,30 @@ export const Body = (
 	config: LunariaConfig,
 	rendererConfig: LunariaRendererConfig | undefined,
 	status: LocalizationStatus[]
-): TemplateResult => {
+): string => {
 	const { dashboard } = config;
 
 	return html`
 		<main>
 			<div class="limit-to-viewport">
-				${rendererConfig?.slots.beforeTitle?.(config) ?? nothing}
+				${rendererConfig?.slots.beforeTitle?.(config) ?? ''}
 				<h1>${dashboard.title}</h1>
-				${rendererConfig?.slots.afterTitle?.(config) ?? nothing}
+				${rendererConfig?.slots.afterTitle?.(config) ?? ''}
 				${rendererConfig?.overrides.statusByLocale?.(config, status) ??
 				StatusByLocale(config, status)}
-				${rendererConfig?.slots.afterStatusByLocale?.(config) ?? nothing}
+				${rendererConfig?.slots.afterStatusByLocale?.(config) ?? ''}
 			</div>
 			${rendererConfig?.overrides.statusByFile?.(config, status) ?? StatusByFile(config, status)}
-			${rendererConfig?.slots.afterStatusByFile?.(config) ?? nothing}
+			${rendererConfig?.slots.afterStatusByFile?.(config) ?? ''}
 		</main>
 	`;
 };
 
-export const StatusByLocale = (
-	config: LunariaConfig,
-	status: LocalizationStatus[]
-): TemplateResult => {
+export const StatusByLocale = (config: LunariaConfig, status: LocalizationStatus[]): string => {
 	const { dashboard, locales } = config;
 	return html`
 		<h2 id="by-locale">
-			<a href="#by-locale">${unsafeStatic(dashboard.ui['statusByLocale.heading'])}</a>
+			<a href="#by-locale">${dashboard.ui['statusByLocale.heading']}</a>
 		</h2>
 		${locales.map((locale) => LocaleDetails(status, dashboard, locale))}
 	`;
@@ -121,7 +114,7 @@ export const LocaleDetails = (
 	status: LocalizationStatus[],
 	dashboard: Dashboard,
 	locale: Locale
-): TemplateResult => {
+): string => {
 	const { label, lang } = locale;
 
 	const missingFiles = status.filter((content) => content.localizations[lang]?.isMissing);
@@ -135,32 +128,28 @@ export const LocaleDetails = (
 		<details class="progress-details">
 			<summary>
 				<strong
-					>${unsafeStatic(
-						getStringFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
-							'{locale_name}': label,
-							'{locale_tag}': lang,
-						})
-					)}</strong
+					>${getStringFromFormat(dashboard.ui['statusByLocale.detailsTitleFormat'], {
+						'{locale_name}': label,
+						'{locale_tag}': lang,
+					})}</strong
 				>
 				<br />
 				<span class="progress-summary"
-					>${unsafeStatic(
-						getStringFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
-							'{done_amount}': doneLength.toString(),
-							'{done_word}': dashboard.ui['status.done'],
-							'{outdated_amount}': outdatedFiles.length.toString(),
-							'{outdated_word}': dashboard.ui['status.outdated'],
-							'{missing_amount}': missingFiles.length.toString(),
-							'{missing_word}': dashboard.ui['status.missing'],
-						})
-					)}</span
+					>${getStringFromFormat(dashboard.ui['statusByLocale.detailsSummaryFormat'], {
+						'{done_amount}': doneLength.toString(),
+						'{done_word}': dashboard.ui['status.done'],
+						'{outdated_amount}': outdatedFiles.length.toString(),
+						'{outdated_word}': dashboard.ui['status.outdated'],
+						'{missing_amount}': missingFiles.length.toString(),
+						'{missing_word}': dashboard.ui['status.missing'],
+					})}</span
 				>
 				<br />
 				${ProgressBar(status.length, outdatedFiles.length, missingFiles.length)}
 			</summary>
-			${outdatedFiles.length > 0 ? OutdatedFiles(outdatedFiles, lang, dashboard) : nothing}
+			${outdatedFiles.length > 0 ? OutdatedFiles(outdatedFiles, lang, dashboard) : ''}
 			${missingFiles.length > 0
-				? html`<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.missing'])}</h3>
+				? html`<h3 class="capitalize">${dashboard.ui['status.missing']}</h3>
 						<ul>
 							${missingFiles.map(
 								(file) => html`
@@ -173,15 +162,15 @@ export const LocaleDetails = (
 													file.localizations[lang]?.gitHostingFileURL!,
 													dashboard.ui['statusByLocale.createFileLink']
 											  )
-											: nothing}
+											: ''}
 									</li>
 								`
 							)}
 						</ul>`
-				: nothing}
+				: ''}
 			${missingFiles.length == 0 && outdatedFiles.length == 0
-				? html`<p>${unsafeStatic(dashboard.ui['statusByLocale.completeLocalization'])}</p>`
-				: nothing}
+				? html`<p>${dashboard.ui['statusByLocale.completeLocalization']}</p>`
+				: ''}
 		</details>
 	`;
 };
@@ -190,9 +179,9 @@ export const OutdatedFiles = (
 	outdatedFiles: LocalizationStatus[],
 	lang: string,
 	dashboard: Dashboard
-): TemplateResult => {
+): string => {
 	return html`
-		<h3 class="capitalize">${unsafeStatic(dashboard.ui['status.outdated'])}</h3>
+		<h3 class="capitalize">${dashboard.ui['status.outdated']}</h3>
 		<ul>
 			${outdatedFiles.map(
 				(file) => html`
@@ -202,11 +191,11 @@ export const OutdatedFiles = (
 									<details>
 										<summary>${ContentDetailsLinks(file, lang, dashboard)}</summary>
 										${html`
-											<h4>${unsafeStatic(dashboard.ui['statusByLocale.missingKeys'])}</h4>
+											<h4>${dashboard.ui['statusByLocale.missingKeys']}</h4>
 											<ul>
 												${file.localizations[lang]?.completeness.missingKeys!.map(
 													(key) => html`<li>${key}</li>`
-												)}
+												) ?? ''}
 											</ul>
 										`}
 									</details>
@@ -219,14 +208,11 @@ export const OutdatedFiles = (
 	`;
 };
 
-export const StatusByFile = (
-	config: LunariaConfig,
-	status: LocalizationStatus[]
-): TemplateResult => {
+export const StatusByFile = (config: LunariaConfig, status: LocalizationStatus[]): string => {
 	const { dashboard, locales } = config;
 	return html`
 		<h2 id="by-file">
-			<a href="#by-file">${unsafeStatic(dashboard.ui['statusByFile.heading'])}</a>
+			<a href="#by-file">${dashboard.ui['statusByFile.heading']}</a>
 		</h2>
 		<table class="status-by-file">
 			<thead>
@@ -239,16 +225,14 @@ export const StatusByFile = (
 			${TableBody(status, locales, dashboard)}
 		</table>
 		<sup class="capitalize"
-			>${unsafeStatic(
-				getStringFromFormat(dashboard.ui['statusByFile.tableSummaryFormat'], {
-					'{missing_emoji}': dashboard.ui['status.emojiMissing'],
-					'{missing_word}': dashboard.ui['status.missing'],
-					'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
-					'{outdated_word}': dashboard.ui['status.outdated'],
-					'{done_emoji}': dashboard.ui['status.emojiDone'],
-					'{done_word}': dashboard.ui['status.done'],
-				})
-			)}
+			>${getStringFromFormat(dashboard.ui['statusByFile.tableSummaryFormat'], {
+				'{missing_emoji}': dashboard.ui['status.emojiMissing'],
+				'{missing_word}': dashboard.ui['status.missing'],
+				'{outdated_emoji}': dashboard.ui['status.emojiOutdated'],
+				'{outdated_word}': dashboard.ui['status.outdated'],
+				'{done_emoji}': dashboard.ui['status.emojiDone'],
+				'{done_word}': dashboard.ui['status.done'],
+			})}
 		</sup>
 	`;
 };
@@ -257,7 +241,7 @@ export const TableBody = (
 	status: LocalizationStatus[],
 	locales: Locale[],
 	dashboard: Dashboard
-): TemplateResult => {
+): string => {
 	return html`
 		<tbody>
 			${status.map(
@@ -283,7 +267,7 @@ export const TableContentStatus = (
 	localizations: { [locale: string]: FileStatus },
 	lang: string,
 	dashboard: Dashboard
-): TemplateResult => {
+): string => {
 	return html`
 		<td>
 			${localizations[lang]?.isMissing
@@ -299,7 +283,7 @@ export const ContentDetailsLinks = (
 	fileStatus: LocalizationStatus,
 	lang: string,
 	dashboard: Dashboard
-): TemplateResult => {
+): string => {
 	return html`
 		${fileStatus.gitHostingFileURL
 			? Link(fileStatus.gitHostingFileURL, getCollapsedPath(dashboard, fileStatus.sharedPath))
@@ -314,23 +298,19 @@ export const ContentDetailsLinks = (
 									? dashboard.ui['statusByLocale.incompleteLocalizationLink']
 									: dashboard.ui['statusByLocale.outdatedLocalizationLink']
 						  )
-						: nothing},
+						: ''},
 				  ${fileStatus.localizations[lang]?.gitHostingHistoryURL
 						? Link(
 								fileStatus.localizations[lang]?.gitHostingHistoryURL!,
 								dashboard.ui['statusByLocale.sourceChangeHistoryLink']
 						  )
-						: nothing})`
-				: nothing
-			: nothing}
+						: ''})`
+				: ''
+			: ''}
 	`;
 };
 
-export const EmojiFileLink = (
-	ui: Dashboard['ui'],
-	href: string | null,
-	type: Status
-): TemplateResult => {
+export const EmojiFileLink = (ui: Dashboard['ui'], href: string | null, type: Status): string => {
 	const statusTextOpts = {
 		missing: 'status.missing',
 		outdated: 'status.outdated',
@@ -352,12 +332,12 @@ export const EmojiFileLink = (
 		  </span>`;
 };
 
-export const Link = (href: string, text: string): TemplateResult => {
-	return html`<a href="${href}">${unsafeStatic(text)}</a>`;
+export const Link = (href: string, text: string): string => {
+	return html`<a href="${href}">${text}</a>`;
 };
 
-export const CreateFileLink = (href: string, text: string): TemplateResult => {
-	return html`<a class="create-button" href="${href}">${unsafeStatic(text)}</a>`;
+export const CreateFileLink = (href: string, text: string): string => {
+	return html`<a class="create-button" href="${href}">${text}</a>`;
 };
 
 export const ProgressBar = (
@@ -365,7 +345,7 @@ export const ProgressBar = (
 	outdated: number,
 	missing: number,
 	{ size = 20 }: { size?: number } = {}
-): TemplateResult => {
+): string => {
 	const outdatedSize = Math.round((outdated / total) * size);
 	const missingSize = Math.round((missing / total) * size);
 	const doneSize = size - outdatedSize - missingSize;

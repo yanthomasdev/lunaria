@@ -3,8 +3,7 @@ import { handleShallowRepo } from './status/git.js';
 import { getLocalizationStatus } from './status/index.js';
 import type { LunariaUserConfig, LunariaUserRendererConfig } from './types.js';
 
-export { nothing } from 'lit';
-export { html, svg, unsafeStatic } from 'lit/static-html.js';
+export { html } from './dashboard/index.js';
 export type * from './types.js';
 
 /**
