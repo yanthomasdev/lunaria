@@ -1,6 +1,5 @@
-import type { TemplateResult } from 'lit';
 import type { MatchResult } from 'path-to-regexp';
-import type { LunariaConfig, OptionalKeys } from './config/schemas.js';
+import type { OptionalKeys } from './config/schemas.js';
 
 type PathResolver = {
 	isMatch: (path: string) => MatchResult;
@@ -83,13 +82,6 @@ export type RegExpGroups<T extends string> =
 			groups?: { [name in T]: string } | { [key: string]: string };
 	  })
 	| null;
-
-export type CustomComponent = (config: LunariaConfig) => TemplateResult;
-
-export type CustomStatusComponent = (
-	config: LunariaConfig,
-	status: LocalizationStatus[]
-) => TemplateResult;
 
 export type Dictionary = {
 	[key: string]: string | Dictionary;
