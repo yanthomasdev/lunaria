@@ -1,0 +1,140 @@
+---
+title: Installation manuelle
+description: Apprenez à installer Lunaria dans votre projet
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+La façon la plus efficace d'ajouter Lunaria à votre projet est d'utiliser le paquet `create-lunaria`, comme indiqué dans le [Guide de démarrage](/fr/getting-started/). Si vous préférez effectuer ce processus manuellement, suivez ce guide à la place.
+
+## 1. Ajouter le paquet `@lunariajs/core`.
+
+Lunaria est publié à travers le paquet `@lunariajs/core` dans le registre npm. Ajoutez-le à votre projet en exécutant la commande suivante dans son répertoire racine :
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm install @lunariajs/core
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm install @lunariajs/core
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn add @lunariajs/core
+```
+
+</TabItem>
+</Tabs>
+
+Ensuite, ajoutez le script exécutable `lunaria` dans le champ `scripts` de votre `package.json` :
+
+```json title="package.json" ins={5}
+"scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lunaria": "lunaria"
+}
+```
+
+## 2. Créer `lunaria.config.json`
+
+Lunaria est configuré en utilisant `lunaria.config.json`. Ce fichier est nécessaire pour que Lunaria connaisse la structure de votre référentiel et ce qui doit être suivi.
+
+```json title="lunaria.config.json" mark={2}
+{
+	"$schema": "./node_modules/@lunariajs/core/config.schema.json"
+}
+```
+
+:::tip
+`@lunariajs/core` est livré avec un schéma JSON auquel vous pouvez vous référer avec la propriété optionnelle `$schema` pour ajouter le support IntelliSense dans votre éditeur de code.
+:::
+
+## 3. Configurer le paquet
+
+Avant de générer votre premier tableau de bord de localisation, vous devez configurer les champs `repository`, `defaultLocale`, et `locales` de votre fichier `lunaria.config.json`.
+
+L'exemple suivant configure Lunaria pour suivre le contenu Markdown/MDX pour l'anglais et le portugais dans un exemple de projet, hébergé sur `https://github.com/me/cool-project/` :
+
+```json title="lunaria.config.json"
+{
+	"$schema": "./node_modules/@lunariajs/core/config.schema.json",
+	"repository": {
+		"name": "me/cool-docs"
+	},
+	"files": [
+		{
+			"location": "content/**/*.md",
+			"pattern": "content/@lang/@path"
+		}
+	],
+	"defaultLocale": {
+		"label": "Français",
+		"lang": "fr"
+	},
+	"locales": [
+		{
+			"label": "Português",
+			"lang": "pt"
+		}
+	]
+}
+```
+
+Pour en savoir plus sur toutes les options disponibles, consultez le [Guide de référence de la configuration](/fr/configuration-reference/).
+
+:::tip
+Visitez le [répertoire d'exemples du dépôt Lunaria](https://github.com/Yan-Thomas/lunaria/tree/main/examples/) pour voir des exemples de configuration pour différents frameworks et projets.
+:::
+
+## 4. Exécuter Lunaria
+
+Enfin, vous pouvez générer votre tableau de bord de localisation en lançant le script `lunaria` en ligne de commande avec votre gestionnaire de paquets préféré.
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm run lunaria
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm run lunaria
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn run lunaria
+```
+
+</TabItem>
+</Tabs>
+
+Par défaut, le tableau de bord de localisation sera construit dans un fichier `index.html` dans le répertoire `./dist/lunaria/`. Ce fichier peut ensuite être déployé sur la plateforme d'hébergement de votre choix et partagé par vos contributeurs.
+
+## Prochaines étapes
+
+Hourra ! La localisation de votre projet est maintenant entièrement suivie par Lunaria ! 🌛
+
+Lunaria est doté de plusieurs fonctionnalités que vous pouvez explorer pour l'adapter au mieux à votre projet. Voici quelques pages que vous pouvez lire ensuite, dans n'importe quel ordre, pour en savoir plus :
+
+🌒 **Personnalisez votre tableau de bord :** Apprenez à ajouter des styles personnalisés, des composants et plus encore dans notre [Guide de personnalisation du tableau de bord](/fr/features/dashboard-customization/).
+
+🌓 **Améliorez votre flux de travail :** Découvrez le flux de travail recommandé par Lunaria pour améliorer la vie de vos contributeurs et mainteneurs dans notre [Guide du flux de travail](/fr/workflow/).
+
+🌔 **Comprendre le suivi :** Apprenez-en plus sur le fonctionnement du suivi de Lunaria et comment prendre le relais si nécessaire dans notre [Guide de suivi](/fr/features/tracking/).

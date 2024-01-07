@@ -1,0 +1,53 @@
+---
+title: Bien démarrer
+description: Apprendre à démarrer avec Lunaria
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+:::caution[Travaux en cours]
+Lunaria est actuellement en accès anticipé et des **changements radicaux** sont susceptibles de se produire.
+Si vous avez trouvé quelque chose d'incorrect ou d'inattendu, veuillez [ouvrir un problème sur GitHub](https://github.com/Yan-Thomas/lunaria/issues/new).
+:::
+
+Lunaria est une **chaîne d'outils de gestion de la localisation** pour les projets open-source, fournissant les outils nécessaires aux mainteneurs et aux contributeurs pour construire un flux de travail de localisation transparent et efficace.
+
+## Pourquoi Lunaria ?
+
+En tant que mainteneur, la gestion des efforts de localisation n'a jamais été facile, vous deviez toujours sacrifier la propriété de votre contenu en passant à une plateforme de localisation ou renoncer à un suivi fiable de votre contenu pour les changements, jusqu'à maintenant. Lunaria résout ces deux problèmes en permettant un flux de travail entièrement nouveau, alimenté par Git.
+
+Chaque validation de fichiers sélectionnés est utilisée pour construire un tableau de bord de localisation, donnant à chaque fichier son statut fait, périmé ou manquant. À partir du tableau de bord, les responsables obtiennent une vue d'ensemble détaillée de l'état de la localisation de leur projet, tandis que les contributeurs reçoivent toutes les informations dont ils ont besoin pour apporter une aide efficace, notamment des liens vers les fichiers manquants et une liste des modifications qui doivent être ajoutées au contenu périmé.
+
+## Ajouter à votre projet
+
+Vous pouvez rapidement ajouter Lunaria à votre projet en lançant la commande suivante dans votre terminal :
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm create lunaria@latest
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm create lunaria
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn create lunaria
+```
+
+</TabItem>
+</Tabs>
+
+Cette commande créera automatiquement un nouveau fichier `lunaria.config.json`, inclura une commande `lunaria` facile à utiliser dans votre `package.json`, et ajoutera toutes les dépendances nécessaires à votre projet spécifique.
+
+:::note
+L'assistant d'installation `create-lunaria` ne vous guide pas actuellement dans la configuration du fichier `lunaria.config.json`. Visitez la section Référence pour procéder manuellement à la place.
+:::
