@@ -123,7 +123,7 @@ export const LunariaConfigSchema = z
 		/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"` */
 		cloneDir: z
 			.string()
-			.default('./dist/lunaria/history')
+			.default('./node_modules/.cache/lunaria/history')
 			.describe(
 				'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"`'
 			),
