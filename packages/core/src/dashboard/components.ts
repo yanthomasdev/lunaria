@@ -1,6 +1,5 @@
 import type {
 	Dashboard,
-	FileStatus,
 	Locale,
 	LocalizationStatus,
 	LunariaConfig,
@@ -117,11 +116,15 @@ export const LocaleDetails = (
 ): string => {
 	const { label, lang } = locale;
 
-	const missingFiles = status.filter((content) => content.localizations[lang]?.isMissing);
-	const outdatedFiles = status.filter(
-		(content) =>
-			content.localizations[lang]?.isOutdated || !content.localizations[lang]?.completeness.complete
-	);
+	const missingFiles = status.filter((file) => file.localizations[lang]?.isMissing);
+	const outdatedFiles = status.filter((file) => {
+		const localization = file.localizations[lang]!;
+
+		if (localization.isMissing) return false;
+		if (localization.meta.type === 'dictionary') return localization.meta.missingKeys.length > 0;
+		return localization.isOutdated;
+	});
+
 	const doneLength = status.length - outdatedFiles.length - missingFiles.length;
 
 	return html`
@@ -154,8 +157,11 @@ export const LocaleDetails = (
 							${missingFiles.map(
 								(file) => html`
 									<li>
-										${file.gitHostingFileURL
-											? Link(file.gitHostingFileURL, getCollapsedPath(dashboard, file.sharedPath))
+										${file.sourceFile.gitHostingFileURL
+											? Link(
+													file.sourceFile.gitHostingFileURL,
+													getCollapsedPath(dashboard, file.sharedPath)
+											  )
 											: getCollapsedPath(dashboard, file.sharedPath)}
 										${file.localizations[lang]?.gitHostingFileURL
 											? CreateFileLink(
@@ -183,27 +189,31 @@ export const OutdatedFiles = (
 	return html`
 		<h3 class="capitalize">${dashboard.ui['status.outdated']}</h3>
 		<ul>
-			${outdatedFiles.map(
-				(file) => html`
+			${outdatedFiles.map((file) => {
+				const localization = file.localizations[lang]!;
+				const isMissingKeys =
+					!localization.isMissing &&
+					localization.meta.type === 'dictionary' &&
+					localization.meta.missingKeys.length > 0;
+
+				return html`
 					<li>
-						${!file.localizations[lang]?.completeness.complete
+						${isMissingKeys && 'missingKeys' in localization.meta
 							? html`
 									<details>
 										<summary>${ContentDetailsLinks(file, lang, dashboard)}</summary>
 										${html`
 											<h4>${dashboard.ui['statusByLocale.missingKeys']}</h4>
 											<ul>
-												${file.localizations[lang]?.completeness.missingKeys!.map(
-													(key) => html`<li>${key}</li>`
-												) ?? ''}
+												${localization.meta.missingKeys.map((key) => html`<li>${key}</li>`)}
 											</ul>
 										`}
 									</details>
 							  `
 							: html` ${ContentDetailsLinks(file, lang, dashboard)} `}
 					</li>
-				`
-			)}
+				`;
+			})}
 		</ul>
 	`;
 };
@@ -249,8 +259,11 @@ export const TableBody = (
 					html`
 				<tr>
 					<td>${
-						file.gitHostingFileURL
-							? Link(file.gitHostingFileURL, getCollapsedPath(dashboard, file.sharedPath))
+						file.sourceFile.gitHostingFileURL
+							? Link(
+									file.sourceFile.gitHostingFileURL,
+									getCollapsedPath(dashboard, file.sharedPath)
+							  )
 							: getCollapsedPath(dashboard, file.sharedPath)
 					}</td>
 						${locales.map(({ lang }) => {
@@ -264,15 +277,21 @@ export const TableBody = (
 };
 
 export const TableContentStatus = (
-	localizations: { [locale: string]: FileStatus },
+	localizations: LocalizationStatus['localizations'],
 	lang: string,
 	dashboard: Dashboard
 ): string => {
+	const localization = localizations[lang]!;
+	const isMissingKeys =
+		!localization.isMissing &&
+		localization.meta.type === 'dictionary' &&
+		localization.meta.missingKeys.length > 0;
+
 	return html`
 		<td>
-			${localizations[lang]?.isMissing
-				? EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'missing')
-				: localizations[lang]?.isOutdated || !localizations[lang]?.completeness.complete
+			${localization?.isMissing
+				? EmojiFileLink(dashboard.ui, localization?.gitHostingFileURL!, 'missing')
+				: localization?.isOutdated || isMissingKeys
 				? EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'outdated')
 				: EmojiFileLink(dashboard.ui, localizations[lang]?.gitHostingFileURL!, 'done')}
 		</td>
@@ -284,24 +303,32 @@ export const ContentDetailsLinks = (
 	lang: string,
 	dashboard: Dashboard
 ): string => {
+	const localization = fileStatus.localizations[lang]!;
+	const isMissingKeys =
+		!localization.isMissing &&
+		localization.meta.type === 'dictionary' &&
+		localization.meta.missingKeys.length > 0;
+
 	return html`
-		${fileStatus.gitHostingFileURL
-			? Link(fileStatus.gitHostingFileURL, getCollapsedPath(dashboard, fileStatus.sharedPath))
+		${fileStatus.sourceFile.gitHostingFileURL
+			? Link(
+					fileStatus.sourceFile.gitHostingFileURL,
+					getCollapsedPath(dashboard, fileStatus.sharedPath)
+			  )
 			: getCollapsedPath(dashboard, fileStatus.sharedPath)}
-		${fileStatus.localizations[lang]
-			? fileStatus.localizations[lang]?.gitHostingFileURL ||
-			  fileStatus.localizations[lang]?.gitHostingHistoryURL
-				? html`(${fileStatus.localizations[lang]?.gitHostingFileURL
+		${localization
+			? localization?.gitHostingFileURL || localization?.gitHostingHistoryURL
+				? html`(${localization?.gitHostingFileURL
 						? Link(
-								fileStatus.localizations[lang]?.gitHostingFileURL!,
-								!fileStatus.localizations[lang]?.completeness.complete
+								localization?.gitHostingFileURL!,
+								isMissingKeys
 									? dashboard.ui['statusByLocale.incompleteLocalizationLink']
 									: dashboard.ui['statusByLocale.outdatedLocalizationLink']
 						  )
 						: ''},
-				  ${fileStatus.localizations[lang]?.gitHostingHistoryURL
+				  ${localization?.gitHostingHistoryURL
 						? Link(
-								fileStatus.localizations[lang]?.gitHostingHistoryURL!,
+								localization?.gitHostingHistoryURL!,
 								dashboard.ui['statusByLocale.sourceChangeHistoryLink']
 						  )
 						: ''})`

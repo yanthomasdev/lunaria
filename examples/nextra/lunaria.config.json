@@ -7,7 +7,8 @@
   "files": [
     {
       "location": "pages/**/*.mdx",
-      "pattern": "pages/:path+.@lang.mdx"
+      "pattern": "pages/:path+.@lang.mdx",
+      "type": "universal"
     }
   ],
   "defaultLocale": {

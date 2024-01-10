@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
 import { info } from '../cli/messages.js';
 import type { LunariaConfig } from '../types.js';
-import { cleanJoinURL, getStringFromFormat } from '../utils.js';
+import { cleanJoinURL } from '../utils.js';
 
 const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
@@ -52,63 +52,33 @@ export async function getFileHistory(path: string) {
 export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 	const { name, branch, hosting, rootDir } = repository;
 
-	if (hosting === 'github')
-		return {
-			create: (filePath: string) =>
-				`https://github.com/${name}/new/${branch}?filename=${cleanJoinURL(rootDir, filePath)}`,
-			source: (filePath: string) =>
-				`https://github.com/${name}/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
-			history: (filePath: string, sinceDate: string) =>
-				`https://github.com/${name}/commits/${branch}/${cleanJoinURL(
-					rootDir,
-					filePath
-				)}?since=${sinceDate}`,
-			clone: () => `https://github.com/${name}.git`,
-		};
+	switch (hosting) {
+		case 'github':
+			return {
+				create: (filePath: string) =>
+					`https://github.com/${name}/new/${branch}?filename=${cleanJoinURL(rootDir, filePath)}`,
+				source: (filePath: string) =>
+					`https://github.com/${name}/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
+				history: (filePath: string, sinceDate: string) =>
+					`https://github.com/${name}/commits/${branch}/${cleanJoinURL(
+						rootDir,
+						filePath
+					)}?since=${sinceDate}`,
+				clone: () => `https://github.com/${name}.git`,
+			};
 
-	if (hosting === 'gitlab')
-		return {
-			create: (filePath: string) =>
-				`https://gitlab.com/${name}/-/new/${branch}?file_name=${cleanJoinURL(rootDir, filePath)}`,
-			source: (filePath: string) =>
-				`https://gitlab.com/${name}/-/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
-			history: (filePath: string, sinceDate: string) =>
-				`https://gitlab.com/${name}/-/commits/${branch}/${cleanJoinURL(
-					rootDir,
-					filePath
-				)}?since=${sinceDate}`,
-			clone: () => `https://gitlab.com/${name}.git`,
-		};
-
-	return {
-		create: (filePath: string) =>
-			hosting.create
-				? getStringFromFormat(hosting.create, {
-						':name': name,
-						':branch': branch,
-						':path': cleanJoinURL(rootDir, filePath),
-				  })
-				: null,
-		source: (filePath: string) =>
-			hosting.source
-				? getStringFromFormat(hosting.source, {
-						':name': name,
-						':branch': branch,
-						':path': cleanJoinURL(rootDir, filePath),
-				  })
-				: null,
-		history: (filePath: string, sinceDate: string) =>
-			hosting.history
-				? getStringFromFormat(hosting.history, {
-						':name': name,
-						':branch': branch,
-						':path': cleanJoinURL(rootDir, filePath),
-						':since': sinceDate,
-				  })
-				: null,
-		clone: () =>
-			getStringFromFormat(hosting.clone, {
-				':name': name,
-			}),
-	};
+		case 'gitlab':
+			return {
+				create: (filePath: string) =>
+					`https://gitlab.com/${name}/-/new/${branch}?file_name=${cleanJoinURL(rootDir, filePath)}`,
+				source: (filePath: string) =>
+					`https://gitlab.com/${name}/-/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
+				history: (filePath: string, sinceDate: string) =>
+					`https://gitlab.com/${name}/-/commits/${branch}/${cleanJoinURL(
+						rootDir,
+						filePath
+					)}?since=${sinceDate}`,
+				clone: () => `https://gitlab.com/${name}.git`,
+			};
+	}
 }

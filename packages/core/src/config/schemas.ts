@@ -2,13 +2,6 @@ import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../dashboard/schemas.js';
 
-const CustomGitHostingSchema = z.object({
-	create: z.string().or(z.null()),
-	source: z.string().or(z.null()),
-	history: z.string().or(z.null()),
-	clone: z.string(),
-});
-
 const RepositorySchema = z.object({
 	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
 	name: z
@@ -33,18 +26,17 @@ const RepositorySchema = z.object({
 	hosting: z
 		.literal('github')
 		.or(z.literal('gitlab'))
-		.or(CustomGitHostingSchema)
 		.default('github')
 		.describe('The git hosting platform used by your project, e.g. `"github"` or `"gitlab"`'),
 });
 
-const OptionalKeysSchema = z
-	.record(z.string(), z.array(z.string()).nonempty())
+export const OptionalKeysSchema = z
+	.record(z.string(), z.array(z.string()))
 	.describe(
 		'Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional'
 	);
 
-const FileSchema = z.object({
+const BaseFileSchema = z.object({
 	/** The glob pattern of where your content including the file type(s) is */
 	location: z
 		.string()
@@ -59,14 +51,17 @@ const FileSchema = z.object({
 	/** A path-to-regexp-like pattern of your content paths */
 	pattern: z.string().describe('A path-to-regexp-like pattern describing your content paths'),
 	/** The desired type of tracking for this content */
-	type: z
-		.literal('universal')
-		.or(z.literal('dictionary'))
-		.default('universal')
-		.describe('The desired type of tracking for this content'),
-	/** Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional */
-	optionalKeys: OptionalKeysSchema.optional(),
 });
+
+const FileSchema = z.discriminatedUnion('type', [
+	BaseFileSchema.extend({
+		type: z.literal('universal'),
+	}),
+	BaseFileSchema.extend({
+		type: z.literal('dictionary'),
+		optionalKeys: OptionalKeysSchema.optional(),
+	}),
+]);
 
 const LocaleSchema = z.object({
 	/** The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"` */
@@ -147,7 +142,6 @@ export const LunariaConfigSchema = z
 		}
 	});
 
-/** TODO: Move LocalizationStatus type into its own schema and property type args.  */
 export const LunariaRendererConfigSchema = z.object({
 	slots: z
 		.object({

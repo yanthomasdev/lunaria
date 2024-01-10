@@ -204,31 +204,8 @@
               "description": "The root directory of the project being tracked, must be set when using a monorepo"
             },
             "hosting": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "enum": ["github", "gitlab"]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "create": {
-                      "type": ["string", "null"]
-                    },
-                    "source": {
-                      "type": ["string", "null"]
-                    },
-                    "history": {
-                      "type": ["string", "null"]
-                    },
-                    "clone": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["create", "source", "history", "clone"],
-                  "additionalProperties": false
-                }
-              ],
+              "type": "string",
+              "enum": ["github", "gitlab"],
               "default": "github",
               "description": "The git hosting platform used by your project, e.g. `\"github\"` or `\"gitlab\"`"
             }
@@ -274,44 +251,65 @@
         "files": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "location": {
-                "type": "string",
-                "description": "The glob pattern of where your content including the file type(s) is, e.g. `\"src/content/docs/**/*.mdx\"`"
-              },
-              "ignore": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "default": [],
-                "description": "Array of glob patterns to be ignored from matching"
-              },
-              "pattern": {
-                "type": "string",
-                "description": "A path-to-regexp-like pattern describing your content paths"
-              },
-              "type": {
-                "type": "string",
-                "enum": ["universal", "dictionary"],
-                "default": "universal",
-                "description": "The desired type of tracking for this content"
-              },
-              "optionalKeys": {
+            "anyOf": [
+              {
                 "type": "object",
-                "additionalProperties": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "properties": {
+                  "location": {
+                    "type": "string",
+                    "description": "The glob pattern of where your content including the file type(s) is, e.g. `\"src/content/docs/**/*.mdx\"`"
                   },
-                  "minItems": 1
+                  "ignore": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "default": [],
+                    "description": "Array of glob patterns to be ignored from matching"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "A path-to-regexp-like pattern describing your content paths"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "universal"
+                  }
                 },
-                "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional"
+                "required": ["location", "pattern", "type"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "location": {
+                    "$ref": "#/definitions/LunariaConfigSchema/properties/files/items/anyOf/0/properties/location"
+                  },
+                  "ignore": {
+                    "$ref": "#/definitions/LunariaConfigSchema/properties/files/items/anyOf/0/properties/ignore"
+                  },
+                  "pattern": {
+                    "$ref": "#/definitions/LunariaConfigSchema/properties/files/items/anyOf/0/properties/pattern"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "dictionary"
+                  },
+                  "optionalKeys": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "description": "Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional"
+                  }
+                },
+                "required": ["location", "pattern", "type"],
+                "additionalProperties": false
               }
-            },
-            "required": ["location", "pattern"],
-            "additionalProperties": false
+            ]
           },
           "minItems": 1,
           "description": "Array of files to be tracked"

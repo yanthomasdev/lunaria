@@ -1,22 +1,19 @@
 import { readFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { code, error, highlight } from '../cli/messages.js';
-import { type AugmentedFileData, type Dictionary, type OptionalKeys } from '../types.js';
+import { type Dictionary, type OptionalKeys } from '../types.js';
 import { loadWithJiti } from '../utils.js';
 import { frontmatterFile, getFileFrontmatter } from './frontmatter.js';
 import { DictionaryContentSchema } from './schemas.js';
 
 export async function getDictionaryCompletion(
 	optionalKeys: OptionalKeys | undefined,
-	localizationFile: AugmentedFileData | undefined,
+	localizationFilePath: string,
 	sourceFilePath: string,
 	sharedPath: string
 ) {
-	if (!localizationFile || localizationFile.type === 'universal')
-		return { complete: true, missingKeys: [] };
-
 	const sourceDictionary = await loadDictionary(sourceFilePath);
-	const localizationDictionary = await loadDictionary(localizationFile.filePath);
+	const localizationDictionary = await loadDictionary(localizationFilePath);
 
 	const missingKeys = Object.keys(sourceDictionary).flatMap((key) => {
 		const isOptionalKey = optionalKeys?.[sharedPath]?.includes(key) === true;
@@ -24,10 +21,7 @@ export async function getDictionaryCompletion(
 		return [];
 	});
 
-	return {
-		complete: !missingKeys.length,
-		missingKeys: missingKeys,
-	};
+	return missingKeys;
 }
 
 async function loadDictionary(path: string) {
