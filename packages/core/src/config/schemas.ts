@@ -1,6 +1,7 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../dashboard/schemas.js';
+import type { LocalizationStatus } from '../types.js';
 
 const RepositorySchema = z.object({
 	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
@@ -142,22 +143,35 @@ export const LunariaConfigSchema = z
 		}
 	});
 
+/**
+ * Using Zod's z.function() to type these components with argument hints causes
+ * an exponential increase in bundle size, therefore we use z.custom();
+ * to avoid this, especially because we don't need any complex validation
+ * of the arguments in the user's side.
+ */
+
+const BaseComponent = z.custom<(config: LunariaConfig) => string>().optional();
+
+const StatusComponent = z
+	.custom<(config: LunariaConfig, status: LocalizationStatus[]) => string>()
+	.optional();
+
 export const LunariaRendererConfigSchema = z.object({
 	slots: z
 		.object({
-			head: z.function().returns(z.string()).optional(),
-			beforeTitle: z.function().returns(z.string()).optional(),
-			afterTitle: z.function().returns(z.string()).optional(),
-			afterStatusByLocale: z.function().returns(z.string()).optional(),
-			afterStatusByFile: z.function().returns(z.string()).optional(),
+			head: BaseComponent,
+			beforeTitle: BaseComponent,
+			afterTitle: BaseComponent,
+			afterStatusByLocale: BaseComponent,
+			afterStatusByFile: BaseComponent,
 		})
 		.default({}),
 	overrides: z
 		.object({
-			meta: z.function().returns(z.string()).optional(),
-			body: z.function().returns(z.string()).optional(),
-			statusByLocale: z.function().returns(z.string()).optional(),
-			statusByFile: z.function().returns(z.string()).optional(),
+			meta: BaseComponent,
+			body: StatusComponent,
+			statusByLocale: StatusComponent,
+			statusByFile: StatusComponent,
 		})
 		.default({}),
 });
