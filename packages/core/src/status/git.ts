@@ -59,11 +59,10 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 					`https://github.com/${name}/new/${branch}?filename=${cleanJoinURL(rootDir, filePath)}`,
 				source: (filePath: string) =>
 					`https://github.com/${name}/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
-				history: (filePath: string, sinceDate: string) =>
-					`https://github.com/${name}/commits/${branch}/${cleanJoinURL(
-						rootDir,
-						filePath
-					)}?since=${sinceDate}`,
+				history: (filePath: string, sinceDate?: string) =>
+					`https://github.com/${name}/commits/${branch}/${cleanJoinURL(rootDir, filePath)}${
+						sinceDate ? `?since=${sinceDate}` : ''
+					}`,
 				clone: () => `https://github.com/${name}.git`,
 			};
 
@@ -73,11 +72,10 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 					`https://gitlab.com/${name}/-/new/${branch}?file_name=${cleanJoinURL(rootDir, filePath)}`,
 				source: (filePath: string) =>
 					`https://gitlab.com/${name}/-/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
-				history: (filePath: string, sinceDate: string) =>
-					`https://gitlab.com/${name}/-/commits/${branch}/${cleanJoinURL(
-						rootDir,
-						filePath
-					)}?since=${sinceDate}`,
+				history: (filePath: string, sinceDate?: string) =>
+					`https://gitlab.com/${name}/-/commits/${branch}/${cleanJoinURL(rootDir, filePath)}${
+						sinceDate ? `?since=${sinceDate}` : ''
+					}`,
 				clone: () => `https://gitlab.com/${name}.git`,
 			};
 	}
