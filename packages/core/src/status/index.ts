@@ -143,7 +143,7 @@ async function getFileIndex(config: LunariaConfig, isShallowRepo: boolean) {
 
 				const gitHostingLinks = getGitHostingLinks(repository);
 				const gitHostingFileURL = gitHostingLinks.source(path);
-				const gitHostingHistoryURL = gitHostingLinks.history(path, '');
+				const gitHostingHistoryURL = gitHostingLinks.history(path);
 
 				const fileData = await getFileData(
 					path,
