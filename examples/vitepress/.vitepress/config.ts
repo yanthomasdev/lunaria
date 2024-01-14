@@ -2,10 +2,9 @@ import { defineConfig } from 'vitepress';
 
 export default defineConfig({
 	locales: {
-		en: {
+		root: {
 			label: 'English',
 			lang: 'en',
-			link: '/en/',
 		},
 		pt: {
 			label: 'Português',
