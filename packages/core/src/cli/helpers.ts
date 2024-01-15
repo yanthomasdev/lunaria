@@ -10,7 +10,15 @@ export function parseCommand() {
 			config: {
 				type: 'string',
 			},
+			/** Build command */
 			'skip-status': {
+				type: 'boolean',
+			},
+			/** Sync command */
+			package: {
+				type: 'string',
+			},
+			'skip-questions': {
 				type: 'boolean',
 			},
 		},
@@ -20,4 +28,9 @@ export function parseCommand() {
 		name: positionals[0],
 		options: values,
 	};
+}
+
+export function getFormattedTime(start: number, end: number) {
+	const seconds = (end - start) / 1000;
+	return `${seconds.toFixed(2)}s`;
 }

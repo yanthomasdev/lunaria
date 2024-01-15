@@ -21,7 +21,8 @@
     },
     {
       "location": "**/*.md",
-      "pattern": "@lang/@path"
+      "pattern": "@lang/@path",
+      "type": "universal"
     }
   ],
   "defaultLocale": {

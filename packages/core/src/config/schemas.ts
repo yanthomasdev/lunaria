@@ -1,13 +1,7 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../dashboard/schemas.js';
-
-const CustomGitHostingSchema = z.object({
-	create: z.string().or(z.null()),
-	source: z.string().or(z.null()),
-	history: z.string().or(z.null()),
-	clone: z.string(),
-});
+import type { LocalizationStatus } from '../types.js';
 
 const RepositorySchema = z.object({
 	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
@@ -33,18 +27,17 @@ const RepositorySchema = z.object({
 	hosting: z
 		.literal('github')
 		.or(z.literal('gitlab'))
-		.or(CustomGitHostingSchema)
 		.default('github')
 		.describe('The git hosting platform used by your project, e.g. `"github"` or `"gitlab"`'),
 });
 
-const OptionalKeysSchema = z
-	.record(z.string(), z.array(z.string()).nonempty())
+export const OptionalKeysSchema = z
+	.record(z.string(), z.array(z.string()))
 	.describe(
 		'Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional'
 	);
 
-const FileSchema = z.object({
+const BaseFileSchema = z.object({
 	/** The glob pattern of where your content including the file type(s) is */
 	location: z
 		.string()
@@ -59,14 +52,17 @@ const FileSchema = z.object({
 	/** A path-to-regexp-like pattern of your content paths */
 	pattern: z.string().describe('A path-to-regexp-like pattern describing your content paths'),
 	/** The desired type of tracking for this content */
-	type: z
-		.literal('universal')
-		.or(z.literal('dictionary'))
-		.default('universal')
-		.describe('The desired type of tracking for this content'),
-	/** Record of dictionary shared paths whose values are an array of dictionary keys to be marked as optional */
-	optionalKeys: OptionalKeysSchema.optional(),
 });
+
+const FileSchema = z.discriminatedUnion('type', [
+	BaseFileSchema.extend({
+		type: z.literal('universal'),
+	}),
+	BaseFileSchema.extend({
+		type: z.literal('dictionary'),
+		optionalKeys: OptionalKeysSchema.optional(),
+	}),
+]);
 
 const LocaleSchema = z.object({
 	/** The label of the locale to show in the status dashboard, e.g. `"English"`, `"Português"`, or `"Español"` */
@@ -123,7 +119,7 @@ export const LunariaConfigSchema = z
 		/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"` */
 		cloneDir: z
 			.string()
-			.default('./dist/lunaria/history')
+			.default('./node_modules/.cache/lunaria/history')
 			.describe(
 				'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"`'
 			),
@@ -147,29 +143,42 @@ export const LunariaConfigSchema = z
 		}
 	});
 
-/** TODO: Move LocalizationStatus type into its own schema and property type args.  */
+/**
+ * Using Zod's z.function() to type these components with argument hints causes
+ * an exponential increase in bundle size, therefore we use z.custom();
+ * to avoid this, especially because we don't need any complex validation
+ * of the arguments in the user's side.
+ */
+
+const BaseComponent = z.custom<(config: LunariaConfig) => string>().optional();
+
+const StatusComponent = z
+	.custom<(config: LunariaConfig, status: LocalizationStatus[]) => string>()
+	.optional();
+
 export const LunariaRendererConfigSchema = z.object({
 	slots: z
 		.object({
-			head: z.function().returns(z.string()).optional(),
-			beforeTitle: z.function().returns(z.string()).optional(),
-			afterTitle: z.function().returns(z.string()).optional(),
-			afterStatusByLocale: z.function().returns(z.string()).optional(),
-			afterStatusByFile: z.function().returns(z.string()).optional(),
+			head: BaseComponent,
+			beforeTitle: BaseComponent,
+			afterTitle: BaseComponent,
+			afterStatusByLocale: BaseComponent,
+			afterStatusByFile: BaseComponent,
 		})
 		.default({}),
 	overrides: z
 		.object({
-			meta: z.function().returns(z.string()).optional(),
-			body: z.function().returns(z.string()).optional(),
-			statusByLocale: z.function().returns(z.string()).optional(),
-			statusByFile: z.function().returns(z.string()).optional(),
+			meta: BaseComponent,
+			body: StatusComponent,
+			statusByLocale: StatusComponent,
+			statusByFile: StatusComponent,
 		})
 		.default({}),
 });
 
 export type OptionalKeys = z.infer<typeof OptionalKeysSchema>;
 export type Locale = z.infer<typeof LocaleSchema>;
+export type File = z.infer<typeof FileSchema>;
 
 export type LunariaConfig = z.infer<typeof LunariaConfigSchema>;
 export type LunariaUserConfig = z.input<typeof LunariaConfigSchema>;

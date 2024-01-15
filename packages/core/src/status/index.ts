@@ -5,14 +5,14 @@ import { compile, match, type MatchResult } from 'path-to-regexp';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
 import { code, error, highlight } from '../cli/messages.js';
 import type {
-	ContentIndex,
 	FileData,
-	FileMeta,
-	IndexData,
+	FileIndex,
+	IndexEntry,
 	Locale,
 	LocalizationStatus,
 	LunariaConfig,
 	RegExpGroups,
+	SourceFileMeta,
 } from '../types.js';
 import { getStringFromFormat, toUtcString } from '../utils.js';
 import { getDictionaryCompletion } from './dictionaries.js';
@@ -22,7 +22,7 @@ import { getFileHistory, getGitHostingLinks } from './git.js';
 export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo: boolean) {
 	const { defaultLocale, locales, repository } = config;
 
-	const contentIndex = await getContentIndex(config, isShallowRepo);
+	const contentIndex = await getFileIndex(config, isShallowRepo);
 	const sourceLocaleIndex = contentIndex[defaultLocale.lang];
 
 	if (!sourceLocaleIndex) {
@@ -46,36 +46,64 @@ export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo
 		const fileStatus: LocalizationStatus = {
 			sharedPath,
 			sourceFile,
-			gitHostingFileURL: gitHostingLinks.source(sourceFile.filePath),
 			localizations,
 		};
 
 		for (const { lang } of locales) {
+			const pathResolver = getPathResolver(sourceFile.pattern, defaultLocale, locales);
 			const localizationFile = contentIndex[lang]?.[sharedPath];
-			const localeFilePath = sourceFile.pathResolver.toLocalePath(sourceFile.filePath, lang);
+			const localeFilePath = pathResolver.toLocalePath(sourceFile.path, lang);
 
-			const fileSourceURL = localizationFile
-				? gitHostingLinks.source(localizationFile.filePath)
-				: gitHostingLinks.create(localeFilePath);
+			switch (localizationFile?.meta.type) {
+				case undefined: {
+					localizations[lang] = {
+						isMissing: true,
+						gitHostingFileURL: gitHostingLinks.create(localeFilePath),
+						gitHostingHistoryURL: gitHostingLinks.history(
+							sourceFile.path,
+							sourceFile.git.lastMajorChange
+						),
+					};
+					break;
+				}
 
-			localizations[lang] = {
-				file: localizationFile,
-				completeness: await getDictionaryCompletion(
-					sourceFile.type === 'dictionary' ? sourceFile.optionalKeys : undefined,
-					localizationFile,
-					sourceFile.filePath,
-					sharedPath
-				),
-				isMissing: !localizationFile,
-				isOutdated:
-					(localizationFile && sourceFile.lastMajorChange > localizationFile.lastMajorChange) ??
-					false,
-				gitHostingFileURL: fileSourceURL,
-				gitHostingHistoryURL: gitHostingLinks.history(
-					sourceFile.filePath,
-					localizationFile?.lastMajorChange ?? ''
-				),
-			};
+				case 'universal': {
+					localizations[lang] = {
+						...localizationFile,
+						isMissing: false,
+						isOutdated: sourceFile.git.lastMajorChange > localizationFile.git.lastMajorChange,
+						gitHostingHistoryURL: gitHostingLinks.history(
+							sourceFile.path,
+							sourceFile.git.lastMajorChange
+						),
+						meta: {
+							type: 'universal',
+						},
+					};
+					break;
+				}
+
+				case 'dictionary': {
+					localizations[lang] = {
+						...localizationFile,
+						isMissing: false,
+						isOutdated: sourceFile.git.lastMajorChange > localizationFile.git.lastMajorChange,
+						gitHostingHistoryURL: gitHostingLinks.history(
+							sourceFile.path,
+							sourceFile.git.lastMajorChange
+						),
+						meta: {
+							type: 'dictionary',
+							missingKeys: await getDictionaryCompletion(
+								sourceFile.meta.type === 'dictionary' ? sourceFile.meta.optionalKeys : undefined,
+								localizationFile.path,
+								sourceFile.path,
+								sharedPath
+							),
+						},
+					};
+				}
+			}
 		}
 		localizationStatus.push(fileStatus);
 	}
@@ -83,10 +111,10 @@ export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo
 	return localizationStatus;
 }
 
-async function getContentIndex(config: LunariaConfig, isShallowRepo: boolean) {
+async function getFileIndex(config: LunariaConfig, isShallowRepo: boolean) {
 	const { files, defaultLocale, locales, localizableProperty, ignoreKeywords, repository } = config;
 
-	const contentIndex: ContentIndex = {};
+	const contentIndex: FileIndex = {};
 	for (const file of files) {
 		const { location, ignore, pattern } = file;
 
@@ -98,7 +126,7 @@ async function getContentIndex(config: LunariaConfig, isShallowRepo: boolean) {
 		});
 
 		const filesData = await Promise.all(
-			contentPaths.sort().map(async (path): Promise<IndexData> => {
+			contentPaths.sort().map(async (path): Promise<IndexEntry> => {
 				const params = pathResolver.isMatch(path).params;
 
 				if (!params) {
@@ -113,6 +141,10 @@ async function getContentIndex(config: LunariaConfig, isShallowRepo: boolean) {
 				const lang = params.lang || defaultLocale.lang;
 				const sharedPath = pathResolver.toSharedPath(path);
 
+				const gitHostingLinks = getGitHostingLinks(repository);
+				const gitHostingFileURL = gitHostingLinks.source(path);
+				const gitHostingHistoryURL = gitHostingLinks.history(path);
+
 				const fileData = await getFileData(
 					path,
 					isShallowRepo,
@@ -121,8 +153,7 @@ async function getContentIndex(config: LunariaConfig, isShallowRepo: boolean) {
 					ignoreKeywords
 				);
 
-				const meta: FileMeta = {
-					pathResolver: pathResolver,
+				const meta: SourceFileMeta = {
 					type: file.type,
 					...(file.type === 'dictionary' && { optionalKeys: file.optionalKeys }),
 				};
@@ -130,19 +161,20 @@ async function getContentIndex(config: LunariaConfig, isShallowRepo: boolean) {
 				return {
 					lang,
 					sharedPath,
-					fileData,
+					...fileData,
+					gitHostingFileURL,
+					gitHostingHistoryURL,
+					pattern,
 					meta,
 				};
 			})
 		);
 
-		filesData.forEach(({ lang, sharedPath, fileData, meta }) => {
+		filesData.forEach((data) => {
+			const { lang, sharedPath } = data;
 			contentIndex[lang] = {
 				...contentIndex[lang],
-				[sharedPath]: {
-					...fileData,
-					...meta,
-				},
+				[sharedPath]: data,
 			};
 		});
 	}
@@ -184,12 +216,14 @@ async function getFileData(
 
 	// TODO: Optimize to only go after localizableProperty of source files.
 	return {
-		filePath: filePath,
+		path: filePath,
 		isLocalizable: await isLocalizable(filePath, localizableProperty),
-		lastChange: toUtcString(lastCommit.date),
-		lastCommitMessage: lastCommit.message,
-		lastMajorChange: toUtcString(lastMajorCommit.date),
-		lastMajorCommitMessage: lastMajorCommit.message,
+		git: {
+			lastChange: toUtcString(lastCommit.date),
+			lastCommitMessage: lastCommit.message,
+			lastMajorChange: toUtcString(lastMajorCommit.date),
+			lastMajorCommitMessage: lastMajorCommit.message,
+		},
 	};
 }
 

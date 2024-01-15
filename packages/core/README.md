@@ -35,7 +35,8 @@ The example below contains all of the **required** options to generate a dashboa
   "files": [
     {
       "location": "content/**/*.md",
-      "pattern": "content/@lang/@path"
+      "pattern": "content/@lang/@path",
+      "type": "universal"
     }
   ],
   "defaultLocale": {

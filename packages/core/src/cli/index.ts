@@ -15,6 +15,22 @@ const cli: CLI = {
 				},
 			],
 		},
+		{
+			name: 'sync',
+			description:
+				"Sync your config's files and/or locales fields based on your project's structure.",
+			usage: '[...options]',
+			options: [
+				{
+					name: '--package <package>',
+					description: 'Skip the package selection and use the specified one instead.',
+				},
+				{
+					name: '--skip-questions',
+					description: 'Confirm all config changes without waiting for prompts.',
+				},
+			],
+		},
 	],
 	options: [
 		{
@@ -29,7 +45,7 @@ const cli: CLI = {
 };
 
 async function showHelp(command?: string) {
-	const { help } = await import('./commands/help.js');
+	const { help } = await import('./help/index.js');
 	help(cli, command);
 }
 
@@ -45,8 +61,12 @@ async function main() {
 
 		switch (name) {
 			case 'build':
-				const { build } = await import('./commands/build.js');
+				const { build } = await import('./build/index.js');
 				await build(options);
+				break;
+			case 'sync':
+				const { sync } = await import('./sync/index.js');
+				await sync(options);
 				break;
 			default:
 				await showHelp();
@@ -59,4 +79,4 @@ async function main() {
 	}
 }
 
-await main();
+main().catch(console.error);
