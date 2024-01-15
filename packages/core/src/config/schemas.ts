@@ -178,6 +178,7 @@ export const LunariaRendererConfigSchema = z.object({
 
 export type OptionalKeys = z.infer<typeof OptionalKeysSchema>;
 export type Locale = z.infer<typeof LocaleSchema>;
+export type File = z.infer<typeof FileSchema>;
 
 export type LunariaConfig = z.infer<typeof LunariaConfigSchema>;
 export type LunariaUserConfig = z.input<typeof LunariaConfigSchema>;

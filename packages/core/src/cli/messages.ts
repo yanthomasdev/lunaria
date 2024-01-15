@@ -24,6 +24,10 @@ export function success(message: string) {
 	return pc.green(`✓ ${message}`);
 }
 
+export function failure(message: string) {
+	return pc.red(`✕ ${message}`);
+}
+
 export function highlight(message: string) {
 	return pc.blue(message);
 }
@@ -39,6 +43,12 @@ export function code(message: string) {
 /** Command-specific */
 export function build(message: string) {
 	const badge = pc.magenta('[build]');
+
+	return `${badge} ${message}`;
+}
+
+export function sync(message: string) {
+	const badge = pc.blue('[sync]');
 
 	return `${badge} ${message}`;
 }

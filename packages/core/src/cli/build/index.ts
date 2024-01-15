@@ -5,6 +5,7 @@ import { generateDashboard } from '../../dashboard/index.js';
 import { handleShallowRepo } from '../../status/git.js';
 import { getLocalizationStatus } from '../../status/index.js';
 import type { LocalizationStatus, LunariaConfig } from '../../types.js';
+import { getFormattedTime } from '../helpers.js';
 import { build as b, bold, error, highlight, success } from '../messages.js';
 import type { BuildOptions } from '../types.js';
 
@@ -85,9 +86,4 @@ async function getStatus(
 		}
 	}
 	return await getLocalizationStatus(config, isShallowRepo);
-}
-
-function getFormattedTime(start: number, end: number) {
-	const seconds = (end - start) / 1000;
-	return `${seconds.toFixed(2)}s`;
 }
