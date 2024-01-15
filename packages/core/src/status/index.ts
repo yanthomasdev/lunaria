@@ -274,15 +274,18 @@ function findLastMajorCommit(
 	// TODO: See how to document the fact monorepos paths will be based on
 	// the root of the project, not the root of the monorepo.
 
-	/** Regex that matches a `'@tracker-major'` or `'@tracker-minor'` group
+	/** Regex that matches a `'@lunaria-track'` or `'@lunaria-ignore'` group
 	 * and a sequence of characters till line break. Inteded for user-specified
 	 * file paths or globs, separated by a semicolon.
 	 *
 	 * This means whenever a valid tracker directive is found, the tracking system
-	 * is taken over by the user and all the files/patterns listed will get that
-	 * state (e.g. major change), while the others will get the inverse (e.g. minor change).
+	 * is taken over by the user and all the files listed will suffer status changes
+	 * or be ignored, while the non-specified files will go through the inverse.
 	 */
-	const TRACKER_DIRECTIVES = /(?<directive>@tracker-major|@tracker-minor):(?<pathsOrGlobs>[^\n]+)?/;
+
+	// TODO: Remove `@tracker-major` and `@tracker-minor` in v1.0
+	const TRACKER_DIRECTIVES =
+		/(?<directive>@tracker-major|@lunaria-track|@tracker-minor|@lunaria-ignore):(?<pathsOrGlobs>[^\n]+)?/;
 	/** Dynamic regex that matches any occurances of the user-specified keywords (case-insensitive)
 	 * @example
 	 * Given the array `['one', 'two', 'three']`, you get
@@ -304,8 +307,11 @@ function findLastMajorCommit(
 
 		return (
 			pathsOrGlobsList.find((pathOrGlob) => {
-				if (directive === '@tracker-major') return micromatch.isMatch(filePath, pathOrGlob);
-				if (directive === '@tracker-minor') return !micromatch.isMatch(filePath, pathOrGlob);
+				// @tracker-(major/minor) are kept for
+				if (directive === '@lunaria-track' || directive === '@tracker-major')
+					return micromatch.isMatch(filePath, pathOrGlob);
+				if (directive === '@lunaria-ignore' || directive === '@tracker-minor')
+					return !micromatch.isMatch(filePath, pathOrGlob);
 			}) !== undefined
 		);
 	});
