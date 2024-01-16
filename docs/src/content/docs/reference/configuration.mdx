@@ -1,0 +1,130 @@
+---
+title: Configuration
+sidebar:
+  order: 0
+---
+
+Lunaria allows for extensive customization of its default behavior. This reference covers all the available options in a `lunaria.config.json` file.
+
+```json title="lunaria.config.json"
+{
+	"$schema": "./node_modules/@lunariajs/core/config.schema.json"
+}
+```
+
+## Top-level Options
+
+### defaultLocale (required)
+
+**Type:** `{ label: string; lang: string }`
+
+Sets the default locale of your project, where the source content is from.
+
+`label` is the display name of the locale (e.g. `"English"`), and `lang` is the [BCP-47 tag](https://datatracker.ietf.org/doc/html/rfc5646), or other identifying code of the locale used in the tracked file's path (e.g. `"en"`).
+
+```json
+{
+	"defaultLocale": {
+		"label": "English",
+		"lang": "en"
+	}
+}
+```
+
+### locales (required)
+
+**Type: `{ label: string; lang: string }[]`**
+
+Sets all the locales for localization of your project. Its entries follow the same signature as [defaultLocale](#defaultLocale).
+
+```json
+{
+	"locales": [
+		{
+			"label": "Spanish",
+			"lang": "es"
+		},
+		{
+			"label": "Português",
+			"lang": "pt"
+		}
+	]
+}
+```
+
+### ignoreKeywords
+
+**Type: `string[]`**<br/>
+**Default: `['lunaria-ignore', 'fix typo']`**
+
+List of keywords in a commit's title for Lunaria to automatically ignore and don't trigger status changes. By default, any commits' title including `lunaria-ignore` or `fix typo` will be ignored.
+
+You can disable the feature by providing an empty array (`[]`), or override with your own keywords.
+
+```json
+{
+	"ignoreKeywords": ["i18nIgnore", "en-only"]
+}
+```
+
+### localizableProperty
+
+**Type: `string`**
+
+Name of a frontmatter property with boolean value determining if a file can be localized or not.
+
+Any files where the property is absent or found with a `false` will not be tracked, while the ones with `true` will, and in case a file was found with a non-boolean value, an error will be thrown.
+
+For files that do not support frontmatter, this option will be ignored and the file assumed to be localizable.
+
+This option is recommended when you use a file format that supports frontmatter metadata (e.g. Markdown, MDX, YAML) and you want to gradually make files available for localization. If you expect a specific file to never be localized, consider not tracking it in the first place.
+
+```json
+{
+	"localizableProperty": "readyForL10n"
+}
+```
+
+### outDir
+
+**Type: `string`**<br/>
+**Default: `'./dist/lunaria'`**
+
+Sets the directory that `lunaria build` writes your final dashboard and status to.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+	"outDir": "./lunaria"
+}
+```
+
+### cloneDir
+
+**Type: `string`**<br/>
+**Default: `'./node_modules/.cache/lunaria/history'`**
+
+Sets the directory that Lunaria will use to store your temporary git history when using a shallow repository.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+	"cloneDir": "./lunaria/history"
+}
+```
+
+### renderer
+
+**Type: `string`**
+
+Sets the file path to a `.(c/m)js` or `.(c/m)ts` file with your dashboard renderer configuration.
+
+The expected value is a relative path from the project's root.
+
+```json
+{
+	"renderer": "./renderer.config.ts"
+}
+```
