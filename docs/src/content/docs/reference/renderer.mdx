@@ -1,0 +1,70 @@
+---
+title: Renderer
+description: An reference of all available Lunaria renderer configuration options.
+sidebar:
+  order: 1
+---
+
+Lunaria allows for slotting and overriding content into your generated dashboard. This reference covers all the available renderer options.
+
+```ts title="renderer.config.ts"
+import { defineRendererConfig } from '@lunariajs/core';
+
+export default defineRendererConfig({
+	// your configuration options go here...
+});
+```
+
+:::tip
+For your renderer configuration to be applied, don't forget to fill the [`renderer`](/reference/configuration/#renderer) field of your `lunaria.config.json` file.
+:::
+
+## Components
+
+Lunaria comes with a built-in `html` tagged template literal to allow for a better component authoring experience.
+
+```ts title="renderer.config.ts"
+import { defineRendererConfig, html } from '@lunariajs/core';
+
+export default defineRendererConfig({
+	slots: {
+		afterTitle: html`<p>This is a example component!</p>`,
+	},
+});
+```
+
+Syntax highlighting and language support is available through the [lit-html VSCode extension](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) and the [vim-jsx-pretty plugin](https://github.com/MaxMEllon/vim-jsx-pretty).
+
+## Top-level Options
+
+### Slots
+
+**Type: [`Slots`](#slots-1)**
+
+#### `Slots`
+
+```ts
+type Slots = {
+	head?: (config: LunariaConfig) => string;
+	beforeTitle?: (config: LunariaConfig) => string;
+	afterTitle?: (config: LunariaConfig) => string;
+	afterStatusByLocale?: (config: LunariaConfig) => string;
+	afterStatusByFile?: (config: LunariaConfig) => string;
+};
+```
+
+### Overrides
+
+**Type: [`Overrides`](#overrides-1)**
+
+#### `Overrides`
+
+{/* prettier-ignore */}
+```ts
+type Overrides = {
+	meta?: (config: LunariaConfig) => string;
+	body?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+	statusByLocale?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+	statusByFile?: (config: LunariaConfig, status: LocalizationStatus[]) => string;
+};
+```
