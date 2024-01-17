@@ -42,25 +42,20 @@ export default defineConfig({
 							label: 'Manual Installation',
 							link: 'manual-installation',
 						},
-						/*{
+						{
 							label: 'Workflow',
 							link: 'workflow',
-						},*/
+						},
 					],
+				},
+				{
+					label: 'Guides',
+					autogenerate: { directory: 'guides' },
 				},
 				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },
 				},
-				/*{
-					label: 'Features',
-					items: [
-						{
-							label: 'Tracking',
-							link: 'features/tracking',
-						},
-					],
-				},*/
 			],
 			customCss: ['./src/styles/theme.css', './src/styles/landing.css'],
 		}),
