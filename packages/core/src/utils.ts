@@ -1,7 +1,7 @@
 import jiti from 'jiti';
 import { resolve } from 'node:path';
 import { joinURL } from 'ufo';
-import { error, highlight } from './cli/messages.js';
+import { error, highlight } from './cli/console.js';
 
 export function toUtcString(date: string) {
 	return new Date(date).toISOString();

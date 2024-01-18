@@ -1,4 +1,3 @@
-import { rmSync } from 'node:fs';
 import { defineBuildConfig } from 'unbuild';
 
 export default defineBuildConfig([
@@ -6,19 +5,13 @@ export default defineBuildConfig([
 		preset: '../../build.preset.ts',
 		entries: [
 			'src/index',
+			'src/dashboard/index',
 			'src/dashboard/components',
-			{
-				input: 'src/cli/index.ts',
-				outDir: 'dist/cli/',
-				builder: 'rollup',
-			},
+			'src/status/index',
+			'src/status/git',
+			'src/config/index',
+			'src/cli/index',
+			'src/cli/console',
 		],
-		hooks: {
-			// Cleans empty .d.(m)ts files unnecessary for the CLI
-			'build:done': () => {
-				rmSync('./dist/cli/index.d.mts');
-				rmSync('./dist/cli/index.d.ts');
-			},
-		},
 	},
 ]);

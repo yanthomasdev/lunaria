@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.26",
   "description": "Localization management system for open-source projects",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.mts",
   "bin": {
     "lunaria": "./dist/cli/index.mjs"
   },
@@ -15,7 +15,28 @@
     "./components": {
       "types": "./dist/dashboard/components.d.mts",
       "default": "./dist/dashboard/components.mjs"
-    }
+    },
+    "./dashboard": {
+      "types": "./dist/dashboard/index.d.mts",
+      "default": "./dist/dashboard/index.mjs"
+    },
+    "./git": {
+      "types": "./dist/status/git.d.mts",
+      "default": "./dist/status/git.mjs"
+    },
+    "./status": {
+      "types": "./dist/status/index.d.mts",
+      "default": "./dist/status/index.mjs"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.mts",
+      "default": "./dist/config/index.mjs"
+    },
+    "./console": {
+      "types": "./dist/cli/console.d.mts",
+      "default": "./dist/cli/console.mjs"
+    },
+    "./cli": "./dist/cli/index.mjs"
   },
   "engines": {
     "node": ">=18.17.0"

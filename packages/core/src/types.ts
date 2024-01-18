@@ -1,8 +1,4 @@
-import type { OptionalKeys } from './config/schemas.js';
-
-export type * from './config/schemas.js';
-export type * from './dashboard/schemas.js';
-export type * from './status/schemas.js';
+import type { OptionalKeys } from './config/index.js';
 
 export type GitHistory = {
 	lastChange: string;

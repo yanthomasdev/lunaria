@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { error } from '../cli/messages.js';
-import type { Dashboard } from '../types.js';
+import { error } from '../cli/console.js';
+import type { Dashboard } from './index.js';
 
 export function readAsset(path: string) {
 	const resolvedPath = resolve(path);

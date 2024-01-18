@@ -1,7 +1,10 @@
-import { validateConfig } from './config/index.js';
+import {
+	validateConfig,
+	type LunariaUserConfig,
+	type LunariaUserRendererConfig,
+} from './config/index.js';
 import { handleShallowRepo } from './status/git.js';
 import { getLocalizationStatus } from './status/index.js';
-import type { LunariaUserConfig, LunariaUserRendererConfig } from './types.js';
 
 export { html } from './dashboard/index.js';
 export type * from './types.js';
