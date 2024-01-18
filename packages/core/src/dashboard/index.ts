@@ -1,5 +1,8 @@
-import type { LocalizationStatus, LunariaConfig, LunariaRendererConfig } from '../types.js';
+import type { LunariaConfig, LunariaRendererConfig } from '../config/index.js';
+import type { LocalizationStatus } from '../types.js';
 import { Page } from './components.js';
+
+export * from './schemas.js';
 
 export function html(strings: TemplateStringsArray, ...values: (string | string[])[]) {
 	const treatedValues = values.map((value) => (Array.isArray(value) ? value.join('') : value));

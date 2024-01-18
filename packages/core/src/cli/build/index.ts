@@ -1,12 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import type { LunariaConfig } from '../../config/index.js';
 import { loadConfig } from '../../config/index.js';
 import { generateDashboard } from '../../dashboard/index.js';
 import { handleShallowRepo } from '../../status/git.js';
 import { getLocalizationStatus } from '../../status/index.js';
-import type { LocalizationStatus, LunariaConfig } from '../../types.js';
+import type { LocalizationStatus } from '../../types.js';
+import { build as b, bold, error, highlight, success } from '../console.js';
 import { getFormattedTime } from '../helpers.js';
-import { build as b, bold, error, highlight, success } from '../messages.js';
 import type { BuildOptions } from '../types.js';
 
 export async function build(options: BuildOptions) {

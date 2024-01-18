@@ -2,8 +2,8 @@ import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
-import { info } from '../cli/messages.js';
-import type { LunariaConfig } from '../types.js';
+import { info } from '../cli/console.js';
+import type { LunariaConfig } from '../config/index.js';
 import { cleanJoinURL } from '../utils.js';
 
 const git = simpleGit({
