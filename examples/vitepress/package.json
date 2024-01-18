@@ -14,6 +14,6 @@
     "vitepress": "1.0.0-rc.20"
   },
   "dependencies": {
-    "@lunariajs/core": "workspace:0.0.25"
+    "@lunariajs/core": "workspace:0.0.26"
   }
 }

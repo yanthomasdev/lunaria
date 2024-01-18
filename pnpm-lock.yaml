@@ -31,7 +31,7 @@ importers:
         version: 0.15.0(astro@4.0.3)
       astro:
         specifier: ^4.0.3
-        version: 4.0.3(@types/node@20.10.5)(typescript@5.3.3)
+        version: 4.0.3(typescript@5.3.3)
       sharp:
         specifier: ^0.32.5
         version: 0.32.6
@@ -67,7 +67,7 @@ importers:
   examples/vitepress:
     dependencies:
       '@lunariajs/core':
-        specifier: workspace:0.0.25
+        specifier: workspace:0.0.26
         version: link:../../packages/core
     devDependencies:
       ts-node:
@@ -341,7 +341,7 @@ packages:
       astro: ^4.0.0-beta.0
     dependencies:
       '@astrojs/prism': 3.0.0
-      astro: 4.0.3(@types/node@20.10.5)(typescript@5.3.3)
+      astro: 4.0.3(typescript@5.3.3)
       github-slugger: 2.0.0
       import-meta-resolve: 4.0.0
       mdast-util-definitions: 6.0.0
@@ -368,7 +368,7 @@ packages:
       '@astrojs/markdown-remark': 4.0.0(astro@4.0.3)
       '@mdx-js/mdx': 3.0.0
       acorn: 8.11.2
-      astro: 4.0.3(@types/node@20.10.5)(typescript@5.3.3)
+      astro: 4.0.3(typescript@5.3.3)
       es-module-lexer: 1.4.1
       estree-util-visit: 2.0.0
       github-slugger: 2.0.0
@@ -409,7 +409,7 @@ packages:
       '@pagefind/default-ui': 1.0.4
       '@types/hast': 3.0.3
       '@types/mdast': 4.0.3
-      astro: 4.0.3(@types/node@20.10.5)(typescript@5.3.3)
+      astro: 4.0.3(typescript@5.3.3)
       astro-expressive-code: 0.29.3(astro@4.0.3)
       bcp-47: 2.1.0
       execa: 8.0.1
@@ -2480,6 +2480,7 @@ packages:
     resolution: {integrity: sha512-nNPsNE65wjMxEKI93yOP+NPGGBJz/PoN3kZsVLee0XMiJolxSekEVD8wRwBUBqkwc7UWop0edW50yrCQW4CyRw==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
 
   /@types/node@20.8.10:
     resolution: {integrity: sha512-TlgT8JntpcbmKUFzjhsyhGfP2fsiz1Mv56im6enJ905xG1DAYesxJaeSbGqQmAw8OWPdhyJGhGSQGKRNJ45u9w==}
@@ -2881,11 +2882,11 @@ packages:
     peerDependencies:
       astro: ^3.0.0-beta || ^4.0.0-beta
     dependencies:
-      astro: 4.0.3(@types/node@20.10.5)(typescript@5.3.3)
+      astro: 4.0.3(typescript@5.3.3)
       remark-expressive-code: 0.29.3
     dev: false
 
-  /astro@4.0.3(@types/node@20.10.5)(typescript@5.3.3):
+  /astro@4.0.3(typescript@5.3.3):
     resolution: {integrity: sha512-hrwe7CIVhSKW8/iibDs1hpqzZAtvx6Qu8TFFxjaGbooEWF720M9L+ZZtyTgrcy6K/ZHJ0xwFvZV3/X2Vvbf/LQ==}
     engines: {node: '>=18.14.1', npm: '>=6.14.0'}
     hasBin: true
@@ -2946,7 +2947,7 @@ packages:
       tsconfck: 3.0.0(typescript@5.3.3)
       unist-util-visit: 5.0.0
       vfile: 6.0.1
-      vite: 5.0.6(@types/node@20.10.5)
+      vite: 5.0.6
       vitefu: 0.2.5(vite@5.0.6)
       which-pm: 2.1.1
       yargs-parser: 21.1.1
@@ -4689,7 +4690,7 @@ packages:
   /hast-util-is-element@3.0.0:
     resolution: {integrity: sha512-Val9mnv2IWpLbNPqc/pUem+a7Ipj2aHacCwgNfTiK0vJKl0LF+4Ba4+v1oPHFpf3bLYmreq0/l3Gud9S5OH42g==}
     dependencies:
-      '@types/hast': 3.0.1
+      '@types/hast': 3.0.3
     dev: false
 
   /hast-util-parse-selector@3.1.1:
@@ -9067,7 +9068,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vite@5.0.6(@types/node@20.10.5):
+  /vite@5.0.6:
     resolution: {integrity: sha512-MD3joyAEBtV7QZPl2JVVUai6zHms3YOmLR+BpMzLlX2Yzjfcc4gTgNi09d/Rua3F4EtC8zdwPU8eQYyib4vVMQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -9095,7 +9096,6 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.10.5
       esbuild: 0.19.8
       postcss: 8.4.32
       rollup: 4.6.1
@@ -9111,7 +9111,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 5.0.6(@types/node@20.10.5)
+      vite: 5.0.6
     dev: false
 
   /vitepress@1.0.0-rc.20(@algolia/client-search@4.22.0)(@types/node@20.10.5)(search-insights@2.13.0):

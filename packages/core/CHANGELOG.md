@@ -1,5 +1,17 @@
 # @lunariajs/core
 
+## 0.0.26
+
+### Patch Changes
+
+- 8c09b43: Change `cloneDir` default
+- c462f75: Improve renderer components types
+- 9c325ae: Add lunaria sync command
+- b804110: Improve types and status signature
+- ff3be57: Simplify component system and dashboard generation
+- 7838358: Update tracker directive names
+- cbdb059: Improve generated `gitHostingLinks.history()`
+
 ## 0.0.25
 
 ### Patch Changes
