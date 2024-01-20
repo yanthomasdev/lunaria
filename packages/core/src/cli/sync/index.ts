@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
-	loadConfig,
+	readConfig,
 	writeConfig,
 	type LunariaConfig,
 	type LunariaUserConfig,
@@ -102,7 +102,7 @@ export async function updateConfig(
 	file: LunariaUserConfig['files'][number],
 	skip: boolean
 ) {
-	const { rawUserConfig: config } = await loadConfig(configPath);
+	const config = await readConfig(configPath);
 
 	if (defaultLocale) {
 		let answer: boolean = true;
@@ -149,7 +149,8 @@ export async function updateConfig(
 			answer = Boolean(updateFiles);
 		}
 
-		const otherFiles = config.files?.filter((f) => f.location !== file.location) ?? [];
+		const otherFiles =
+			config.files?.filter((f: { location: string }) => f.location !== file.location) ?? [];
 
 		if (answer || skip) config.files = [file, ...otherFiles];
 	}
