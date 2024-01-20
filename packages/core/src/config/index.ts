@@ -19,15 +19,12 @@ const fromZodErrorOptions = {
 };
 
 export async function loadConfig(path: string) {
-	const resolvedPath = resolve(path);
-
-	if (/\.json$/.test(resolvedPath)) {
+	if (/\.json$/.test(path)) {
 		try {
-			const rawUserConfig = JSON.parse(readFileSync(resolvedPath, 'utf-8')) as LunariaUserConfig;
-			const userConfig = validateConfig(rawUserConfig);
+			const userConfig = validateConfig(readConfig(path));
 			const rendererConfig = await loadRendererConfig(userConfig.renderer);
 
-			return { rawUserConfig, userConfig, rendererConfig };
+			return { userConfig, rendererConfig };
 		} catch (e) {
 			console.error(error('Failed to load Lunaria config\n'));
 			throw e;
@@ -84,13 +81,31 @@ export function validateRendererConfig(config: LunariaUserRendererConfig) {
 	process.exit(1);
 }
 
+export function readConfig(path: string) {
+	const resolvedPath = resolve(path);
+
+	if (/\.json$/.test(resolvedPath)) {
+		try {
+			const configString = readFileSync(resolvedPath, 'utf-8');
+			return JSON.parse(configString);
+		} catch (e) {
+			console.error(error('Failed to write Lunaria config\n'));
+			throw e;
+		}
+	}
+
+	console.error(error('Invalid Lunaria config extension, expected .json'));
+	process.exit(1);
+}
+
 export function writeConfig(path: string, config: LunariaUserConfig) {
 	const resolvedPath = resolve(path);
 
 	if (/\.json$/.test(resolvedPath)) {
 		try {
-			const configJSON = JSON.stringify(config, null, 2);
-			writeFileSync(resolvedPath, configJSON);
+			const configString = JSON.stringify(config, null, 2);
+			writeFileSync(resolvedPath, configString);
+			return;
 		} catch (e) {
 			console.error(error('Failed to write Lunaria config\n'));
 			throw e;
