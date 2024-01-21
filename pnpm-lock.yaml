@@ -27,8 +27,8 @@ importers:
   docs:
     dependencies:
       '@astrojs/starlight':
-        specifier: ^0.16.0
-        version: 0.16.0(astro@4.2.1)
+        specifier: ^0.15.0
+        version: 0.15.4(astro@4.2.1)
       astro:
         specifier: ^4.0.3
         version: 4.2.1(typescript@5.3.3)
@@ -479,6 +479,33 @@ packages:
     dependencies:
       sitemap: 7.1.1
       zod: 3.22.4
+    dev: false
+
+  /@astrojs/starlight@0.15.4(astro@4.2.1):
+    resolution: {integrity: sha512-o3heYH+RltsCsvO3L0qLnnFJEakwLSRoxW4wFX2zDeDWta9BIpdSOo7+Zg+sSn7k9RPOhI9SGvdFx67B53I18Q==}
+    peerDependencies:
+      astro: ^4.0.0
+    dependencies:
+      '@astrojs/mdx': 2.0.5(astro@4.2.1)
+      '@astrojs/sitemap': 3.0.5
+      '@pagefind/default-ui': 1.0.4
+      '@types/hast': 3.0.3
+      '@types/mdast': 4.0.3
+      astro: 4.2.1(typescript@5.3.3)
+      astro-expressive-code: 0.31.0(astro@4.2.1)
+      bcp-47: 2.1.0
+      hast-util-select: 6.0.2
+      hastscript: 8.0.0
+      mdast-util-directive: 3.0.0
+      pagefind: 1.0.4
+      rehype: 13.0.1
+      remark-directive: 3.0.0
+      unified: 11.0.4
+      unist-util-remove: 4.0.0
+      unist-util-visit: 5.0.0
+      vfile: 6.0.1
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@astrojs/starlight@0.16.0(astro@4.2.1):
