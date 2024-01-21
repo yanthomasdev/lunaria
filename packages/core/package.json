@@ -43,8 +43,7 @@
   },
   "files": [
     "dist",
-    "config.schema.json",
-    "CHANGELOG.md"
+    "config.schema.json"
   ],
   "keywords": [
     "i18n",
