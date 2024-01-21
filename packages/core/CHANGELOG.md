@@ -1,5 +1,13 @@
 # @lunariajs/core
 
+## 0.0.27
+
+### Patch Changes
+
+- ff2bda6: Add `readConfig` and fix `writeConfig` issue
+- 52f43d6: Organize and extend exports
+- b29f478: Expose `simpleGit` instance
+
 ## 0.0.26
 
 ### Patch Changes
