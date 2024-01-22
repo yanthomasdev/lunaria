@@ -1,6 +1,6 @@
 import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
-import { DashboardSchema } from '../dashboard/schemas.js';
+import { DashboardSchema } from '../dashboard/index.js';
 import type { LocalizationStatus } from '../types.js';
 
 const RepositorySchema = z.object({

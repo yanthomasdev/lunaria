@@ -1,8 +1,8 @@
 import glob from 'fast-glob';
-import type { File, Locale } from '../../types.js';
+import type { Locale, LunariaUserConfig } from '../../config/index.js';
 import { loadWithJiti } from '../../utils.js';
-import { error } from '../messages.js';
-import { updateConfig } from './utils.js';
+import { error } from '../console.js';
+import { updateConfig } from './index.js';
 
 export async function vitepress(configPath: string, skipQuestions: boolean) {
 	const config: {
@@ -14,9 +14,12 @@ export async function vitepress(configPath: string, skipQuestions: boolean) {
 		: undefined;
 
 	const defaultLocale = allLocales?.find((locale) => locale.label === config.locales?.root?.label);
-	const locales = allLocales?.filter((locale) => locale.label !== defaultLocale?.label);
+	const locales = allLocales?.filter((locale) => locale.label !== defaultLocale?.label) as [
+		Locale,
+		...Locale[],
+	];
 
-	const file: Omit<File, 'ignore'> = {
+	const file: LunariaUserConfig['files'][number] = {
 		location: '**/*.md',
 		pattern: '@lang/@path',
 		type: 'universal',

@@ -2,16 +2,16 @@ import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import { resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
-import { info } from '../cli/messages.js';
-import type { LunariaConfig } from '../types.js';
+import { error, info } from '../cli/console.js';
+import type { LunariaConfig } from '../config/index.js';
 import { cleanJoinURL } from '../utils.js';
 
-const git = simpleGit({
+export const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
 });
 
 /** Creates a clone of the git history to be used on platforms
- * that only allow shallow repositores (e.g. Vercel) and returns
+ * that only allow shallow repositories (e.g. Vercel) and returns
  * `true` if it's running on a shallow repository.
  */
 export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig) {
@@ -38,15 +38,20 @@ export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig)
 }
 
 export async function getFileHistory(path: string) {
-	const log = await git.log({
-		file: path,
-		strictDate: true,
-	});
+	try {
+		const log = await git.log({
+			file: path,
+			strictDate: true,
+		});
 
-	return {
-		latest: log.latest,
-		all: log.all,
-	};
+		return {
+			latest: log.latest,
+			all: log.all,
+		};
+	} catch (e) {
+		error('Failed to find commits. Have you made any commits in your branch yet?');
+		process.exit(1);
+	}
 }
 
 export function getGitHostingLinks(repository: LunariaConfig['repository']) {

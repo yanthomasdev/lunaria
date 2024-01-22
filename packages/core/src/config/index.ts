@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fromZodError } from 'zod-validation-error';
-import { error } from '../cli/messages.js';
+import { error } from '../cli/console.js';
 import { loadWithJiti } from '../utils.js';
 import {
 	LunariaConfigSchema,
@@ -10,6 +10,8 @@ import {
 	type LunariaUserRendererConfig,
 } from './schemas.js';
 
+export * from './schemas.js';
+
 const fromZodErrorOptions = {
 	prefix: '- ',
 	prefixSeparator: '',
@@ -17,12 +19,9 @@ const fromZodErrorOptions = {
 };
 
 export async function loadConfig(path: string) {
-	const resolvedPath = resolve(path);
-
-	if (/\.json$/.test(resolvedPath)) {
+	if (/\.json$/.test(path)) {
 		try {
-			const rawConfig = JSON.parse(readFileSync(resolvedPath, 'utf-8'));
-			const userConfig = validateConfig(rawConfig);
+			const userConfig = validateConfig(readConfig(path));
 			const rendererConfig = await loadRendererConfig(userConfig.renderer);
 
 			return { userConfig, rendererConfig };
@@ -79,5 +78,40 @@ export function validateRendererConfig(config: LunariaUserRendererConfig) {
 	const validationError = fromZodError(parsedConfig.error, fromZodErrorOptions);
 
 	console.error(error('Invalid Lunaria renderer config:\n' + validationError));
+	process.exit(1);
+}
+
+export function readConfig(path: string) {
+	const resolvedPath = resolve(path);
+
+	if (/\.json$/.test(resolvedPath)) {
+		try {
+			const configString = readFileSync(resolvedPath, 'utf-8');
+			return JSON.parse(configString);
+		} catch (e) {
+			console.error(error('Failed to write Lunaria config\n'));
+			throw e;
+		}
+	}
+
+	console.error(error('Invalid Lunaria config extension, expected .json'));
+	process.exit(1);
+}
+
+export function writeConfig(path: string, config: LunariaUserConfig) {
+	const resolvedPath = resolve(path);
+
+	if (/\.json$/.test(resolvedPath)) {
+		try {
+			const configString = JSON.stringify(config, null, 2);
+			writeFileSync(resolvedPath, configString);
+			return;
+		} catch (e) {
+			console.error(error('Failed to write Lunaria config\n'));
+			throw e;
+		}
+	}
+
+	console.error(error('Invalid Lunaria config extension, expected .json'));
 	process.exit(1);
 }

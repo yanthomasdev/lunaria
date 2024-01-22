@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse } from 'ultramatter';
-import { error, highlight } from '../cli/messages.js';
+import { error, highlight } from '../cli/console.js';
 
 export const frontmatterFile = /\.(yml|md|markdown|mdx|mdoc)$/;
 

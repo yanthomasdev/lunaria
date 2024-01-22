@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
-import { code, error, highlight } from '../cli/messages.js';
-import { type Dictionary, type OptionalKeys } from '../types.js';
+import { code, error, highlight } from '../cli/console.js';
+import type { OptionalKeys } from '../config/index.js';
+import { type Dictionary } from '../types.js';
 import { loadWithJiti } from '../utils.js';
 import { frontmatterFile, getFileFrontmatter } from './frontmatter.js';
-import { DictionaryContentSchema } from './schemas.js';
+import { DictionaryContentSchema } from './index.js';
 
 export async function getDictionaryCompletion(
 	optionalKeys: OptionalKeys | undefined,

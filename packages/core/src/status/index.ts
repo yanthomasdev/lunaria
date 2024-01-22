@@ -3,14 +3,13 @@ import micromatch from 'micromatch';
 import { join, resolve } from 'node:path';
 import { compile, match, type MatchResult } from 'path-to-regexp';
 import type { DefaultLogFields, ListLogLine } from 'simple-git';
-import { code, error, highlight } from '../cli/messages.js';
+import { code, error, highlight } from '../cli/console.js';
+import type { Locale, LunariaConfig } from '../config/index.js';
 import type {
 	FileData,
 	FileIndex,
 	IndexEntry,
-	Locale,
 	LocalizationStatus,
-	LunariaConfig,
 	RegExpGroups,
 	SourceFileMeta,
 } from '../types.js';
@@ -18,6 +17,8 @@ import { getStringFromFormat, toUtcString } from '../utils.js';
 import { getDictionaryCompletion } from './dictionaries.js';
 import { frontmatterFile, getFileFrontmatter } from './frontmatter.js';
 import { getFileHistory, getGitHostingLinks } from './git.js';
+
+export * from './schemas.js';
 
 export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo: boolean) {
 	const { defaultLocale, locales, repository } = config;

@@ -1,14 +1,8 @@
-import type {
-	Dashboard,
-	Locale,
-	LocalizationStatus,
-	LunariaConfig,
-	LunariaRendererConfig,
-	Status,
-} from '../types.js';
+import type { Locale, LunariaConfig, LunariaRendererConfig } from '../config/index.js';
+import type { LocalizationStatus, Status } from '../types.js';
 import { getStringFromFormat } from '../utils.js';
 import { getCollapsedPath, inlineCustomCssFiles, readAsset } from './helpers.js';
-import { html } from './index.js';
+import { html, type Dashboard } from './index.js';
 import { Styles } from './styles.js';
 
 export const Page = (
