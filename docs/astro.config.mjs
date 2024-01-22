@@ -43,15 +43,15 @@ export default defineConfig({
 							link: 'manual-installation',
 						},
 						{
-							label: 'Workflow',
-							link: 'workflow',
+							label: 'Recommendations',
+							link: 'recommendations',
 						},
 					],
 				},
-				{
+				/*{
 					label: 'Guides',
 					autogenerate: { directory: 'guides' },
-				},
+				},*/
 				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },
