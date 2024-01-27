@@ -20,6 +20,8 @@ export type SyncOptions = GlobalOptions & {
 	'skip-questions': boolean | undefined;
 };
 
+export type InitOptions = GlobalOptions;
+
 export type PackageJson = {
 	dependencies?: Record<string, string>;
 	devDependencies?: Record<string, string>;

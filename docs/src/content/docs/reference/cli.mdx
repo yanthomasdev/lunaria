@@ -43,7 +43,8 @@ lunaria [command] [...options]
 Commands
 
     build  Build your dashboard and status to disk.
-     sync  Sync your config's files and/or locales fields based on your project's structure.
+     init  Initialize Lunaria in your project.
+     sync  Sync your config fields based on your project.
 
 Global Options
 
@@ -68,6 +69,10 @@ Builds your dashboard and status to disk. By default, the files will be output i
 The command will skip the status generation and use the latest already available status on disk instead.
 
 This option is recommended when you want to rebuild your dashboard constantly (e.g. to test styling changes) without waiting for the status to be built.
+
+### `lunaria init`
+
+Initializes Lunaria in your project, prompting you with a few questions and setting up a new `lunaria.config.json` for you.
 
 ### `lunaria sync`
 

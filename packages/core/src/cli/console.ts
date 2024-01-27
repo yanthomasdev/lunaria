@@ -1,35 +1,62 @@
-import { ConfirmPrompt, SelectPrompt, isCancel } from '@clack/core';
+import { ConfirmPrompt, SelectPrompt, TextPrompt } from '@clack/core';
 import pc from 'picocolors';
 
-export function handleCancel(
-	value: (string | number | boolean) | symbol,
-	message: string = 'Operation cancelled.'
-) {
-	if (isCancel(value)) {
-		console.log(failure(message));
-		process.exit(0);
-	}
+export { isCancel } from '@clack/core';
+
+export function text(opts: {
+	message: string;
+	placeholder?: string;
+	defaultValue?: string;
+	initialValue?: string;
+	validate?: (value: string) => string | void;
+}) {
+	return new TextPrompt({
+		validate: opts.validate,
+		placeholder: opts.placeholder,
+		defaultValue: opts.defaultValue,
+		initialValue: opts.initialValue,
+		render() {
+			const title = `${opts.message}\n`;
+			const placeholder = opts.placeholder
+				? pc.inverse(opts.placeholder[0]) + pc.dim(opts.placeholder.slice(1))
+				: pc.inverse(pc.hidden('_'));
+			const value = !this.value ? placeholder : this.valueWithCursor;
+
+			switch (this.state) {
+				case 'error':
+					return `${title.trim()}\n  ${value}\n  ${pc.yellow(this.error)}\n`;
+				case 'submit':
+					return `${title}  ${pc.dim(this.value || opts.placeholder)}`;
+				case 'cancel':
+					return `${title}  ${pc.strikethrough(pc.dim(this.value ?? ''))}${
+						this.value?.trim() ? '\n' : ''
+					}`;
+				default:
+					return `${title}  ${value}\n\n`;
+			}
+		},
+	}).prompt() as Promise<string | symbol>;
 }
 
 export function select(opts: {
-	options: { value: string }[];
+	options: { value: string; label?: string }[];
 	message: string;
 	initialValue?: string;
 }) {
 	const opt = (
-		option: { value: string },
+		option: { value: string; label?: string },
 		state: 'inactive' | 'active' | 'selected' | 'cancelled'
 	) => {
-		const label = option.value;
+		const label = option.label ?? option.value;
 		switch (state) {
 			case 'selected':
-				return `Selected: ${pc.dim(label)}\n`;
+				return `${pc.dim(label)}`;
 			case 'active':
 				return `${pc.green('>')} ${label}`;
 			case 'cancelled':
 				return `${pc.strikethrough(pc.dim(label))}`;
 			default:
-				return `${pc.dim(label)}`;
+				return `${pc.dim(pc.hidden('__') + label)}`;
 		}
 	};
 
@@ -37,7 +64,7 @@ export function select(opts: {
 		options: opts.options,
 		initialValue: opts.initialValue,
 		render() {
-			const title = `${opts.message}\n\n`;
+			const title = `${opts.message}\n`;
 			const allOptions = this.options
 				.map((option, i) => `${opt(option, i === this.cursor ? 'active' : 'inactive')}`)
 				.join('\n');
@@ -48,7 +75,7 @@ export function select(opts: {
 				case 'cancel':
 					return `${title}  ${opt(this.options[this.cursor]!, 'cancelled')}\n`;
 				default: {
-					return `${title}  ${allOptions}\n\n`;
+					return `${title}    ${allOptions}\n\n`;
 				}
 			}
 		},
@@ -64,7 +91,7 @@ export function confirm(opts: { message: string; initialValue?: boolean }) {
 		inactive,
 		initialValue: opts.initialValue ?? true,
 		render() {
-			const title = `${opts.message}`;
+			const title = `${opts.message}\n`;
 			const value = this.value ? active : inactive;
 
 			switch (this.state) {
@@ -76,11 +103,11 @@ export function confirm(opts: { message: string; initialValue?: boolean }) {
 					return `${title} ${
 						this.value
 							? `${pc.green('>')} ${active}`
-							: ` ${!this.value ? ' ' : ''}${pc.dim(active)}`
-					} ${pc.dim('/')} ${
+							: `${!this.value ? pc.hidden('__') : ''}${pc.dim(active)}`
+					}\n${
 						!this.value
 							? `${pc.green('>')} ${inactive}`
-							: ` ${this.value ? ' ' : ''}${pc.dim(inactive)}`
+							: `${this.value ? pc.hidden('__') : ''}${pc.dim(inactive)}`
 					}\n\n`;
 				}
 			}
@@ -137,6 +164,12 @@ export function build(message: string) {
 
 export function sync(message: string) {
 	const badge = pc.blue('[sync]');
+
+	return `${badge} ${message}`;
+}
+
+export function init(message: string) {
+	const badge = pc.cyan('[init]');
 
 	return `${badge} ${message}`;
 }
