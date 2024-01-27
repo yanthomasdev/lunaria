@@ -6,7 +6,16 @@ import {
 	type LunariaConfig,
 	type LunariaUserConfig,
 } from '../../config/index.js';
-import { bold, confirm, error, handleCancel, highlight, sync as s, select } from '../console.js';
+import {
+	bold,
+	confirm,
+	error,
+	failure,
+	highlight,
+	isCancel,
+	sync as s,
+	select,
+} from '../console.js';
 import { getFormattedTime } from '../helpers.js';
 import type { PackageJson, SyncOptions } from '../types.js';
 
@@ -67,9 +76,12 @@ async function getPackage() {
 			initialValue: options[0]?.value,
 		});
 
-		handleCancel(selected);
+		if (isCancel(selected)) {
+			console.log(failure('Operation cancelled.'));
+			process.exit(0);
+		}
 
-		return String(selected);
+		return selected;
 	}
 
 	return foundPackages[0];
@@ -112,9 +124,12 @@ export async function updateConfig(
 				initialValue: true,
 			});
 
-			handleCancel(updateDefaultLocale);
+			if (isCancel(updateDefaultLocale)) {
+				console.log(failure('Operation cancelled.'));
+				process.exit(0);
+			}
 
-			answer = Boolean(updateDefaultLocale);
+			answer = updateDefaultLocale;
 		}
 
 		if (answer || skip) config.defaultLocale = defaultLocale;
@@ -128,9 +143,12 @@ export async function updateConfig(
 				initialValue: true,
 			});
 
-			handleCancel(updateLocales);
+			if (isCancel(updateLocales)) {
+				console.log(failure('Operation cancelled.'));
+				process.exit(0);
+			}
 
-			answer = Boolean(updateLocales);
+			answer = updateLocales;
 		}
 
 		if (answer || skip) config.locales = locales;
@@ -144,9 +162,12 @@ export async function updateConfig(
 				initialValue: true,
 			});
 
-			handleCancel(updateFiles);
+			if (isCancel(updateFiles)) {
+				console.log(failure('Operation cancelled.'));
+				process.exit(0);
+			}
 
-			answer = Boolean(updateFiles);
+			answer = updateFiles;
 		}
 
 		const otherFiles =
