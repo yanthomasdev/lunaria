@@ -88,7 +88,7 @@ importers:
   examples/vitepress:
     dependencies:
       '@lunariajs/core':
-        specifier: workspace:0.0.27
+        specifier: workspace:0.0.28
         version: link:../../packages/core
     devDependencies:
       ts-node:

@@ -1,5 +1,13 @@
 # @lunariajs/core
 
+## 0.0.28
+
+### Patch Changes
+
+- b7916c5: Add lunaria init command
+- 8f79c52: Add lunaria preview command
+- a3c2ce1: Miscellaneous fixes and optimizations
+
 ## 0.0.27
 
 ### Patch Changes
