@@ -21,6 +21,17 @@ const cli: CLI = {
 			usage: '[...options]',
 		},
 		{
+			name: 'preview',
+			description: 'Preview your built dashboard locally.',
+			usage: '[...options]',
+			options: [
+				{
+					name: '--port <number>',
+					description: 'Specify which port to open the preview server on.',
+				},
+			],
+		},
+		{
 			name: 'sync',
 			description: 'Sync your config fields based on your project.',
 			usage: '[...options]',
@@ -71,6 +82,10 @@ async function main() {
 			case 'init':
 				const { init } = await import('./init/index.js');
 				await init(options);
+				break;
+			case 'preview':
+				const { preview } = await import('./preview/index.js');
+				await preview(options);
 				break;
 			case 'sync':
 				const { sync } = await import('./sync/index.js');

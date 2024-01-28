@@ -173,3 +173,9 @@ export function init(message: string) {
 
 	return `${badge} ${message}`;
 }
+
+export function preview(message: string) {
+	const badge = pc.yellow('[preview]');
+
+	return `${badge} ${message}`;
+}
