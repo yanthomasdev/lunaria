@@ -4,12 +4,10 @@
   "version": "1.0.0",
   "scripts": {
     "docs": "pnpm --filter lunaria-docs dev",
-    "build": "pnpm run build:core && pnpm run build:create-lunaria",
+    "build": "pnpm run build:core",
     "build:core": "pnpm --filter @lunariajs/core build",
-    "build:create-lunaria": "pnpm --filter create-lunaria build",
-    "lint": "pnpm run lint:core && pnpm run lint:create-lunaria",
+    "lint": "pnpm run lint:core",
     "lint:core": "pnpm --filter @lunariajs/core lint",
-    "lint:create-lunaria": "pnpm --filter create-lunaria lint",
     "format": "prettier -w --cache --plugin prettier-plugin-astro .",
     "version": "pnpm changeset version && pnpm i --no-frozen-lockfile"
   },
