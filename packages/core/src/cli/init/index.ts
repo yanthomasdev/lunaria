@@ -47,6 +47,9 @@ export async function init(options: InitOptions) {
 	const repoName = await text({
 		message: i('What is the unique name of your repository?'),
 		placeholder: 'Yan-Thomas/lunaria',
+		validate(value) {
+			if (value.trim().length < 1) return 'The repository name cannot be empty.';
+		},
 	});
 
 	if (isCancel(repoName)) {
@@ -59,6 +62,9 @@ export async function init(options: InitOptions) {
 	const repoBranch = await text({
 		message: i('What is the main branch of your repository?'),
 		placeholder: 'main',
+		validate(value) {
+			if (value.trim().length < 1) return 'The branch name cannot be empty.';
+		},
 	});
 
 	if (isCancel(repoBranch)) {
@@ -83,6 +89,13 @@ export async function init(options: InitOptions) {
 		const repoRootDir = await text({
 			message: i('What is the root directory of your project?'),
 			placeholder: 'docs',
+			validate(value) {
+				if (value.trim().length < 1) return 'The root directory cannot be empty.';
+				if (value.trim().startsWith('./') || value.trim().startsWith('../'))
+					return 'The root directory cannot be a relative path.';
+				if (value.trim().endsWith('/'))
+					return 'The root directory cannot end with a trailing slash.';
+			},
 		});
 
 		if (isCancel(repoRootDir)) {

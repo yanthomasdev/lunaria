@@ -140,6 +140,7 @@ async function getFileIndex(config: LunariaConfig, isShallowRepo: boolean) {
 				}
 
 				const lang = params.lang || defaultLocale.lang;
+				const isSourceLocale = lang === defaultLocale.lang;
 				const sharedPath = pathResolver.toSharedPath(path);
 
 				const gitHostingLinks = getGitHostingLinks(repository);
@@ -148,6 +149,7 @@ async function getFileIndex(config: LunariaConfig, isShallowRepo: boolean) {
 
 				const fileData = await getFileData(
 					path,
+					isSourceLocale,
 					isShallowRepo,
 					repository.rootDir,
 					localizableProperty,
@@ -185,6 +187,7 @@ async function getFileIndex(config: LunariaConfig, isShallowRepo: boolean) {
 
 async function getFileData(
 	filePath: string,
+	isSourceLocale: boolean,
 	isShallowRepo: boolean,
 	rootDir: string,
 	localizableProperty: string | undefined,
@@ -215,10 +218,9 @@ async function getFileData(
 
 	const lastMajorCommit = findLastMajorCommit(filePath, allCommits, ignoreKeywords) || lastCommit;
 
-	// TODO: Optimize to only go after localizableProperty of source files.
 	return {
 		path: filePath,
-		isLocalizable: await isLocalizable(filePath, localizableProperty),
+		isLocalizable: await isLocalizable(filePath, localizableProperty, isSourceLocale),
 		git: {
 			lastChange: toUtcString(lastCommit.date),
 			lastCommitMessage: lastCommit.message,
@@ -318,12 +320,18 @@ function findLastMajorCommit(
 	});
 }
 
-async function isLocalizable(filePath: string, localizableProperty: string | undefined) {
-	/** If no localizableProperty is defined in the configuration, or
-	 * the file format doesn't include frontmatter, the file is marked
-	 * as localizable by default.
+async function isLocalizable(
+	filePath: string,
+	localizableProperty: string | undefined,
+	isSourceLocale: boolean
+) {
+	/**
+	 * If it's not a source locale, there is no localizableProperty defined in the config,
+	 * or the file format doesn't include frontmatter, the file is marked as localizable
+	 * by default.
 	 */
-	if (!localizableProperty || !frontmatterFile.test(filePath)) return true;
+	if (!isSourceLocale || !localizableProperty) return true;
+	if (!frontmatterFile.test(filePath)) return true;
 
 	const frontmatter = getFileFrontmatter(filePath);
 	const isLocalizable = frontmatter?.[localizableProperty];
