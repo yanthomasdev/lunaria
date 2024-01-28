@@ -44,6 +44,7 @@ Commands
 
     build  Build your dashboard and status to disk.
      init  Initialize Lunaria in your project.
+  preview  Preview your built dashboard locally.
      sync  Sync your config fields based on your project.
 
 Global Options
@@ -72,7 +73,19 @@ This option is recommended when you want to rebuild your dashboard constantly (e
 
 ### `lunaria init`
 
-Initializes Lunaria in your project, prompting you with a few questions and setting up a new `lunaria.config.json` for you.
+Initializes Lunaria in your project, prompting you with a few questions and setting up a new `lunaria.config.json` file.
+
+### `lunaria preview`
+
+Starts a local server to serve your latest localization dashboard built by [`lunaria build`](#lunaria-build).
+
+This command is not meant for being used in production. For production hosting, see our specific deploy instructions.
+
+#### Options
+
+##### `--port <number>`
+
+Specifies which port to open the preview server on. By default, `3000` will be used. If `3000` or your specified port isn't available, a random available port will be used instead.
 
 ### `lunaria sync`
 

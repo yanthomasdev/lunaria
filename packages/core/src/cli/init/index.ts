@@ -138,6 +138,7 @@ export async function init(options: InitOptions) {
 			packageJson.scripts = {
 				...packageJson.scripts,
 				'lunaria:build': 'lunaria build',
+				'lunaria:preview': 'lunaria preview',
 			};
 
 			writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));

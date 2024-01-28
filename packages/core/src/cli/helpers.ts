@@ -21,6 +21,10 @@ export function parseCommand() {
 			'skip-questions': {
 				type: 'boolean',
 			},
+			/** Preview command */
+			port: {
+				type: 'string',
+			},
 		},
 	});
 

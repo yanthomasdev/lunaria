@@ -22,6 +22,10 @@ export type SyncOptions = GlobalOptions & {
 
 export type InitOptions = GlobalOptions;
 
+export type PreviewOptions = GlobalOptions & {
+	port: string | undefined;
+};
+
 export type PackageJson = {
 	dependencies?: Record<string, string>;
 	devDependencies?: Record<string, string>;
