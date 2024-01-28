@@ -16,15 +16,12 @@ import {
 	sync as s,
 	select,
 } from '../console.js';
-import { getFormattedTime } from '../helpers.js';
 import type { PackageJson, SyncOptions } from '../types.js';
 
 /** Packages that we support sync with. */
-const supportedPackages = ['vitepress'];
+const supportedPackages = ['vitepress', '@astrojs/starlight'];
 
 export async function sync(options: SyncOptions) {
-	const syncStartTime = performance.now();
-
 	if (!options.package) console.log(s('Looking for syncable packages...'));
 
 	const configPath = options.config ?? './lunaria.config.json';
@@ -42,14 +39,17 @@ export async function sync(options: SyncOptions) {
 			const { vitepress } = await import('./vitepress.js');
 			await vitepress(configPath, skipQuestions);
 			break;
+		case '@astrojs/starlight':
+			console.log(s(`Syncing with ${highlight('Starlight')}...`));
+			const { starlight } = await import('./starlight.js');
+			await starlight(configPath, skipQuestions);
+			break;
 		default:
 			console.error(error(`The selected package ${selectedPackage} is not supported`));
 			break;
 	}
 
-	const syncEndTime = performance.now();
-
-	console.log(s(`${bold('Complete!')} Synced in ${getFormattedTime(syncStartTime, syncEndTime)}`));
+	console.log(s(bold('Complete!')));
 }
 
 async function getPackage() {
@@ -93,7 +93,7 @@ function loadPackageJson() {
 	try {
 		const packageJson: PackageJson = JSON.parse(readFileSync(resolvedPath, 'utf-8'));
 
-		if (!packageJson.dependencies || !packageJson.devDependencies) {
+		if (!packageJson.dependencies && !packageJson.devDependencies) {
 			console.error(
 				error('Failed to find a dependencies or devDependencies field in your package.json\n')
 			);
