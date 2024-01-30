@@ -1,6 +1,5 @@
 import jiti from 'jiti';
 import { resolve } from 'node:path';
-import { joinURL } from 'ufo';
 import { error, highlight } from './cli/console.js';
 
 export function toUtcString(date: string) {
@@ -39,8 +38,10 @@ export function loadWithJiti(path: string) {
 	}
 }
 
-export function cleanJoinURL(base: string, ...paths: string[]) {
-	return joinURL(base, ...paths)
-		.replace('../', '')
-		.replace('./', '');
+export function isRelative(path: string) {
+	return path.startsWith('./') || path.startsWith('../');
+}
+
+export function removeTrailingSlash(path: string) {
+	return path.replace(/\/+$/, '');
 }
