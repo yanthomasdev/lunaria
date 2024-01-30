@@ -1,13 +1,13 @@
-import { isRelative, withoutTrailingSlash } from 'ufo';
 import { z } from 'zod';
 import { DashboardSchema } from '../dashboard/index.js';
 import type { LocalizationStatus } from '../types.js';
+import { isRelative, removeTrailingSlash } from '../utils.js';
 
 const RepositorySchema = z.object({
 	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
 	name: z
 		.string()
-		.transform((path) => withoutTrailingSlash(path))
+		.transform((path) => removeTrailingSlash(path))
 		.describe(
 			'The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"`'
 		),
@@ -21,7 +21,7 @@ const RepositorySchema = z.object({
 			message:
 				'The root directory should not be a relative path, it should follow the example: `examples/vitepress`',
 		})
-		.transform((path) => withoutTrailingSlash(path))
+		.transform((path) => removeTrailingSlash(path))
 		.describe('The root directory of the project being tracked, must be set when using a monorepo'),
 	/** The git hosting platform used by your project, e.g. `"github"` or `"gitlab"` */
 	hosting: z

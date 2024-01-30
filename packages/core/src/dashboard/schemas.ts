@@ -1,6 +1,6 @@
 import { extname } from 'node:path';
-import { isRelative } from 'ufo';
 import { z } from 'zod';
+import { isRelative } from '../utils.js';
 
 const DashboardUiSchema = z
 	.object({

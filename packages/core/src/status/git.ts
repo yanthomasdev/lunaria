@@ -1,10 +1,9 @@
 import { existsSync, rmSync } from 'node:fs';
 import os from 'node:os';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { simpleGit } from 'simple-git';
 import { error, info } from '../cli/console.js';
 import type { LunariaConfig } from '../config/index.js';
-import { cleanJoinURL } from '../utils.js';
 
 export const git = simpleGit({
 	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
@@ -61,11 +60,11 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 		case 'github':
 			return {
 				create: (filePath: string) =>
-					`https://github.com/${name}/new/${branch}?filename=${cleanJoinURL(rootDir, filePath)}`,
+					`https://github.com/${name}/new/${branch}?filename=${join(rootDir, filePath)}`,
 				source: (filePath: string) =>
-					`https://github.com/${name}/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
+					`https://github.com/${name}/blob/${branch}/${join(rootDir, filePath)}`,
 				history: (filePath: string, sinceDate?: string) =>
-					`https://github.com/${name}/commits/${branch}/${cleanJoinURL(rootDir, filePath)}${
+					`https://github.com/${name}/commits/${branch}/${join(rootDir, filePath)}${
 						sinceDate ? `?since=${sinceDate}` : ''
 					}`,
 				clone: () => `https://github.com/${name}.git`,
@@ -74,11 +73,11 @@ export function getGitHostingLinks(repository: LunariaConfig['repository']) {
 		case 'gitlab':
 			return {
 				create: (filePath: string) =>
-					`https://gitlab.com/${name}/-/new/${branch}?file_name=${cleanJoinURL(rootDir, filePath)}`,
+					`https://gitlab.com/${name}/-/new/${branch}?file_name=${join(rootDir, filePath)}`,
 				source: (filePath: string) =>
-					`https://gitlab.com/${name}/-/blob/${branch}/${cleanJoinURL(rootDir, filePath)}`,
+					`https://gitlab.com/${name}/-/blob/${branch}/${join(rootDir, filePath)}`,
 				history: (filePath: string, sinceDate?: string) =>
-					`https://gitlab.com/${name}/-/commits/${branch}/${cleanJoinURL(rootDir, filePath)}${
+					`https://gitlab.com/${name}/-/commits/${branch}/${join(rootDir, filePath)}${
 						sinceDate ? `?since=${sinceDate}` : ''
 					}`,
 				clone: () => `https://gitlab.com/${name}.git`,
