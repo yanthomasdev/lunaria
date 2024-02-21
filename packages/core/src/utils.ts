@@ -1,4 +1,4 @@
-import jiti from 'jiti';
+import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { error, highlight } from './cli/console.js';
 
@@ -19,9 +19,10 @@ export function getStringFromFormat(
 	return formatResult;
 }
 
-/** TODO: Use `jiti.import` instead when available. */
 export function loadWithJiti(path: string) {
-	// @ts-expect-error
+	const require = createRequire(import.meta.url);
+	const jiti = require('jiti');
+
 	const loadFile = jiti(process.cwd(), {
 		interopDefault: true,
 		esmResolve: true,
