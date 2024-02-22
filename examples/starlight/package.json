@@ -13,6 +13,7 @@
   "dependencies": {
     "@astrojs/check": "^0.4.1",
     "@astrojs/starlight": "^0.16.0",
+    "@lunariajs/core": "workspace:^",
     "@lunariajs/starlight": "workspace:^",
     "astro": "^4.2.1",
     "sharp": "^0.32.5",
