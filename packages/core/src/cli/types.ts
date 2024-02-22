@@ -13,6 +13,7 @@ export type GlobalOptions = {
 
 export type BuildOptions = GlobalOptions & {
 	'skip-status': boolean | undefined;
+	'stdout-status': boolean | undefined;
 };
 
 export type SyncOptions = GlobalOptions & {

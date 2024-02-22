@@ -67,9 +67,13 @@ Builds your dashboard and status to disk. By default, the files will be output i
 
 ##### `--skip-status`
 
-The command will skip the status generation and use the latest already available status on disk instead.
+Skips status generation and uses the latest already available status on disk instead.
 
 This option is recommended when you want to rebuild your dashboard constantly (e.g. to test styling changes) without waiting for the status to be built.
+
+##### `--stdout-status`
+
+Logs the generated status in the console as a stringified JSON, skipping dashboard generation altogether.
 
 ### `lunaria init`
 

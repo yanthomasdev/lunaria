@@ -13,6 +13,10 @@ const cli: CLI = {
 					name: '--skip-status',
 					description: 'Skip the status build and use the one from disk instead.',
 				},
+				{
+					name: '--stdout-status',
+					description: 'Log the generated status in the console, skipping dashboard generation.',
+				},
 			],
 		},
 		{
