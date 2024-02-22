@@ -72,6 +72,9 @@ importers:
       '@astrojs/starlight':
         specifier: ^0.16.0
         version: 0.16.0(astro@4.2.1)
+      '@lunariajs/core':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@lunariajs/starlight':
         specifier: workspace:^
         version: link:../../packages/starlight

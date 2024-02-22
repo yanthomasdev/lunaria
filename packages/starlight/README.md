@@ -19,6 +19,19 @@ pnpm add @lunariajs/starlight
 yarn add @lunariajs/starlight
 ```
 
+To use `@lunariajs/starlight` properly you also need to install Lunaria's core package:
+
+```bash
+# npm
+npm install @lunariajs/core
+
+# pnpm
+pnpm add @lunariajs/core
+
+# yarn
+yarn add @lunariajs/core
+```
+
 ## Basic Usage
 
 Start using `@lunariajs/starlight` by setting up your own `lunaria.config.json` file and adding the provided integration to your `astro.config.*` file.

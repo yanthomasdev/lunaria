@@ -3,9 +3,6 @@
   "type": "module",
   "version": "0.0.2",
   "description": "Lunaria integration for the Starlight documentation theme for Astro",
-  "bin": {
-    "lunaria": "./src/bin/lunaria.mjs"
-  },
   "exports": {
     ".": "./src/index.ts",
     "./Dashboard.astro": "./src/components/Dashboard.astro",
@@ -34,9 +31,7 @@
   "bugs": "https://github.com/Yan-Thomas/lunaria/issues",
   "peerDependencies": {
     "@astrojs/starlight": ">=0.14.0",
-    "astro": ">=4.0.0"
-  },
-  "dependencies": {
+    "astro": ">=4.0.0",
     "@lunariajs/core": "workspace:^"
   }
 }
