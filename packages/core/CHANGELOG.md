@@ -1,5 +1,13 @@
 # @lunariajs/core
 
+## 0.0.29
+
+### Patch Changes
+
+- 1518854: Remove `ufo` dependency
+- 9d46185: Fix jiti type and bundling issue
+- e6e444d: Add `--stdout-status` build option
+
 ## 0.0.28
 
 ### Patch Changes
