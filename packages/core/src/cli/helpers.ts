@@ -14,9 +14,6 @@ export function parseCommand() {
 			'skip-status': {
 				type: 'boolean',
 			},
-			'stdout-status': {
-				type: 'boolean',
-			},
 			/** Sync command */
 			package: {
 				type: 'string',
