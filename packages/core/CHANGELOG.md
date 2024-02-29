@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.30
+
+### Patch Changes
+
+- 54e44c1: Deprecate `--stdout-status` option
+
 ## 0.0.29
 
 ### Patch Changes

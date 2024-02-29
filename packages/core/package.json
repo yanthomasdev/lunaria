@@ -1,7 +1,7 @@
 {
   "name": "@lunariajs/core",
   "type": "module",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Localization management system for open-source projects",
   "types": "./dist/index.d.mts",
   "bin": {
