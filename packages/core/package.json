@@ -82,7 +82,6 @@
     "picocolors": "^1.0.0",
     "simple-git": "^3.20.0",
     "ultramatter": "^0.0.4",
-    "zod": "^3.22.4",
-    "zod-validation-error": "^2.1.0"
+    "zod": "^3.22.4"
   }
 }

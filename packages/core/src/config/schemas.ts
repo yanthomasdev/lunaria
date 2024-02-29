@@ -79,69 +79,69 @@ const LocaleSchema = z.object({
 		),
 });
 
-export const LunariaConfigSchema = z
-	.object({
-		/** The location of your Lunaria JSON schema */
-		$schema: z.string().optional().describe('The location of your Lunaria JSON schema'),
-		/** Options about your generated dashboard */
-		dashboard: DashboardSchema.describe('Options about your generated dashboard'),
-		/** Information about your project's repository */
-		repository: RepositorySchema.describe("Information about your project's repository"),
-		/** The default locale of your content that is going to be localized */
-		defaultLocale: LocaleSchema.describe(
-			'The default locale of your content that is going to be localized'
-		),
-		/** Array of the localized locales */
-		locales: z.array(LocaleSchema).nonempty().describe('Array of the localized locales'),
-		/** Array of files to be tracked */
-		files: z.array(FileSchema).nonempty().describe('Array of files to be tracked'),
-		/** Array of commit keywords that avoid a commit from triggering status changes */
-		ignoreKeywords: z
-			.array(z.string())
-			.default(['lunaria-ignore', 'fix typo'])
-			.describe('Array of commit keywords that avoid a commit from triggering status changes'),
-		/** Name of the frontmatter property used to mark a file as localizable
-		 * and include it as part of the status dashboard. Keep empty for every file to be unconditionally localizable
-		 */
-		localizableProperty: z
-			.string()
-			.optional()
-			.describe(
-				'Name of the frontmatter property used to mark a file as ready for localization. Keep empty for every file to be unconditionally localizable'
-			),
-		/** The relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"` */
-		outDir: z
-			.string()
-			.default('./dist/lunaria')
-			.describe(
-				'A relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"`'
-			),
-		/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"` */
-		cloneDir: z
-			.string()
-			.default('./node_modules/.cache/lunaria/history')
-			.describe(
-				'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"`'
-			),
-		/** The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration */
-		renderer: z
-			.string()
-			.optional()
-			.describe(
-				'The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration'
-			),
-	})
-	.superRefine((config, ctx) => {
-		const allLocales = [config.defaultLocale, ...config.locales];
-		const allLangs = allLocales.map(({ lang }) => lang);
-
-		if (new Set(allLangs).size !== allLocales.length) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+export const LunariaConfigSchema = z.object({
+	/** The location of your Lunaria JSON schema */
+	$schema: z.string().optional().describe('The location of your Lunaria JSON schema'),
+	/** Options about your generated dashboard */
+	dashboard: DashboardSchema.describe('Options about your generated dashboard'),
+	/** Information about your project's repository */
+	repository: RepositorySchema.describe("Information about your project's repository"),
+	/** The default locale of your content that is going to be localized */
+	defaultLocale: LocaleSchema.describe(
+		'The default locale of your content that is going to be localized'
+	),
+	/** Array of the localized locales */
+	locales: z
+		.array(LocaleSchema)
+		.nonempty()
+		.describe('Array of the localized locales')
+		.refine(
+			(locales) => {
+				const allLangs = locales.map(({ lang }) => lang);
+				return allLangs.length === new Set(allLangs).size;
+			},
+			{
 				message: 'All locales should have a unique `lang` value',
-			});
-		}
-	});
+			}
+		),
+	/** Array of files to be tracked */
+	files: z.array(FileSchema).nonempty().describe('Array of files to be tracked'),
+	/** Array of commit keywords that avoid a commit from triggering status changes */
+	ignoreKeywords: z
+		.array(z.string())
+		.default(['lunaria-ignore', 'fix typo'])
+		.describe('Array of commit keywords that avoid a commit from triggering status changes'),
+	/** Name of the frontmatter property used to mark a file as localizable
+	 * and include it as part of the status dashboard. Keep empty for every file to be unconditionally localizable
+	 */
+	localizableProperty: z
+		.string()
+		.optional()
+		.describe(
+			'Name of the frontmatter property used to mark a file as ready for localization. Keep empty for every file to be unconditionally localizable'
+		),
+	/** The relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"` */
+	outDir: z
+		.string()
+		.default('./dist/lunaria')
+		.describe(
+			'A relative directory path of where your dashboard will build to, e.g. `"./dist/lunaria"`'
+		),
+	/** The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"` */
+	cloneDir: z
+		.string()
+		.default('./node_modules/.cache/lunaria/history')
+		.describe(
+			'The relative directory path of your git history clone, exclusively made when running on a shallow repository, e.g. `"./dist/lunaria/history"`'
+		),
+	/** The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration */
+	renderer: z
+		.string()
+		.optional()
+		.describe(
+			'The relative path to a valid `.(c/m)js` or `.(c/m)ts` file containing your dashboard renderer configuration'
+		),
+});
 
 /**
  * Using Zod's z.function() to type these components with argument hints causes
