@@ -26,6 +26,8 @@ export type PreviewOptions = GlobalOptions & {
 	port: string | undefined;
 };
 
+export type StdoutOptions = GlobalOptions;
+
 export type PackageJson = {
 	dependencies?: Record<string, string>;
 	devDependencies?: Record<string, string>;

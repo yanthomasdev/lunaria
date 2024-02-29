@@ -45,6 +45,7 @@ Commands
     build  Build your dashboard and status to disk.
      init  Initialize Lunaria in your project.
   preview  Preview your built dashboard locally.
+   stdout  Log your config and status in the console.
      sync  Sync your config fields based on your project.
 
 Global Options
@@ -86,6 +87,12 @@ This command is not meant for being used in production. For production hosting, 
 ##### `--port <number>`
 
 Specifies which port to open the preview server on. By default, `3000` will be used. If `3000` or your specified port isn't available, a random available port will be used instead.
+
+### `lunaria stdout`
+
+Logs your configuration and status in the console.
+
+This command is meant for interfacing with Lunaria without necessarily depending on the package, e.g. to build a GitHub Action that uses the already set up Lunaria in a repository.
 
 ### `lunaria sync`
 
