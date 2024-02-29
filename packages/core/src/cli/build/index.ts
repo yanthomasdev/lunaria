@@ -16,7 +16,6 @@ export async function build(options: BuildOptions) {
 	/** Command options */
 	const configPath = options.config ?? './lunaria.config.json';
 	const skipStatus = options['skip-status'] ?? false;
-	const stdoutStatus = options['stdout-status'] ?? false;
 
 	const { userConfig, rendererConfig } = await loadConfig(configPath);
 
@@ -24,13 +23,6 @@ export async function build(options: BuildOptions) {
 	const outDir = resolve(userConfig.outDir);
 	const statusPath = join(outDir, 'status.json');
 	const dashboardPath = join(outDir, 'index.html');
-
-	if (stdoutStatus) {
-		const isShallowRepo = await handleShallowRepo(userConfig);
-		const status = await getStatus(userConfig, isShallowRepo, skipStatus, statusPath);
-		console.log(JSON.stringify(status));
-		process.exit(0);
-	}
 
 	/** Create the output directory if it doesn't exist yet. */
 	if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
