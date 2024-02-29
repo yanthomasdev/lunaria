@@ -1,5 +1,12 @@
 # @lunariajs/starlight
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [54e44c1]
+  - @lunariajs/core@0.0.30
+
 ## 0.0.3
 
 ### Patch Changes
