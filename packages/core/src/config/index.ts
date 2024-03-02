@@ -1,8 +1,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { fromZodError } from 'zod-validation-error';
+import type { z } from 'zod';
 import { error } from '../cli/console.js';
 import { loadWithJiti } from '../utils.js';
+import { errorMap } from './error-map.js';
 import {
 	LunariaConfigSchema,
 	LunariaRendererConfigSchema,
@@ -11,12 +12,6 @@ import {
 } from './schemas.js';
 
 export * from './schemas.js';
-
-const fromZodErrorOptions = {
-	prefix: '- ',
-	prefixSeparator: '',
-	issueSeparator: '\n- ',
-};
 
 export async function loadConfig(path: string) {
 	if (/\.json$/.test(path)) {
@@ -56,29 +51,21 @@ export async function loadRendererConfig(path: string | undefined) {
 }
 
 export function validateConfig(config: LunariaUserConfig) {
-	const parsedConfig = LunariaConfigSchema.safeParse(config);
-
-	if (parsedConfig.success) {
-		return parsedConfig.data;
-	}
-
-	const validationError = fromZodError(parsedConfig.error, fromZodErrorOptions);
-
-	console.error(error('Invalid Lunaria config:\n' + validationError));
-	process.exit(1);
+	const parsedConfig = parseWithFriendlyErrors(
+		LunariaConfigSchema,
+		config,
+		'Invalid Lunaria config:\n'
+	);
+	return parsedConfig;
 }
 
 export function validateRendererConfig(config: LunariaUserRendererConfig) {
-	const parsedConfig = LunariaRendererConfigSchema.safeParse(config);
-
-	if (parsedConfig.success) {
-		return parsedConfig.data;
-	}
-
-	const validationError = fromZodError(parsedConfig.error, fromZodErrorOptions);
-
-	console.error(error('Invalid Lunaria renderer config:\n' + validationError));
-	process.exit(1);
+	const parsedConfig = parseWithFriendlyErrors(
+		LunariaRendererConfigSchema,
+		config,
+		'Invalid Lunaria renderer config:\n'
+	);
+	return parsedConfig;
 }
 
 export function readConfig(path: string) {
@@ -114,4 +101,21 @@ export function writeConfig(path: string, config: LunariaUserConfig) {
 
 	console.error(error('Invalid Lunaria config extension, expected .json'));
 	process.exit(1);
+}
+
+export function parseWithFriendlyErrors<T extends z.Schema>(
+	schema: T,
+	input: z.input<T>,
+	message: string
+): z.output<T> {
+	const parsedConfig = schema.safeParse(input, { errorMap });
+
+	if (!parsedConfig.success) {
+		console.error(
+			error(message + parsedConfig.error.issues.map((i) => `- ${i.message}`).join('\n'))
+		);
+		process.exit(1);
+	}
+
+	return parsedConfig.data;
 }
