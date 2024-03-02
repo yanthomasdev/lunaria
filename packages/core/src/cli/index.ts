@@ -32,6 +32,11 @@ const cli: CLI = {
 			],
 		},
 		{
+			name: 'stdout',
+			description: 'Log your config and status in the console.',
+			usage: '[...options]',
+		},
+		{
 			name: 'sync',
 			description: 'Sync your config fields based on your project.',
 			usage: '[...options]',
@@ -86,6 +91,10 @@ async function main() {
 			case 'preview':
 				const { preview } = await import('./preview/index.js');
 				await preview(options);
+				break;
+			case 'stdout':
+				const { stdout } = await import('./stdout/index.js');
+				await stdout(options);
 				break;
 			case 'sync':
 				const { sync } = await import('./sync/index.js');
