@@ -1,5 +1,12 @@
 # @lunariajs/core
 
+## 0.0.31
+
+### Patch Changes
+
+- 1b6838e: Improve Zod errors
+- 4c8fdf4: Add `stdout` command
+
 ## 0.0.30
 
 ### Patch Changes
