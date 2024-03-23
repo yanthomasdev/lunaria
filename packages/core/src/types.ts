@@ -3,8 +3,10 @@ import type { OptionalKeys } from './config/index.js';
 export type GitHistory = {
 	lastChange: string;
 	lastCommitMessage: string;
+	lastCommitHash: string;
 	lastMajorChange: string;
 	lastMajorCommitMessage: string;
+	lastMajorCommitHash: string;
 };
 
 export type GitHosting = {

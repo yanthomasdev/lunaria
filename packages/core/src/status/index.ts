@@ -224,8 +224,10 @@ async function getFileData(
 		git: {
 			lastChange: toUtcString(lastCommit.date),
 			lastCommitMessage: lastCommit.message,
+			lastCommitHash: lastCommit.hash,
 			lastMajorChange: toUtcString(lastMajorCommit.date),
 			lastMajorCommitMessage: lastMajorCommit.message,
+			lastMajorCommitHash: lastMajorCommit.hash,
 		},
 	};
 }
