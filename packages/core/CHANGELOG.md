@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.0.32
+
+### Patch Changes
+
+- 4ab0efa: Include commit hash in localization status data
+
 ## 0.0.31
 
 ### Patch Changes
