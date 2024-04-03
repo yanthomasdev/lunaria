@@ -53,6 +53,10 @@ export default defineConfig({
 					autogenerate: { directory: 'guides' },
 				},*/
 				{
+					label: 'Tools',
+					autogenerate: { directory: 'tools' },
+				},
+				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },
 				},
