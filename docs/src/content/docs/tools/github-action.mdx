@@ -1,0 +1,185 @@
+---
+title: GitHub Action
+description: Add Lunaria insights into your GitHub pull requests.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+You can get helpful insights on how pull requests are going to affect the resulting localization status after merging through the Lunaria GitHub Action.
+
+## Prerequisites
+
+- Node.js - `v20.0.0` or higher.
+- `@lunariajs/core` - `v0.0.31` or higher.
+
+## Set up the Action
+
+Create a new file in your project at `.github/workflows/lunaria.yml` with the following content, according to the package manager used:
+
+<Tabs>
+<TabItem label="npm">
+
+```yml
+name: Lunaria
+
+on:
+  # Trigger the workflow every time a pull request is opened or synchronized at the target `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
+
+# Allow this job to clone the repository and comment on the pull request
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lunaria-overview:
+    name: Generate Lunaria Overview
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Necessary for Lunaria to work properly
+          # Makes the action clone the entire git history
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm install
+
+      - name: Generate Lunaria Overview
+        uses: yanthomasdev/lunaria-action@main
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```yml
+name: Lunaria
+
+on:
+  # Trigger the workflow every time a pull request is opened or synchronized at the target `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
+
+# Allow this job to clone the repository and comment on the pull request
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lunaria-overview:
+    name: Generate Lunaria Overview
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Necessary for Lunaria to work properly
+          # Makes the action clone the entire git history
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+
+      - run: pnpm install
+
+      - name: Generate Lunaria Overview
+        uses: yanthomasdev/lunaria-action@main
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```yml
+name: Lunaria
+
+on:
+  # Trigger the workflow every time a pull request is opened or synchronized at the target `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
+
+# Allow this job to clone the repository and comment on the pull request
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lunaria-overview:
+    name: Generate Lunaria Overview
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Necessary for Lunaria to work properly
+          # Makes the action clone the entire git history
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - run: yarn install
+
+      - name: Generate Lunaria Overview
+        uses: yanthomasdev/lunaria-action@main
+```
+
+</TabItem>
+</Tabs>
+
+If everything was set up properly, the Action will now comment on every new, or updated pull request that has files tracked by Lunaria (those who do not, won't receive a comment).
+
+### Run on a private repository
+
+By default, the Action won't run on a private repository for a lack of permissions. To fix this, you will need to make a few changes:
+
+1. Create a new [personal access token (PAT) on GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and [add it to your repository's Action secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository).
+
+2. Update the following steps on your workflow at `.github/workflows/lunaria.yml`, with the name of the repository secret you created:
+
+   ```yml ins={7}
+   - name: Checkout
+       uses: actions/checkout@v4
+       with:
+         # Necessary for Lunaria to work properly
+         # Makes the action clone the entire git history
+         fetch-depth: 0
+         token: ${{ secrets.PAT }}
+   ```
+
+   ```yml ins={4}
+   - name: Generate Lunaria Overview
+     uses: yanthomasdev/lunaria-action@main
+     with:
+       token: ${{ secrets.PAT }}
+   ```
+
+## Reference
+
+### Inputs
+
+- `token` - Optional: a [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens) to run the Action with.
