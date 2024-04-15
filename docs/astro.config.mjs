@@ -15,10 +15,10 @@ export default defineConfig({
 				replacesTitle: true,
 			},
 			social: {
-				github: 'https://github.com/Yan-Thomas/lunaria',
+				github: 'https://github.com/yanthomasdev/lunaria',
 			},
 			editLink: {
-				baseUrl: 'https://github.com/Yan-Thomas/lunaria/edit/main/docs/',
+				baseUrl: 'https://github.com/yanthomasdev/lunaria/edit/main/docs/',
 			},
 			head: [
 				{
