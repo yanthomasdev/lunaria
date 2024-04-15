@@ -57,10 +57,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yan-Thomas/lunaria",
+    "url": "https://github.com/yanthomasdev/lunaria",
     "directory": "packages/core"
   },
-  "bugs": "https://github.com/Yan-Thomas/lunaria/issues",
+  "bugs": "https://github.com/yanthomasdev/lunaria/issues",
   "scripts": {
     "build": "unbuild && pnpm run schema",
     "lint": "tsc",

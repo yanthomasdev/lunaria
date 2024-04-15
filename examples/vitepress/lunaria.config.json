@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@lunariajs/core/config.schema.json",
   "repository": {
-    "name": "Yan-Thomas/lunaria",
+    "name": "yanthomasdev/lunaria",
     "rootDir": "examples/vitepress"
   },
   "files": [

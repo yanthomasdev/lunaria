@@ -67,4 +67,4 @@ Now, you need to add a new script to your `package.json` file to trigger a dashb
   },
 ```
 
-Want other usage examples? Head over to the [`examples/` directory](https://github.com/Yan-Thomas/lunaria/tree/main/examples/) and inspect the source code for tips & tricks about using `@lunariajs/core` with other frameworks and environments.
+Want other usage examples? Head over to the [`examples/` directory](https://github.com/yanthomasdev/lunaria/tree/main/examples/) and inspect the source code for tips & tricks about using `@lunariajs/core` with other frameworks and environments.
