@@ -3,9 +3,9 @@ title: GitHub Action
 description: Add Lunaria insights into your GitHub pull requests.
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Tabs, TabItem, Steps } from '@astrojs/starlight/components';
 
-You can get helpful insights on how pull requests are going to affect the resulting localization status after merging through the Lunaria GitHub Action.
+The Lunaria GitHub Action comments on pull requests with an overview of how the changes made will affect the localization status generated after merging, including insights on possible issues and how Lunaria works.
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
 
       - run: npm install
 
@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
@@ -140,7 +140,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
+          cache: yarn
 
       - run: yarn install
 
@@ -153,15 +153,20 @@ jobs:
 
 If everything was set up properly, the Action will now comment on every new, or updated pull request that has files tracked by Lunaria (those who do not, won't receive a comment).
 
-### Run on a private repository
+:::tip[Changing the comment's author]
+Normally, comments made by the Action will be authored by `github-actions[bot]`. You can change this behavior by [defining a different `token` input](http://localhost:4321/tools/github-action/#inputs) in your workflow file, so that the comments will be authored by the user or bot whose the token comes from.
+:::
 
-By default, the Action won't run on a private repository for a lack of permissions. To fix this, you will need to make a few changes:
+### Additional steps for private repositories
 
+By default, the Action won't run on a private repository for a lack of permissions. To fix this, you will need to follow a few additional steps:
+
+<Steps>
 1. Create a new [personal access token (PAT) on GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and [add it to your repository's Action secrets](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository).
 
-2. Update the following steps on your workflow at `.github/workflows/lunaria.yml`, with the name of the repository secret you created:
+2. Add the `token` input to both the Checkout and Lunaria steps of your workflow file at `.github/workflows/lunaria.yml` with the corresponding secret name you added earlier:
 
-   ```yml ins={7}
+   ```yml ins={7} mark="PAT"
    - name: Checkout
        uses: actions/checkout@v4
        with:
@@ -171,15 +176,24 @@ By default, the Action won't run on a private repository for a lack of permissio
          token: ${{ secrets.PAT }}
    ```
 
-   ```yml ins={4}
+   ```yml ins={4} mark="PAT"
    - name: Generate Lunaria Overview
      uses: yanthomasdev/lunaria-action@main
      with:
        token: ${{ secrets.PAT }}
    ```
 
+</Steps>
+
 ## Reference
 
 ### Inputs
 
 - `token` - Optional: a [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#about-personal-access-tokens) to run the Action with.
+
+  ```yml mark={4}
+  - name: Generate Lunaria Overview
+    uses: yanthomasdev/lunaria-action@main
+    with:
+      token: ${{ secrets.PAT }}
+  ```
