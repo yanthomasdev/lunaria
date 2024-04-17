@@ -191,7 +191,7 @@
           "properties": {
             "name": {
               "type": "string",
-              "description": "The unique name of your repository in your git hosting platform, e.g. `\"Yan-Thomas/lunaria\"`"
+              "description": "The unique name of your repository in your git hosting platform, e.g. `\"yanthomasdev/lunaria\"`"
             },
             "branch": {
               "type": "string",

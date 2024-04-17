@@ -4,12 +4,12 @@ import type { LocalizationStatus } from '../types.js';
 import { isRelative, removeTrailingSlash } from '../utils.js';
 
 const RepositorySchema = z.object({
-	/** The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"` */
+	/** The unique name of your repository in your git hosting platform, e.g. `"yanthomasdev/lunaria"` */
 	name: z
 		.string()
 		.transform((path) => removeTrailingSlash(path))
 		.describe(
-			'The unique name of your repository in your git hosting platform, e.g. `"Yan-Thomas/lunaria"`'
+			'The unique name of your repository in your git hosting platform, e.g. `"yanthomasdev/lunaria"`'
 		),
 	/** The currently tracked branch of your repository */
 	branch: z.string().default('main').describe('The currently tracked branch of your repository'),

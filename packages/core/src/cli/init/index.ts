@@ -46,7 +46,7 @@ export async function init(options: InitOptions) {
 
 	const repoName = await text({
 		message: i('What is the unique name of your repository?'),
-		placeholder: 'Yan-Thomas/lunaria',
+		placeholder: 'yanthomasdev/lunaria',
 		validate(value) {
 			if (value.trim().length < 1) return 'The repository name cannot be empty.';
 		},
