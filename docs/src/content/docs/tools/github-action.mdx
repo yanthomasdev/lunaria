@@ -157,6 +157,21 @@ If everything was set up properly, the Action will now comment on every new, or 
 Normally, comments made by the Action will be authored by `github-actions[bot]`. You can change this behavior by [defining a different `token` input](http://localhost:4321/tools/github-action/#inputs) in your workflow file, so that the comments will be authored by the user or bot whose the token comes from.
 :::
 
+### Additional step for monorepos
+
+By default, the Action will look for the `@lunariajs/core` package within the base directory of your repository.
+
+If you're using a monorepo and the package is not installed in the root `package.json` file, you'll need to set the `working-directory` to the correct path.
+
+This example assumes the `@lunariajs/core` package was installed in the `docs/package.json` file, meaning `working-directory` should be set to `docs`:
+
+```yml ins={4} mark="docs"
+- name: Generate Lunaria Overview
+  uses: yanthomasdev/lunaria-action@main
+  with:
+    working-directory: docs
+```
+
 ### Additional steps for private repositories
 
 By default, the Action won't run on a private repository for a lack of permissions. To fix this, you will need to follow a few additional steps:
@@ -196,4 +211,13 @@ By default, the Action won't run on a private repository for a lack of permissio
     uses: yanthomasdev/lunaria-action@main
     with:
       token: ${{ secrets.PAT }}
+  ```
+
+- `working-directory` - Optional: a desired working directory for the Action to be run on. Should be set to the subdirectory where `@lunariajs/core` was installed.
+
+  ```yml mark={4}
+  - name: Generate Lunaria Overview
+    uses: yanthomasdev/lunaria-action@main
+    with:
+      working-directory: docs
   ```
