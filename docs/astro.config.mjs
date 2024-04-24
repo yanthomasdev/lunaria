@@ -53,9 +53,9 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						{
-							label: "Dashboard Customization",
-							link: "guides/dashboard-customization"
-						}
+							label: 'Dashboard Customization',
+							link: 'guides/dashboard-customization',
+						},
 					],
 				},
 				{
