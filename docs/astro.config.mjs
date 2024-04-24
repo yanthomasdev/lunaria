@@ -49,10 +49,15 @@ export default defineConfig({
 						},
 					],
 				},
-				/*{
+				{
 					label: 'Guides',
-					autogenerate: { directory: 'guides' },
-				},*/
+					items: [
+						{
+							label: "Dashboard Customization",
+							link: "guides/dashboard-customization"
+						}
+					],
+				},
 				{
 					label: 'Tools',
 					autogenerate: { directory: 'tools' },
