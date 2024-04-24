@@ -50,12 +50,12 @@ To add a canonical URL, you can set [`dashboard.site`](/reference/configuration/
 
 ## Favicons
 
-Setting a favicon can help matching your project's feel and make it easier to identify your dashboard in the user's web browser. Lunaria allows you to define both multiple external and one inline favicon.
+Setting a favicon can help match your project's feel and make it easier to identify your dashboard in the user's web browser. Lunaria allows you to define both multiple external and one inline favicon.
 
 To add a favicon, you have to set [`dashboard.favicon`](/reference/configuration/#dashboardfavicon) in your Lunaria configuration, with one of, or both the `external` or `inline` properties.
 
 :::note[Why should I have multiple favicons?]
-Currently, [not all browsers support SVG favicons](https://caniuse.com/link-icon-svg), therefore having a fallback favicon (generally a `.ico` icon) is a good way to ensure most users will be able to see an icon when then open the website.
+Currently, [not all browsers support SVG favicons](https://caniuse.com/link-icon-svg), therefore having a fallback favicon (generally a `.ico` icon) is a good way to ensure most users will be able to see an icon when they open the website.
 :::
 
 ### External favicons
@@ -122,12 +122,12 @@ To do so, you can set the [`dashboard.basesToHide`](/reference/configuration/#da
 }
 ```
 
-With this, references to paths like `src/content/docs/guide.mdx` and `src/i18n/dictionary.ts` will be shortened to its unique parts, namely `guide.mdx` and `dictionary.ts`.
+With this, references to paths like `src/content/docs/guide.mdx` and `src/i18n/dictionary.ts` will be shortened to their unique parts, namely `guide.mdx` and `dictionary.ts`.
 
 
 ## Custom CSS
 
-The dashboard can be further customized by adding your own custom CSS, allowing you to modify or extend the default styles provided by Lunaria out-of-the-box.
+The dashboard can be further customized by adding your own custom CSS, allowing you to modify or extend the default styles provided by Lunaria out of the box.
 
 <Steps>
 1. Add a CSS file to a directory in your project (e.g. `src/styles/`). For example, you can change the default body font family used:
@@ -159,7 +159,7 @@ By default, Lunaria's dashboard comes with UI labels written in English. These U
 
 ### Text labels
 
-For example, you can change the default message shown when a localization is 100% complete by changing the `statusByLocale.completeLocalization` property of [`dashboard.ui`](/reference/configuration/#dashboardui):
+For example, you can change the default message shown when a locale's localization is 100% complete by changing the `statusByLocale.completeLocalization` property of [`dashboard.ui`](/reference/configuration/#dashboardui):
 
 ```json title="lunaria.config.json" add={4}
 {
@@ -183,9 +183,9 @@ Some labels, suffixed with `Format` in their name, come with named `{}` blocks t
 "statusByLocale.detailsTitleFormat": "{locale_name} ({locale_tag})",
 ```
 
-These can also be changed, though its highly recommended to not remove any of the `{}` blocks present by default, as that would mean possibly not inserting a dynamic value that was expected. 
+These can also be changed, though it is highly recommended to not remove any of the `{}` blocks present by default, as that would mean possibly not inserting a dynamic value that was expected. 
 
-For example, you could modify your dashboard to show languages details in the format `Deutsch (de)` to `Deutsch - de` by making a small change in the default `statusByLocale.detailsTitleFormat` value:
+For example, you could modify your dashboard to show the language details' summary from the format `Deutsch (de)` to `Deutsch - de` by making a small change in the default `statusByLocale.detailsTitleFormat` value:
 
 ```json title="lunaria.config.json" add={4}
 {
@@ -199,7 +199,7 @@ For example, you could modify your dashboard to show languages details in the fo
 
 ### `lang` and `dir`
 
-Since all labels can be changed, there is no imposition from completely translating the dashboard to another language. To make this even easier, [`dashboard.ui`](/reference/configuration/#dashboardui) exposes the `lang` and `dir` properties, that directly translates to the HTML [`lang`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang) and [`dir`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) attributes used in your dashboard.
+Since all labels can be changed, there is no imposition from completely translating the dashboard to another language. To make this even easier, [`dashboard.ui`](/reference/configuration/#dashboardui) exposes the `lang` and `dir` properties, which directly translates to the HTML [`lang`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang) and [`dir`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) attributes used in your dashboard.
 
 For example, that's how you could go about changing your dashboard's language to Brazilian Portuguese (most properties have been omitted from this example for simplicity's sake):
 
@@ -217,7 +217,7 @@ For example, that's how you could go about changing your dashboard's language to
 
 ## Custom UI elements
 
-Lunaria's dashboard was designed to be flexible and easily customizable through [custom CSS](#custom-css) and the available [configuration options](/reference/configuration/#dashboard-options). When that's not enough, Lunaria allows for you to extend and override your dashboard's UI using its [Renderer API](/reference/renderer/). 
+Lunaria's dashboard was designed to be flexible and easily customizable through [custom CSS](#custom-css) and the available [configuration options](/reference/configuration/#dashboard-options). When that's not enough, Lunaria allows you to extend and override your dashboard's UI using its [Renderer API](/reference/renderer/). 
 
 <Steps>
 1. Add a new `renderer.config.ts` or `renderer.config.js` file to your project with the following content:
@@ -331,7 +331,7 @@ Elements can be slotted into the dashboard with the [renderer's `slots` property
 
 ### Overriding elements
 
-Elements can also be overriden in the dashboard with the [renderer's `overrides` property](/reference/renderer/#overrides). All components added to `overrides` will be passed a copy of your Lunaria configuration, as well as the generated Lunaria status (except for the `meta` property) you can use to get values from:
+Elements can also be overridden in the dashboard with the [renderer's `overrides` property](/reference/renderer/#overrides). All components added to `overrides` will be passed a copy of your Lunaria configuration, as well as the generated Lunaria status (except for the `meta` property) you can use to get values from:
 
 <Steps>
 1. Create a new component using the `html` tagged template. In this case, the component will override the dashboard's body and show the `sharedPath` for each localized content:
