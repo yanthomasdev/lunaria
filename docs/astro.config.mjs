@@ -47,20 +47,19 @@ export default defineConfig({
 							label: 'Recommendations',
 							link: 'recommendations',
 						},
+						{
+							label: "Showcase",
+							link: "showcase"
+						}
 					],
 				},
 				{
 					label: 'Guides',
-					items: [
-						{
-							label: 'Dashboard Customization',
-							link: 'guides/dashboard-customization',
-						},
-					],
+					autogenerate: { directory: 'guides' },
 				},
 				{
-					label: 'Tools',
-					autogenerate: { directory: 'tools' },
+					label: 'Integrations',
+					autogenerate: { directory: 'integrations' },
 				},
 				{
 					label: 'Reference',
