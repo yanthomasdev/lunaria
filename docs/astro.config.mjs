@@ -48,9 +48,9 @@ export default defineConfig({
 							link: 'recommendations',
 						},
 						{
-							label: "Showcase",
-							link: "showcase"
-						}
+							label: 'Showcase',
+							link: 'showcase',
+						},
 					],
 				},
 				{
