@@ -1,0 +1,4 @@
+blank_issues_enabled: false
+  - name: 💡 Ideas
+    url: https://github.com/yanthomasdev/lunaria/discussions/new?category=ideas
+    about: Suggest an improvement you would like to see added to Lunaria

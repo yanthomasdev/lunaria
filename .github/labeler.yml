@@ -1,0 +1,10 @@
+# See https://github.com/actions/labeler
+
+docs:
+- docs/**
+
+core:
+- packages/core/**
+
+starlight:
+- packages/starlight/**
