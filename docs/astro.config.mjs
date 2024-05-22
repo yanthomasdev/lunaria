@@ -1,6 +1,7 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
+import starlightBlog from 'starlight-blog'
 
 const site = 'https://lunaria.dev/';
 
@@ -67,7 +68,7 @@ export default defineConfig({
 				},
 			],
 			customCss: ['./src/styles/theme.css', './src/styles/landing.css'],
-			plugins: [starlightLinksValidator()],
+			plugins: [starlightLinksValidator(), starlightBlog()],
 		}),
 	],
 });
