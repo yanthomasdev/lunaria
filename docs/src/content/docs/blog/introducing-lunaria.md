@@ -16,7 +16,7 @@ It is a lot of effort to build a sustainable workflow for content to be progress
 
 Lunaria is a complete **localization management toolchain** built especially for open-source projects. 
 
-Currently, Lunaria is already being used in production to help track over 5000 content files in over a dozen of locales in big projects such as [Astro](https://i18n.docs.astro.build/), [Starlight](https://i18n.starlight.astro.build/), [SolidJS](https://docs.solidjs.com/i18n-status/), and [VitePress](https://vitepress.dev/_translations/).
+Lunaria is already being used in production to help track over 5,000 content files in over a dozen locales in big projects such as [Astro](https://i18n.docs.astro.build/), [Starlight](https://i18n.starlight.astro.build/), [SolidJS](https://docs.solidjs.com/i18n-status/), and [VitePress](https://vitepress.dev/_translations/).
 
 :::tip[Ready to get started?]
 Read the official ["Getting Started" guide](https://lunaria.dev/getting-started/) to learn more about and set up Lunaria in your project. 
@@ -24,21 +24,23 @@ Read the official ["Getting Started" guide](https://lunaria.dev/getting-started/
 
 ## Why Lunaria?
 
-During the process of making the Astro documentation available for translation, we noticed how hard would be to make a sustainable workflow for both maintainers and contributors. First, most localization management platforms (the ones that help you keep track of and update localizations) have the requirement of owning your content, are paid to some degree, and more importantly, are way too complex for beginners and might not even be available for people in certain countries one might want to reach.
+While making the Astro documentation available for translation, we noticed how hard it was to build a sustainable workflow for both maintainers and contributors. Most localization management platforms (the ones that help you keep track of and update localizations) have the requirement of owning your content and are paid to some degree. More importantly, these platforms are way too complex for beginners or might not even be available for people in certain countries one might want to reach.
 
-With all this in mind, the Astro maintainer [`@hippotastic`](https://github.com/hippotastic) built what was then called "Translation Tracker", a tailor-made translation tracking tool that allowed us to work alongside contributors to translate the official Astro documentation in 14 different languages with ease.
+With all this in mind, the Astro maintainer [`@hippotastic`](https://github.com/hippotastic) built a tailor-made translation tracking tool that allowed us to work with contributors to translate the official Astro documentation into 14 different languages with ease.
 
-Lunaria is the evolution of said tool, with a wider scope, more features, and support for different types of projects -- fun fact, Lunaria was first hinted at in the ["How Astro does i18n" blog post](https://astro.build/blog/astro-i18n/#going-forward)!
+Lunaria is the evolution of that bespoke tool, with a wider scope, more features, and support for different types of projects -- fun fact, Lunaria was first hinted at in the ["How Astro does i18n" blog post](https://astro.build/blog/astro-i18n/#going-forward)!
 
 ## What's in a "toolchain"?
 
-Lunaria is a *toolchain*, a set of tools that **supercharge your localization workflow** by integrating several parts of your project's infrastructure, including your repository's Git history, your project's file structure, and development platform such as GitHub and GitLab.
+Lunaria is a *toolchain*, a set of tools that **supercharge your localization workflow** by integrating with several parts of your project's infrastructure, including your repository's Git history, your project's file structure, and development platform such as GitHub or GitLab.
 
-As of now -- and that list is going to get even bigger -- the toolchain comes with:
+As of today, the toolchain includes:
 
 - Its own **custom tracking system** that keeps track of your source and localized content changes powered by Git, including a runtime API you can use to build upon. 
 - A **complete and easy-to-read status dashboard** you can share with contributors and maintainers.  
 - **Official integrations**, such as a [GitHub Action](https://lunaria.dev/integrations/github-action/) and dashboard integration with the [Starlight theme for Astro](https://lunaria.dev/integrations/starlight/).
+
+And this list is going to grow soon as we add additional tools to complement our core features.
 
 ## Current status
 
@@ -58,9 +60,9 @@ In response to feedback given, Lunaria will receive constant updates with bug fi
 
 ## Support
 
-As usual, maintaining an open-source project is a lot of work, especially when you're an unemployed and broke college student from Latin America. Fortunately, I've been lucky to have received support from [Astro](https://astro.build/) to dedicate some of my time to Lunaria these past months and bring it to its current state.
+Maintaining an open-source project is a lot of work, especially when you're an unemployed and broke college student from Latin America. Fortunately, I've been lucky to have received support from [Astro](https://astro.build/) to dedicate some of my time to Lunaria these past months and bring it to its current state.
 
-If your company or project uses Lunaria, supporting it through [GitHub Sponsors](https://github.com/sponsors/yanthomasdev) would go a long way into helping it be maintained in the foreseeable future, and even better, allow me to live sustainably working full-time on open-source.
+If your company or project uses Lunaria, supporting development through [GitHub Sponsors](https://github.com/sponsors/yanthomasdev) will help guarantee its long-term maintenance, and even better, allow me to live sustainably while working full-time on open-source.
 
 As a final -- and quite personal -- aside, Lunaria is the first open-source project and package I wrote and led. To build something like this in public is, to be quite honest, frightening. For all those understanding and kind enough to test it and share your constructive feedback, thank you! 
 
