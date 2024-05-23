@@ -28,7 +28,7 @@ And that's not all! Lunaria is **free and open-source software** (FOSS). No sign
 
 Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production. This release is also an important step to gather more diversified feedback on how Lunaria can mature into a more complete, fast, and stable library in the future.
 
-As mentioned before, Lunaria is a *toolchain* and comes with different packages meant to help you integrate with, or improve the experience of using Lunaria. Today *also* marks the v0.1 release of the official [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/github-action/).
+As mentioned before, Lunaria is a *toolchain* and comes with different packages meant to help you integrate with, or improve the experience of using Lunaria. Today *also* marks the v0.1 release of the official [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/starlight/).
 
 :::caution[Breaking changes]
 During this stage, breaking changes should be expected across all officially maintained packages. If you find anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new/choose)!
