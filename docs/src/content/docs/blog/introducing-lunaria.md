@@ -21,9 +21,9 @@ Currently, Lunaria is already being used in production to help track over 5000 c
 Read the official ["Getting Started" guide](https://lunaria.dev/getting-started/) to learn more about and set up Lunaria in your project. 
 :::
 
-## What is a "localization managment toolchain"?
+## What is a "localization management toolchain"?
 
-Lunaria is a customizable tracking system for the status of your localized content, powered by Git. It comes complete with an easy-to-read, up-to-the-moment status dashboard that you can share with your contributors, and a GitHub action to provide essential feedback directly in each PR.
+Lunaria is a customizable tracking system for the status of your localized content, powered by Git. It comes complete with an easy-to-read, up-to-the-moment status dashboard that you can share with your contributors and a [GitHub Action](https://lunaria.dev/integrations/github-action/) to provide essential feedback directly in each PR.
 
 And that's not all! Lunaria is **free and open-source software** (FOSS). No sign-ups are needed, and no giving up ownership of your content to another platform. Lunaria's sole goal is -- and will always be -- to help you make the world more inclusive, accessible, and globalized. 
 
@@ -40,7 +40,7 @@ Lunaria was created with the intent to share Astro Docs' own internationalizatio
 
 Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production. This release is also an important step to gather more diversified feedback on how Lunaria can mature into a more complete, fast, and stable library in the future.
 
-As mentioned before, Lunaria is a *toolchain* and comes with different packages meant to help you integrate with, or improve the experience of using Lunaria. Today *also* marks the v0.1 release of the official [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/github-action/).
+As mentioned before, Lunaria is a *toolchain* and comes with different packages meant to help you integrate with, or improve the experience of using Lunaria. Today *also* marks the v0.1 release of the official [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/starlight/).
 
 :::caution[Breaking changes]
 During this stage, breaking changes should be expected across all officially maintained packages. If you find anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new/choose)!
