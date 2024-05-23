@@ -44,11 +44,11 @@ And this list is going to grow soon as we add additional tools to complement our
 
 ## Current status
 
-Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production, as well as is a way to ask for further feedback and use cases from the community so that Lunaria can mature into an even better project.
+Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production. This is also a chance to ask for feedback and learn about new use cases from the community so that Lunaria can mature into an even better project.
 
 Additionally, the officially supported [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/starlight/) are also receiving their own v0.1 releases as of today.
 
-:::caution
+:::caution[Beta software]
 Missing features, bugs, and breaking changes are still expected in this early stage across all officially maintained packages. If you find anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new/choose)!
 :::
 
@@ -56,7 +56,7 @@ Missing features, bugs, and breaking changes are still expected in this early st
 
 Lunaria is -- and will continue to be -- **free and open-source software** (FOSS). No sign-ups are needed, and no giving up ownership of your content to another platform. Lunaria's sole goal is to help you make the world more inclusive, accessible, and globalized. 
 
-In response to feedback given, Lunaria will receive constant updates with bug fixes, miscellaneous quality improvements, and brand-new features. At the same time, a lot of brainstorming will happen in the background (and later publicly) on how Lunaria can shape up to be even better in the future -- and believe me, there are lots of exciting ideas being cooked!
+In response to your feedback, Lunaria will receive constant updates with bug fixes, improvements, and brand-new features. Join the community in brainstorming how Lunaria can shape up to be even better in the future -- and believe me, there are lots of exciting ideas being cooked up!
 
 ## Support
 
