@@ -9,20 +9,32 @@ authors:
   picture: https://avatars.githubusercontent.com/u/61414485
   url: https://github.com/yanthomasdev/
 ---
+Maintaining a website for an international audience is no easy task!
 
-Lunaria is a complete localization management toolchain built especially for open-source projects. Currently, Lunaria is already being used in production to help track over 5000 content files in over a dozen of locales in big projects such as [Astro](https://i18n.docs.astro.build/), [Starlight](https://i18n.starlight.astro.build/), [SolidJS](https://docs.solidjs.com/i18n-status/), and [VitePress](https://vitepress.dev/_translations/).
+It is a lot of effort to build a sustainable workflow for content to be progressively and consistently localized, especially if you also have contributors to your project. 
+
+Lunaria is a complete **localization management toolchain** built especially for open-source projects. 
+
+Currently, Lunaria is already being used in production to help track over 5000 content files in over a dozen of locales in big projects such as [Astro](https://i18n.docs.astro.build/), [Starlight](https://i18n.starlight.astro.build/), [SolidJS](https://docs.solidjs.com/i18n-status/), and [VitePress](https://vitepress.dev/_translations/).
 
 :::tip[Ready to get started?]
 Read the official ["Getting Started" guide](https://lunaria.dev/getting-started/) to learn more about and set up Lunaria in your project. 
 :::
 
-## What's it all about?
+## What is a "localization management toolchain"?
+
+Lunaria is a customizable tracking system for the status of your localized content, powered by Git. It comes complete with an easy-to-read, up-to-the-moment status dashboard that you can share with your contributors and a [GitHub Action](https://lunaria.dev/integrations/github-action/) to provide essential feedback directly in each PR.
+
+And that's not all! Lunaria is **free and open-source software** (FOSS). No sign-ups are needed, and no giving up ownership of your content to another platform. Lunaria's sole goal is -- and will always be -- to help you make the world more inclusive, accessible, and globalized. 
+
+
+
+
+## History
 
 Lunaria was created with the intent to share Astro Docs' own internationalization infrastructure with the wider open-source community -- In fact, Lunaria was first hinted at in the ["How Astro does i18n" blog post](https://astro.build/blog/astro-i18n/#going-forward). Originally developed by [@hippotastic](https://github.com/hippotastic), the before coined "Translation Tracker" was fully redesigned to support a wide variety of different content authoring formats, file structures, and frameworks one might be building their project with.
 
-Maintaining a project for an international audience is no easy task! It involves a lot of effort from both contributors and maintainers to build a sustainable workflow for content to be progressively and consistently localized. Lunaria helps your project by making this effortless -- within a few minutes, you can get a fully tracked project with a dashboard on top that you can share with your contributors to rapidly get into action, all while keeping changes in sync thanks to Lunaria's custom tracking system powered by Git.
 
-And that's not all! Lunaria is **free and open-source software** (FOSS). No sign-ups are needed, and no giving up ownership of your content to another platform. Lunaria's sole goal is -- and will always be -- to help you make the world more inclusive, accessible, and globalized. 
 
 ## Current status
 
