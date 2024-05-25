@@ -288,9 +288,8 @@ function findLastMajorCommit(
 	 * or be ignored, while the non-specified files will go through the inverse.
 	 */
 
-	// TODO: Remove `@tracker-major` and `@tracker-minor` in v1.0
 	const TRACKER_DIRECTIVES =
-		/(?<directive>@tracker-major|@lunaria-track|@tracker-minor|@lunaria-ignore):(?<pathsOrGlobs>[^\n]+)?/;
+		/(?<directive>@lunaria-track|@lunaria-ignore):(?<pathsOrGlobs>[^\n]+)?/;
 	/** Dynamic regex that matches any occurances of the user-specified keywords (case-insensitive)
 	 * @example
 	 * Given the array `['one', 'two', 'three']`, you get
