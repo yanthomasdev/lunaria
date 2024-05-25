@@ -33,7 +33,7 @@
     "@astrojs/starlight": ">=0.14.0",
     "astro": ">=4.0.0"
   },
-  "devDependencies": {
+  "dependencies": {
     "@lunariajs/core": "workspace:^"
   }
 }
