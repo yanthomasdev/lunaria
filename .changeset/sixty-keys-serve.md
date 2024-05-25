@@ -1,6 +1,5 @@
 ---
 "@lunariajs/core": minor
-"@lunariajs/starlight": minor
 ---
 
 The old `@tracker-major` and `@tracker-minor` tracker directives are deprecated in favor of `@lunaria-track` and `@lunaria-ignore`.
