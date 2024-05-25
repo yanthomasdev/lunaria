@@ -4,12 +4,6 @@
 
 ### Minor Changes
 
-- [#145](https://github.com/yanthomasdev/lunaria/pull/145) [`5327d2e`](https://github.com/yanthomasdev/lunaria/commit/5327d2e486885e7cd6cb280d0b71e4e37b62239a) Thanks [@yanthomasdev](https://github.com/yanthomasdev)! - The old `@tracker-major` and `@tracker-minor` tracker directives are deprecated in favor of `@lunaria-track` and `@lunaria-ignore`.
-
-  A small error that wasn't being thrown when fetching a file's git history is now correctly thrown.
-
-### Patch Changes
-
 - Updated dependencies [[`5327d2e`](https://github.com/yanthomasdev/lunaria/commit/5327d2e486885e7cd6cb280d0b71e4e37b62239a)]:
   - @lunariajs/core@0.1.0
 
