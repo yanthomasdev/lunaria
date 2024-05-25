@@ -48,7 +48,7 @@ export async function getFileHistory(path: string) {
 			all: log.all,
 		};
 	} catch (e) {
-		error('Failed to find commits. Have you made any commits in your branch yet?');
+		console.error(error('Failed to find commits. Have you made any commits in your branch yet?'));
 		process.exit(1);
 	}
 }
