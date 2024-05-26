@@ -10,7 +10,7 @@ The Lunaria GitHub Action comments on pull requests with an overview of how the 
 ## Prerequisites
 
 - Node.js - `v20.0.0` or higher.
-- `@lunariajs/core` - `v0.0.31` or higher.
+- `@lunariajs/core` - `v0.1.0` or higher.
 
 ## Set up the Action
 
@@ -56,7 +56,7 @@ jobs:
       - run: npm install
 
       - name: Generate Lunaria Overview
-        uses: yanthomasdev/lunaria-action@main
+        uses: yanthomasdev/lunaria-action@v0.1.0
 ```
 
 </TabItem>
@@ -102,7 +102,7 @@ jobs:
       - run: pnpm install
 
       - name: Generate Lunaria Overview
-        uses: yanthomasdev/lunaria-action@main
+        uses: yanthomasdev/lunaria-action@v0.1.0
 ```
 
 </TabItem>
@@ -145,7 +145,7 @@ jobs:
       - run: yarn install
 
       - name: Generate Lunaria Overview
-        uses: yanthomasdev/lunaria-action@main
+        uses: yanthomasdev/lunaria-action@v0.1.0
 ```
 
 </TabItem>
@@ -167,7 +167,7 @@ This example assumes the `@lunariajs/core` package was installed in the `docs/pa
 
 ```yml ins={4} mark="docs"
 - name: Generate Lunaria Overview
-  uses: yanthomasdev/lunaria-action@main
+  uses: yanthomasdev/lunaria-action@v0.1.0
   with:
     working-directory: docs
 ```
@@ -193,7 +193,7 @@ By default, the Action won't run on a private repository for a lack of permissio
 
    ```yml ins={4} mark="PAT"
    - name: Generate Lunaria Overview
-     uses: yanthomasdev/lunaria-action@main
+     uses: yanthomasdev/lunaria-action@v0.1.0
      with:
        token: ${{ secrets.PAT }}
    ```
@@ -208,7 +208,7 @@ By default, the Action won't run on a private repository for a lack of permissio
 
   ```yml mark={4}
   - name: Generate Lunaria Overview
-    uses: yanthomasdev/lunaria-action@main
+    uses: yanthomasdev/lunaria-action@v0.1.0
     with:
       token: ${{ secrets.PAT }}
   ```
@@ -217,7 +217,7 @@ By default, the Action won't run on a private repository for a lack of permissio
 
   ```yml mark={4}
   - name: Generate Lunaria Overview
-    uses: yanthomasdev/lunaria-action@main
+    uses: yanthomasdev/lunaria-action@v0.1.0
     with:
       working-directory: docs
   ```
