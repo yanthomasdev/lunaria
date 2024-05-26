@@ -26,7 +26,7 @@ Read the official ["Getting Started" guide](https://lunaria.dev/getting-started/
 
 While making the Astro documentation available for translation, we noticed how hard it was to build a sustainable workflow for both maintainers and contributors. Most localization management platforms (the ones that help you keep track of and update localizations) force you to give up control of your content and require some sort of paid subscription. More importantly, your international contributors have to learn their platform too, if it is even available in their country.
 
-With all this in mind, the Astro maintainer [`@hippotastic`](https://github.com/hippotastic) built a tailor-made translation tracking tool that allowed us to work with contributors to translate the official Astro documentation into 14 different languages with ease.
+Wanting a truly free, open-source solution that integrated seamlessly into the translators' and maintainers' normal workflow, the Astro maintainer [`@hippotastic`](https://github.com/hippotastic) built a tailor-made translation tracking tool. The community contributors used this to organize and mobilize, translating the official Astro documentation into 14 different languages with ease.
 
 Lunaria is the evolution of that custom-tailored tool, with a wider scope, more features, and support for different types of projects—fun fact, Lunaria was first hinted at in the ["How Astro does i18n" blog post](https://astro.build/blog/astro-i18n/#going-forward)!
 
@@ -44,7 +44,7 @@ And this list is only going to grow soon as we add additional tools to complemen
 
 ## First public release
 
-Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production. This is also a chance to ask for feedback and learn about new use cases from the community so that Lunaria can mature into an even better project.
+Today marks the release of Lunaria v0.1. This minor release means that Lunaria is ready to be tested and used in production. I also encourage feedback and would love to learn about *your* use cases so that Lunaria can mature into an even better project.
 
 Additionally, the officially supported [Lunaria GitHub Action](https://lunaria.dev/integrations/github-action/) and the [Lunaria integration for Starlight](https://lunaria.dev/integrations/starlight/) are also receiving their own v0.1 releases as of today.
 
