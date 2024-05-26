@@ -2,7 +2,7 @@
 title: Introducing Lunaria
 excerpt: 
   Lunaria is a complete localization management toolchain built especially for open-source projects. Currently, Lunaria is already being used in production to help track over 5000 content files in over a dozen of locales in big projects such as [Astro](https://i18n.docs.astro.build/), [Starlight](https://i18n.starlight.astro.build/), [SolidJS](https://docs.solidjs.com/i18n-status/), and [VitePress](https://vitepress.dev/_translations/).
-date: 2024-05-21
+date: 2024-05-28
 authors:
   name: Yan Thomas
   title: Maintainer
