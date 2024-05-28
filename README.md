@@ -14,7 +14,7 @@
 
 ## Status
 
-Lunaria is currently in early access and **breaking changes** are bound to happen. If you’ve found anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new).
+Lunaria is currently in public beta and **breaking changes** are bound to happen. If you’ve found anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new).
 
 ## Documentation
 
