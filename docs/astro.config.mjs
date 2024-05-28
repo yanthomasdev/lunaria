@@ -1,7 +1,7 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
-import starlightBlog from 'starlight-blog'
+import starlightBlog from 'starlight-blog';
 
 const site = 'https://lunaria.dev/';
 
