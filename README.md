@@ -14,7 +14,7 @@
 
 ## Status
 
-Lunaria is currently in early access and **breaking changes** are bound to happen. If you’ve found anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new).
+Lunaria is currently in public beta and **breaking changes** are bound to happen. If you’ve found anything wrong or unexpected, please [open an issue on GitHub](https://github.com/yanthomasdev/lunaria/issues/new).
 
 ## Documentation
 
@@ -33,3 +33,9 @@ Read the official [Lunaria documentation](https://lunaria.dev) to learn more and
 Lunaria is a free and open-source software (FOSS) maintaned thanks to community and company sponsorships.
 
 [Sponsor Lunaria](https://github.com/sponsors/yanthomasdev)
+
+<p align="center">
+  <a href="https://cdn.jsdelivr.net/gh/yanthomasdev/static/sponsorkit/sponsors.svg">
+    <img src='https://cdn.jsdelivr.net/gh/yanthomasdev/static/sponsorkit/sponsors.svg'/>
+  </a>
+</p>
