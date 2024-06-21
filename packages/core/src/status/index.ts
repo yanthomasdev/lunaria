@@ -60,10 +60,8 @@ export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo
 					localizations[lang] = {
 						isMissing: true,
 						gitHostingFileURL: gitHostingLinks.create(localeFilePath),
-						gitHostingHistoryURL: gitHostingLinks.history(
-							sourceFile.path,
-							sourceFile.git.lastMajorChange
-						),
+						// When the file doesn't exist, we give it a clean history URL, without a since date.
+						gitHostingHistoryURL: gitHostingLinks.history(sourceFile.path),
 					};
 					break;
 				}
@@ -75,7 +73,7 @@ export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo
 						isOutdated: sourceFile.git.lastMajorChange > localizationFile.git.lastMajorChange,
 						gitHostingHistoryURL: gitHostingLinks.history(
 							sourceFile.path,
-							sourceFile.git.lastMajorChange
+							localizationFile.git.lastMajorChange
 						),
 						meta: {
 							type: 'universal',
@@ -91,7 +89,7 @@ export async function getLocalizationStatus(config: LunariaConfig, isShallowRepo
 						isOutdated: sourceFile.git.lastMajorChange > localizationFile.git.lastMajorChange,
 						gitHostingHistoryURL: gitHostingLinks.history(
 							sourceFile.path,
-							sourceFile.git.lastMajorChange
+							localizationFile.git.lastMajorChange
 						),
 						meta: {
 							type: 'dictionary',
