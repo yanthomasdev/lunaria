@@ -1,5 +1,12 @@
 # @lunariajs/starlight
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`30ecd70`](https://github.com/yanthomasdev/lunaria/commit/30ecd7027209eb466c326d5d05972d2a5ed174a4)]:
+  - @lunariajs/core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
