@@ -1,5 +1,11 @@
 # @lunariajs/core
 
+## 0.1.1
+
+### Patch Changes
+
+- [#147](https://github.com/yanthomasdev/lunaria/pull/147) [`30ecd70`](https://github.com/yanthomasdev/lunaria/commit/30ecd7027209eb466c326d5d05972d2a5ed174a4) Thanks [@yanthomasdev](https://github.com/yanthomasdev)! - Fix source history incorrect listing
+
 ## 0.1.0
 
 ### Minor Changes
