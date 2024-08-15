@@ -4,6 +4,7 @@
 # generated directories
 **/dist
 **/.astro
+**/.turbo
 **/__coverage__
 
 # directories

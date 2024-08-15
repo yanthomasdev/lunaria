@@ -1,12 +1,24 @@
 {
   "name": "@lunariajs/core",
-  "type": "module",
   "version": "0.1.1",
   "description": "Localization management system for open-source projects",
-  "types": "./dist/index.d.mts",
-  "bin": {
-    "lunaria": "./dist/cli/index.mjs"
+  "keywords": [
+    "i18n",
+    "l10n",
+    "translation",
+    "localization",
+    "dashboard",
+    "management"
+  ],
+  "bugs": "https://github.com/yanthomasdev/lunaria/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yanthomasdev/lunaria",
+    "directory": "packages/core"
   },
+  "license": "MIT",
+  "author": "Yan Thomas",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -38,50 +50,36 @@
     },
     "./cli": "./dist/cli/index.mjs"
   },
-  "engines": {
-    "node": ">=18.17.0"
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "lunaria": "./dist/cli/index.mjs"
   },
   "files": [
     "dist",
-    "config.schema.json"
+    "README.md"
   ],
-  "keywords": [
-    "i18n",
-    "l10n",
-    "translation",
-    "localization",
-    "dashboard",
-    "management"
-  ],
-  "author": "Yan Thomas",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yanthomasdev/lunaria",
-    "directory": "packages/core"
-  },
-  "bugs": "https://github.com/yanthomasdev/lunaria/issues",
   "scripts": {
-    "build": "unbuild && pnpm run schema",
-    "lint": "tsc",
-    "schema": "jiti ./scripts/schema.ts"
-  },
-  "devDependencies": {
-    "@types/micromatch": "^4.0.3",
-    "@types/node": "^20.8.9",
-    "typescript": "^5.2.2",
-    "zod-to-json-schema": "^3.22.1"
+    "build": "tsc",
+    "dev": "tsc --watch"
   },
   "dependencies": {
-    "@clack/core": "^0.3.3",
-    "fast-glob": "^3.3.1",
-    "get-port": "^7.0.0",
-    "jiti": "^1.21.0",
-    "micromatch": "^4.0.5",
-    "path-to-regexp": "^6.2.1",
-    "picocolors": "^1.0.0",
-    "simple-git": "^3.20.0",
+    "@clack/core": "^0.3.4",
+    "fast-glob": "^3.3.2",
+    "get-port": "^7.1.0",
+    "jiti": "^1.21.6",
+    "micromatch": "^4.0.7",
+    "path-to-regexp": "^6.2.2",
+    "picocolors": "^1.0.1",
+    "simple-git": "^3.25.0",
     "ultramatter": "^0.0.4",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/micromatch": "^4.0.9",
+    "@types/node": "^20.14.15",
+    "zod-to-json-schema": "^3.23.2"
+  },
+  "engines": {
+    "node": ">=18.17.0"
   }
 }
