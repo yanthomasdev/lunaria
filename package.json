@@ -5,15 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm turbo build --filter=!lunaria-docs",
+    "dev": "pnpm turbo dev --filter=!lunaria-docs",
     "docs": "pnpm --filter lunaria-docs dev"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.26.2",
     "@total-typescript/tsconfig": "^1.0.4",
-    "prettier": "3.0.3",
-    "prettier-plugin-astro": "0.12.0",
-    "prettier-plugin-organize-imports": "^3.2.3",
     "turbo": "^2.0.14",
     "typescript": "^5.5.4"
   },
