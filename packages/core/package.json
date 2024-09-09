@@ -21,63 +21,40 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "default": "./dist/index.mjs"
-    },
-    "./components": {
-      "types": "./dist/dashboard/components.d.mts",
-      "default": "./dist/dashboard/components.mjs"
-    },
-    "./dashboard": {
-      "types": "./dist/dashboard/index.d.mts",
-      "default": "./dist/dashboard/index.mjs"
-    },
-    "./git": {
-      "types": "./dist/status/git.d.mts",
-      "default": "./dist/status/git.mjs"
-    },
-    "./status": {
-      "types": "./dist/status/index.d.mts",
-      "default": "./dist/status/index.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./config": {
-      "types": "./dist/config/index.d.mts",
-      "default": "./dist/config/index.mjs"
-    },
-    "./console": {
-      "types": "./dist/cli/console.d.mts",
-      "default": "./dist/cli/console.mjs"
-    },
-    "./cli": "./dist/cli/index.mjs"
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    }
   },
-  "types": "./dist/index.d.mts",
-  "bin": {
-    "lunaria": "./dist/cli/index.mjs"
-  },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "!dist/**/*.map",
     "README.md"
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\""
   },
   "dependencies": {
-    "@clack/core": "^0.3.4",
+    "consola": "^3.2.3",
+    "empathic": "^1.0.0",
     "fast-glob": "^3.3.2",
-    "get-port": "^7.1.0",
-    "jiti": "^1.21.6",
+    "jiti": "2.0.0-beta.3",
     "micromatch": "^4.0.7",
-    "path-to-regexp": "^6.2.2",
-    "picocolors": "^1.0.1",
+    "neotraverse": "^0.6.18",
+    "path-to-regexp": "6.2.2",
     "simple-git": "^3.25.0",
     "ultramatter": "^0.0.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^20.14.15",
-    "zod-to-json-schema": "^3.23.2"
+    "@types/node": "^22.4.1"
   },
   "engines": {
     "node": ">=18.17.0"

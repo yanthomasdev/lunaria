@@ -6,6 +6,7 @@
   "scripts": {
     "build": "pnpm turbo build --filter=!lunaria-docs",
     "dev": "pnpm turbo dev --filter=!lunaria-docs",
+    "test": "pnpm turbo test",
     "docs": "pnpm --filter lunaria-docs dev"
   },
   "devDependencies": {
@@ -13,6 +14,8 @@
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.26.2",
     "@total-typescript/tsconfig": "^1.0.4",
+    "pkg-pr-new": "^0.0.20",
+    "tsx": "^4.17.0",
     "turbo": "^2.0.14",
     "typescript": "^5.5.4"
   },

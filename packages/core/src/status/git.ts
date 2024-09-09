@@ -1,86 +1,110 @@
-import { existsSync, rmSync } from 'node:fs';
-import os from 'node:os';
-import { join, resolve } from 'node:path';
-import { simpleGit } from 'simple-git';
-import { error, info } from '../cli/console.js';
-import type { LunariaConfig } from '../config/index.js';
+import { cpus } from 'node:os';
+import { resolve } from 'node:path';
+import { simpleGit, type DefaultLogFields, type ListLogLine } from 'simple-git';
+import type { ConsolaInstance } from 'consola';
+import { FileCommitsNotFound, UncommittedFileFound } from '../errors/errors.js';
+import micromatch from 'micromatch';
+import type { LunariaConfig } from '../config/types.js';
+import type { RegExpGroups } from '../utils/types.js';
 
-export const git = simpleGit({
-	maxConcurrentProcesses: Math.max(2, Math.min(32, os.cpus().length)),
-});
+export class LunariaGitInstance {
+	#git = simpleGit({
+		maxConcurrentProcesses: Math.max(2, Math.min(32, cpus().length)),
+	});
+	#config: LunariaConfig;
+	#logger: ConsolaInstance;
 
-/** Creates a clone of the git history to be used on platforms
- * that only allow shallow repositories (e.g. Vercel) and returns
- * `true` if it's running on a shallow repository.
- */
-export async function handleShallowRepo({ cloneDir, repository }: LunariaConfig) {
-	const gitHostingLinks = getGitHostingLinks(repository);
-	const isShallowRepo = (await git.revparse(['--is-shallow-repository'])) === 'true';
+	constructor(config: LunariaConfig, logger: ConsolaInstance) {
+		this.#logger = logger;
+		this.#config = config;
+	}
 
-	if (isShallowRepo) {
-		console.log(
-			info(
-				"Shallow repository detected. A clone of your repository's history will be downloaded and used. "
-			)
+	async #getFileHistory(path: string) {
+		try {
+			const log = await this.#git.log({
+				file: resolve(path),
+				strictDate: true,
+			});
+
+			return log;
+		} catch (e) {
+			this.#logger.error(FileCommitsNotFound.message);
+			throw e;
+		}
+	}
+
+	async getFileLatestChanges(path: string) {
+		const logHistory = await this.#getFileHistory(path);
+
+		const latestChange = logHistory.latest;
+		const latestTrackedChange = findLatestTrackedCommit(
+			this.#config.tracking,
+			path,
+			logHistory.all,
 		);
 
-		const target = resolve(cloneDir);
-
-		if (existsSync(target)) rmSync(target, { recursive: true, force: true });
-
-		await git.clone(gitHostingLinks.clone(), target, ['--bare', '--filter=blob:none']);
-		// Use the clone as the git directory for all tasks
-		await git.cwd({ path: target, root: true });
-	}
-
-	return isShallowRepo;
-}
-
-export async function getFileHistory(path: string) {
-	try {
-		const log = await git.log({
-			file: path,
-			strictDate: true,
-		});
+		if (!latestChange || !latestTrackedChange) {
+			this.#logger.error(UncommittedFileFound.message);
+			process.exit(1);
+		}
 
 		return {
-			latest: log.latest,
-			all: log.all,
+			latestChange: {
+				date: latestChange.date,
+				message: latestChange.message,
+				hash: latestChange.hash,
+			},
+			latestTrackedChange: {
+				date: latestTrackedChange.date,
+				message: latestTrackedChange.message,
+				hash: latestTrackedChange.hash,
+			},
 		};
-	} catch (e) {
-		console.error(error('Failed to find commits. Have you made any commits in your branch yet?'));
-		process.exit(1);
 	}
 }
 
-export function getGitHostingLinks(repository: LunariaConfig['repository']) {
-	const { name, branch, hosting, rootDir } = repository;
+/**
+ * Finds the latest tracked commit in a list of commits, tracked means
+ * the latest commit that wasn't ignored from Lunaria's tracking system,
+ * either by the use of a tracker directive or the inclusion of a ignored
+ * keyword in the commit's name.
+ */
+export function findLatestTrackedCommit(
+	tracking: LunariaConfig['tracking'],
+	path: string,
+	commits: Readonly<Array<DefaultLogFields & ListLogLine>> | Array<DefaultLogFields & ListLogLine>,
+) {
+	/** Regex that matches a `'@lunaria-track'` or `'@lunaria-ignore'` group
+	 * and a sequence of paths separated by semicolons till a line break.
+	 *
+	 * This means whenever a valid tracker directive is found, the tracking system
+	 * lets the user take over and cherry-pick which files' changes should be tracked
+	 * or ignored.
+	 */
+	const trackerDirectivesRe =
+		/(?<directive>@lunaria-track|@lunaria-ignore):(?<pathsOrGlobs>[^\n]+)?/;
 
-	switch (hosting) {
-		case 'github':
-			return {
-				create: (filePath: string) =>
-					`https://github.com/${name}/new/${branch}?filename=${join(rootDir, filePath)}`,
-				source: (filePath: string) =>
-					`https://github.com/${name}/blob/${branch}/${join(rootDir, filePath)}`,
-				history: (filePath: string, sinceDate?: string) =>
-					`https://github.com/${name}/commits/${branch}/${join(rootDir, filePath)}${
-						sinceDate ? `?since=${sinceDate}` : ''
-					}`,
-				clone: () => `https://github.com/${name}.git`,
-			};
+	/** Regex that matches any configured ignored keywords in the user's Lunaria config. */
+	const ignoredKeywordsRe = new RegExp(`(${tracking.ignoredKeywords.join('|')})`, 'i');
 
-		case 'gitlab':
-			return {
-				create: (filePath: string) =>
-					`https://gitlab.com/${name}/-/new/${branch}?file_name=${join(rootDir, filePath)}`,
-				source: (filePath: string) =>
-					`https://gitlab.com/${name}/-/blob/${branch}/${join(rootDir, filePath)}`,
-				history: (filePath: string, sinceDate?: string) =>
-					`https://gitlab.com/${name}/-/commits/${branch}/${join(rootDir, filePath)}${
-						sinceDate ? `?since=${sinceDate}` : ''
-					}`,
-				clone: () => `https://gitlab.com/${name}.git`,
-			};
-	}
+	return commits.find((commit) => {
+		// Ignored keywords take precedence over tracker directives.
+		if (commit.message.match(ignoredKeywordsRe)) return false;
+
+		const trackerDirectiveMatch: RegExpGroups<'directive' | 'pathsOrGlobs'> =
+			commit.body.match(trackerDirectivesRe);
+
+		// If no tracker directive is found, we consider the commit as tracked.
+		if (!trackerDirectiveMatch || !trackerDirectiveMatch.groups) return true;
+
+		const { directive, pathsOrGlobs } = trackerDirectiveMatch.groups;
+
+		// TODO: Test this function with multiple paths and globs.
+		return (
+			pathsOrGlobs.split(';').find((pathOrGlob) => {
+				if (directive === '@lunaria-track') return micromatch.isMatch(path, pathOrGlob);
+				if (directive === '@lunaria-ignore') return !micromatch.isMatch(path, pathOrGlob);
+			}) !== undefined
+		);
+	});
 }
