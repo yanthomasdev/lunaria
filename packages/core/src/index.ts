@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateConfig } from './config/config.js';
-import type { LunariaConfig, Pattern } from './config/types.js';
+import type { LunariaConfig, LunariaUserConfig, Pattern } from './config/types.js';
 import { FileConfigNotFound } from './errors/errors.js';
 import { createPathResolver } from './files/paths.js';
 import { LunariaGitInstance } from './status/git.js';
@@ -24,27 +24,13 @@ export const CONSOLE_LEVELS = {
 	silent: -999,
 } as const;
 
-// Lunaria's public API entrypoint.
-// Since we need to load the configuration async, a factory function is used
-// as a way to mimic an async class constructor.
-export async function createLunaria(opts?: {
+interface LunariaOpts {
 	logLevel?: keyof typeof CONSOLE_LEVELS;
 	force?: boolean;
-	config?: LunariaConfig;
-}) {
-	// If an inline configuration is not provided, it will be loaded from the file system.
-	const config = opts?.config ? validateConfig(opts.config) : await loadConfig();
-	const logLevel = opts?.logLevel || 'info';
-	const force = opts?.force || false;
-
-	return new LunariaInstance({
-		logLevel,
-		force,
-		config,
-	});
+	config?: LunariaUserConfig;
 }
 
-class LunariaInstance {
+export class Lunaria {
 	#config: LunariaConfig;
 	#git: LunariaGitInstance;
 	#logger: ConsolaInstance;
@@ -54,23 +40,22 @@ class LunariaInstance {
 	// If either changed, the status will be rebuilt.
 	#cacheHash?: string;
 
-	constructor({
-		logLevel,
-		force,
-		config,
-	}: {
-		logLevel: keyof typeof CONSOLE_LEVELS;
-		force: boolean;
-		config: LunariaConfig;
-	}) {
+	constructor({ logLevel = 'info', force = false, config }: LunariaOpts = {}) {
 		const logger = createConsola({
 			level: CONSOLE_LEVELS[logLevel],
 		});
 
 		this.#logger = logger;
-		this.#git = new LunariaGitInstance(config, logger);
 		this.#force = force;
-		this.#config = config;
+
+		try {
+			this.#config = config ? validateConfig(config) : loadConfig();
+		} catch (e) {
+			if (e instanceof Error) this.#logger.error(e.message);
+			process.exit(1);
+		}
+
+		this.#git = new LunariaGitInstance(this.#config, logger);
 	}
 
 	async getFullStatus() {
@@ -102,6 +87,7 @@ class LunariaInstance {
 
 		const status: LunariaStatus = [];
 
+		// TODO: Check if it might make sense to await Promise.all this as well.
 		for (const file of files) {
 			const { include, exclude, pattern } = file;
 
@@ -241,6 +227,7 @@ class LunariaInstance {
 	/** Finds the matching `files` configuration for the specified path. */
 	findFileConfig(path: string) {
 		return this.#config.files.find((file) => {
+			// TODO: We should update this since the pattern might match, but not the include that determines a different type for it.
 			const { isSourcePathMatch, isLocalesPathMatch } = this.getPathResolver(file.pattern);
 			// We're checking if the path matches either the source or locales pattern,
 			// that way we can determine the `files` entry that should be used for the path.

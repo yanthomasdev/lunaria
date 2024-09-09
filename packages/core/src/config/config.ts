@@ -25,13 +25,13 @@ function findConfig() {
 	return new Error(ConfigNotFound.message);
 }
 
-export async function loadConfig() {
+export function loadConfig() {
 	const path = findConfig();
 	if (path instanceof Error) {
 		throw path;
 	}
 
-	const mod = await moduleLoader(path);
+	const mod = moduleLoader(path);
 	if (mod instanceof Error) {
 		throw mod;
 	}
