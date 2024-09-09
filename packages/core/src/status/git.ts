@@ -28,7 +28,7 @@ export class LunariaGitInstance {
 
 			return log;
 		} catch (e) {
-			this.#logger.error(FileCommitsNotFound.message);
+			this.#logger.error(FileCommitsNotFound.message(path));
 			throw e;
 		}
 	}
@@ -44,7 +44,7 @@ export class LunariaGitInstance {
 		);
 
 		if (!latestChange || !latestTrackedChange) {
-			this.#logger.error(UncommittedFileFound.message);
+			this.#logger.error(UncommittedFileFound.message(path));
 			process.exit(1);
 		}
 

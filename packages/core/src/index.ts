@@ -150,7 +150,7 @@ class LunariaInstance {
 		const fileConfig = this.findFileConfig(path);
 
 		if (!fileConfig) {
-			this.#logger.error(FileConfigNotFound.message);
+			this.#logger.error(FileConfigNotFound.message(path));
 			return undefined;
 		}
 
