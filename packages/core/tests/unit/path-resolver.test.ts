@@ -1,5 +1,5 @@
-import { describe, it } from 'node:test';
 import { strict as assert } from 'node:assert';
+import { describe, it } from 'node:test';
 import { createPathResolver } from '../../dist/status/paths.js';
 
 describe('Path resolver', () => {

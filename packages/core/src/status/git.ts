@@ -1,10 +1,10 @@
 import { cpus } from 'node:os';
 import { resolve } from 'node:path';
-import { simpleGit, type DefaultLogFields, type ListLogLine } from 'simple-git';
 import type { ConsolaInstance } from 'consola';
-import { FileCommitsNotFound, UncommittedFileFound } from '../errors/errors.js';
 import micromatch from 'micromatch';
+import { type DefaultLogFields, type ListLogLine, simpleGit } from 'simple-git';
 import type { LunariaConfig } from '../config/types.js';
+import { FileCommitsNotFound, UncommittedFileFound } from '../errors/errors.js';
 import type { RegExpGroups } from '../utils/types.js';
 
 export class LunariaGitInstance {

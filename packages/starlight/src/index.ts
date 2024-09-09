@@ -1,10 +1,10 @@
 import type { StarlightPlugin } from '@astrojs/starlight/types';
 import {
+	type Locale,
+	type LunariaUserConfig,
 	loadConfig,
 	readConfig,
 	writeConfig,
-	type Locale,
-	type LunariaUserConfig,
 } from '@lunariajs/core/config';
 import { handleShallowRepo } from '@lunariajs/core/git';
 import type { ViteUserConfig } from 'astro';
@@ -66,7 +66,7 @@ export default function lunariaStarlight(userConfig?: LunariaStarlightUserConfig
 						// Filter out the file entry added by sync.
 						const otherFiles =
 							lunariaConfig?.files?.filter(
-								(file: { location: string }) => file.location !== starlightFilesEntry.location
+								(file: { location: string }) => file.location !== starlightFilesEntry.location,
 							) ?? [];
 
 						const locEntries = Object.entries(config.locales);
@@ -82,7 +82,7 @@ export default function lunariaStarlight(userConfig?: LunariaStarlightUserConfig
 							})) as [Locale, ...Locale[]];
 
 						const [defaultKey, defaultValue] = locEntries.find(
-							([key]) => key === config.defaultLocale || key === 'root'
+							([key]) => key === config.defaultLocale || key === 'root',
 						)!;
 						// Since the defaultLocale can be root which does not include
 						// the proper path part, we infer one from the lang (required)
@@ -101,7 +101,7 @@ export default function lunariaStarlight(userConfig?: LunariaStarlightUserConfig
 						logger.info('Sync complete.');
 					} else {
 						logger.warn(
-							'Sync is only supported when your Starlight config includes the locales field.'
+							'Sync is only supported when your Starlight config includes the locales field.',
 						);
 					}
 				}
@@ -136,7 +136,7 @@ type VitePlugin = NonNullable<ViteUserConfig['plugins']>[number];
 
 function vitePluginLunariaStarlight(
 	pluginConfig: LunariaStarlightUserConfig,
-	isShallowRepo: boolean
+	isShallowRepo: boolean,
 ): VitePlugin {
 	const moduleId = 'virtual:lunaria-starlight';
 	const resolvedModuleId = `\0${moduleId}`;

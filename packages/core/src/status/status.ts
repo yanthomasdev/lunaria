@@ -1,9 +1,9 @@
-import type { OptionalKeys } from '../config/types.js';
-import { fileSupportsFrontmatterRe, frontmatterLoader, universalLoader } from '../files/loaders.js';
 import { Traverse } from 'neotraverse/modern';
-import type { Dictionary } from './types.js';
-import { DictionarySchema } from './schema.js';
+import type { OptionalKeys } from '../config/types.js';
 import { InvalidDictionaryFormat } from '../errors/errors.js';
+import { fileSupportsFrontmatterRe, frontmatterLoader, universalLoader } from '../files/loaders.js';
+import { DictionarySchema } from './schema.js';
+import type { Dictionary } from './types.js';
 
 export function isFileLocalizable(path: string, localizableProperty: string | undefined) {
 	// If no localizableProperty is specified, all files are supposed to be localizable.

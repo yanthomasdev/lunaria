@@ -1,7 +1,7 @@
 ---
+import { isShallowRepo, pluginConfig } from 'virtual:lunaria-starlight';
 import { loadConfig } from '@lunariajs/core/config';
 import { generateDashboard } from '@lunariajs/core/dashboard';
-import { pluginConfig, isShallowRepo } from 'virtual:lunaria-starlight';
 import { getStatusFromCache } from '../cache';
 
 const { userConfig, rendererConfig } = await loadConfig(pluginConfig.configPath);

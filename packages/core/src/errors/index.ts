@@ -1,6 +1,6 @@
 import type { z } from 'zod';
-import { errorMap } from './zod-map.js';
 import { ConfigValidationError } from './errors.js';
+import { errorMap } from './zod-map.js';
 
 export function parseWithFriendlyErrors<T extends z.Schema>(
 	schema: T,

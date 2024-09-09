@@ -1,7 +1,7 @@
-import { compile, match, type MatchResult } from 'path-to-regexp';
-import { stringFromFormat } from '../utils/utils.js';
-import { InvalidFilesPattern } from '../errors/errors.js';
+import { type MatchResult, compile, match } from 'path-to-regexp';
 import type { LunariaConfig, Pattern } from '../config/types.js';
+import { InvalidFilesPattern } from '../errors/errors.js';
+import { stringFromFormat } from '../utils/utils.js';
 import type { PathResolver } from './types.js';
 
 /** Returns any missing parameters found for the specified pattern */

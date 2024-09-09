@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm turbo build --filter=!lunaria-docs",
-    "dev": "pnpm turbo dev --filter=!lunaria-docs",
+    "build:core": "pnpm turbo build --filter=@lunariajs/core",
+    "dev": "pnpm turbo dev --filter=lunaria-docs",
     "test": "pnpm turbo test",
     "docs": "pnpm --filter lunaria-docs dev"
   },

@@ -1,8 +1,8 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import type { LunariaConfig } from '@lunariajs/core/config';
 import { git } from '@lunariajs/core/git';
 import { getLocalizationStatus } from '@lunariajs/core/status';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
 
 let lastExecutionDate: string | undefined;
 const cacheDir = resolve('./node_modules/.cache/lunaria/');

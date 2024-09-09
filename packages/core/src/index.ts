@@ -1,15 +1,15 @@
-import { loadConfig, validateConfig } from './config/config.js';
-import { createConsola, type ConsolaInstance } from 'consola';
-import glob from 'fast-glob';
-import { createPathResolver } from './files/paths.js';
-import { FileConfigNotFound } from './errors/errors.js';
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
-import { LunariaGitInstance } from './status/git.js';
-import type { LunariaConfig, Pattern } from './config/types.js';
-import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 import { get } from 'node:http';
+import { resolve } from 'node:path';
+import { type ConsolaInstance, createConsola } from 'consola';
+import glob from 'fast-glob';
+import { loadConfig, validateConfig } from './config/config.js';
+import type { LunariaConfig, Pattern } from './config/types.js';
+import { FileConfigNotFound } from './errors/errors.js';
+import { createPathResolver } from './files/paths.js';
+import { LunariaGitInstance } from './status/git.js';
+import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
+import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 
 // Additional data to ensure we can force rebuild the cache.
 // Bump this whenever there are breaking changes to the status output.

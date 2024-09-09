@@ -1,8 +1,8 @@
-import { ConfigNotFound } from '../errors/errors.js';
-import { LunariaConfigSchema } from './schema.js';
 import * as find from 'empathic/find';
-import { moduleLoader } from '../files/loaders.js';
+import { ConfigNotFound } from '../errors/errors.js';
 import { parseWithFriendlyErrors } from '../errors/index.js';
+import { moduleLoader } from '../files/loaders.js';
+import { LunariaConfigSchema } from './schema.js';
 import type { LunariaConfig, LunariaUserConfig } from './types.js';
 
 // Paths to search for the Lunaria config file,
