@@ -180,6 +180,15 @@ class LunariaInstance {
 			localizations: await Promise.all(
 				this.#config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
+
+					if (!existsSync(resolve(localizedPath))) {
+						return {
+							lang: lang,
+							path: localizedPath,
+							status: 'missing',
+						};
+					}
+
 					const latestLocaleChanges = await this.#git.getFileLatestChanges(localizedPath);
 
 					/**
@@ -189,14 +198,6 @@ class LunariaInstance {
 					const isOutdated =
 						new Date(latestSourceChanges.latestTrackedChange.date) >
 						new Date(latestLocaleChanges.latestTrackedChange.date);
-
-					if (!existsSync(resolve(localizedPath))) {
-						return {
-							lang: lang,
-							path: localizedPath,
-							status: 'missing',
-						};
-					}
 
 					const entryTypeData = () => {
 						if (fileConfig.type === 'dictionary') {
