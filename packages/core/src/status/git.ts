@@ -37,11 +37,14 @@ export class LunariaGitInstance {
 		const logHistory = await this.#getFileHistory(path);
 
 		const latestChange = logHistory.latest;
-		const latestTrackedChange = findLatestTrackedCommit(
-			this.#config.tracking,
-			path,
-			logHistory.all,
-		);
+		/**
+		 * Edge case: it might be possible all the changes for a file have
+		 * been purposefully ignored in Lunaria, therefore we need to define
+		 * the latest change as the latest tracked change.
+		 * TODO: Check if this is not an stupid assumption.
+		 */
+		const latestTrackedChange =
+			findLatestTrackedCommit(this.#config.tracking, path, logHistory.all) ?? latestChange;
 
 		if (!latestChange || !latestTrackedChange) {
 			this.#logger.error(UncommittedFileFound.message(path));
