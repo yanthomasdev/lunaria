@@ -7,6 +7,8 @@ import { parse } from 'ultramatter';
 export const moduleFileRe = /\.(c|m)?(ts|js)$/;
 /** Loader for JavaScript/TypeScript modules (CJS, ESM). */
 export function moduleLoader(path: string) {
+	const resolvedPath = resolve(path);
+
 	const require = createRequire(import.meta.url);
 	const jiti = require('jiti');
 
@@ -15,7 +17,7 @@ export function moduleLoader(path: string) {
 		esmResolve: true,
 	});
 
-	return loadFile(path);
+	return loadFile(resolvedPath);
 }
 
 /** Regex to match files that support frontmatter. */
