@@ -43,18 +43,18 @@
   "dependencies": {
     "consola": "^3.2.3",
     "empathic": "^1.0.0",
-    "fast-glob": "^3.3.2",
     "jiti": "2.0.0-beta.3",
-    "micromatch": "^4.0.7",
     "neotraverse": "^0.6.18",
     "path-to-regexp": "6.2.2",
-    "simple-git": "^3.25.0",
+    "picomatch": "^4.0.2",
+    "simple-git": "^3.26.0",
+    "tinyglobby": "^0.2.6",
     "ultramatter": "^0.0.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/micromatch": "^4.0.9",
-    "@types/node": "^22.4.1"
+    "@types/node": "^22.5.4",
+    "@types/picomatch": "^3.0.1"
   },
   "engines": {
     "node": ">=18.17.0"

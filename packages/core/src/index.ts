@@ -1,8 +1,7 @@
 import { existsSync } from 'node:fs';
-import { get } from 'node:http';
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
-import glob from 'fast-glob';
+import { glob } from 'tinyglobby';
 import { loadConfig, validateConfig } from './config/config.js';
 import type { LunariaConfig, Pattern } from './config/types.js';
 import { FileConfigNotFound } from './errors/errors.js';
@@ -118,6 +117,7 @@ class LunariaInstance {
 			// generated paths using `pattern`.
 			const sourceFilePaths = (
 				await glob(include, {
+					expandDirectories: false,
 					ignore: exclude,
 				})
 			).filter((path) => {

@@ -1,7 +1,7 @@
 import { cpus } from 'node:os';
 import { resolve } from 'node:path';
 import type { ConsolaInstance } from 'consola';
-import micromatch from 'micromatch';
+import picomatch from 'picomatch';
 import { type DefaultLogFields, type ListLogLine, simpleGit } from 'simple-git';
 import type { LunariaConfig } from '../config/types.js';
 import { FileCommitsNotFound, UncommittedFileFound } from '../errors/errors.js';
@@ -105,8 +105,8 @@ export function findLatestTrackedCommit(
 		// TODO: Test this function with multiple paths and globs.
 		return (
 			pathsOrGlobs.split(';').find((pathOrGlob) => {
-				if (directive === '@lunaria-track') return micromatch.isMatch(path, pathOrGlob);
-				if (directive === '@lunaria-ignore') return !micromatch.isMatch(path, pathOrGlob);
+				if (directive === '@lunaria-track') return picomatch.isMatch(path, pathOrGlob);
+				if (directive === '@lunaria-ignore') return !picomatch.isMatch(path, pathOrGlob);
 			}) !== undefined
 		);
 	});
