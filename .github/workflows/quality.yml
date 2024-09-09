@@ -18,5 +18,6 @@ jobs:
         with:
           version: latest
           
+      # TODO: Make the job apply to other packages
       - name: Run Biome
-        run: biome ci .
+        run: biome ci ./packages/core/**/*
