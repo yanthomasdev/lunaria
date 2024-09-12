@@ -19,6 +19,7 @@ export class LunariaGitInstance {
 		this.#config = config;
 	}
 
+	// TODO: Try to cache the latest changes hash for each file so that you don't have to fetch the entire history every run, only new ones.
 	async #getFileHistory(path: string) {
 		try {
 			const log = await this.#git.log({

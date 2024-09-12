@@ -45,7 +45,7 @@
     "empathic": "^1.0.0",
     "jiti": "2.0.0-beta.3",
     "neotraverse": "^0.6.18",
-    "path-to-regexp": "6.2.2",
+    "path-to-regexp": "6.3.0",
     "picomatch": "^4.0.2",
     "simple-git": "^3.26.0",
     "tinyglobby": "^0.2.6",

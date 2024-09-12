@@ -131,8 +131,8 @@ importers:
         specifier: ^0.6.18
         version: 0.6.18
       path-to-regexp:
-        specifier: 6.2.2
-        version: 6.2.2
+        specifier: 6.3.0
+        version: 6.3.0
       picomatch:
         specifier: ^4.0.2
         version: 4.0.2
@@ -4096,6 +4096,9 @@ packages:
 
   path-to-regexp@6.2.2:
     resolution: {integrity: sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==}
+
+  path-to-regexp@6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
@@ -10301,6 +10304,8 @@ snapshots:
   path-parse@1.0.7: {}
 
   path-to-regexp@6.2.2: {}
+
+  path-to-regexp@6.3.0: {}
 
   path-type@4.0.0: {}
 
