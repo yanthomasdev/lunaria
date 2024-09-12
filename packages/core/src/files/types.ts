@@ -1,8 +1,8 @@
 export interface PathResolver {
 	/** Checks if a path matches an source locale path. */
-	isSourcePathMatch: (path: string) => boolean;
+	isSourcePath: (path: string) => boolean;
 	/** Checks if a path matches an localized path. */
-	isLocalesPathMatch: (path: string) => boolean;
+	isLocalesPath: (path: string) => boolean;
 	/** Creates a path from one locale to the equivalent of another. */
 	toPath: (fromPath: string, toLang: string) => string;
 	/** The resolved source pattern used by the path resolver. */

@@ -64,7 +64,7 @@ export function createPathResolver(
 	return {
 		// `match` returns an object if true, here we're forcing it to return a boolean.
 		/**
-		 * Explanation: why does `isSourcePathMatch` checks if it isn't a locales path but `isLocalesPathMatch` doesn't?
+		 * Explanation: why does `isSourcePath` checks if it isn't a locales path but `isLocalesPath` doesn't?
 		 * In a few cases, the source path can end up matching the locales path, like so:
 		 *
 		 * - Source path: `docs/test.mdx` (sourcePattern: `docs/@path`)
@@ -73,9 +73,8 @@ export function createPathResolver(
 		 * In this case, the locales path fulfills the source pattern match, but the opposite can't happen, considering
 		 * the locales path strictly requires the `@lang` parameter that is limited to the configured locales.
 		 */
-		isSourcePathMatch: (path: string) =>
-			!!match(sourcePattern)(path) && !match(localesPattern)(path),
-		isLocalesPathMatch: (path: string) => !!match(localesPattern)(path),
+		isSourcePath: (path: string) => !!match(sourcePattern)(path) && !match(localesPattern)(path),
+		isLocalesPath: (path: string) => !!match(localesPattern)(path),
 		toPath: (fromPath: string, toLang: string) => {
 			// Since the path for the same source and localized content can have different patterns,
 			// we have to check if the `toLang` is from the sourceLocale (i.e. source content) or

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
+import picomatch from 'picomatch';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateConfig } from './config/config.js';
 import type { LunariaConfig, LunariaUserConfig, Pattern } from './config/types.js';
@@ -97,7 +98,7 @@ export class Lunaria {
 			// We keep track of those to warn the user about them.
 			const filteredOutPaths: string[] = [];
 
-			const { isSourcePathMatch } = this.getPathResolver(pattern);
+			const { isSourcePath } = this.getPathResolver(pattern);
 			// Lunaria initially globs only the source files, and then proceed to
 			// check the status of each localization file through dynamically
 			// generated paths using `pattern`.
@@ -107,7 +108,7 @@ export class Lunaria {
 					ignore: exclude,
 				})
 			).filter((path) => {
-				if (!isSourcePathMatch(path)) {
+				if (!isSourcePath(path)) {
 					filteredOutPaths.push(path);
 					return false;
 				}
@@ -140,12 +141,10 @@ export class Lunaria {
 			return undefined;
 		}
 
-		const { isSourcePathMatch, toPath } = this.getPathResolver(fileConfig.pattern);
+		const { isSourcePath, toPath } = this.getPathResolver(fileConfig.pattern);
 
 		/** The given path can be of another locale, therefore we always convert it to the source path */
-		const sourcePath = isSourcePathMatch(path)
-			? path
-			: toPath(path, this.#config.sourceLocale.lang);
+		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
 
 		const isLocalizable = isFileLocalizable(path, this.#config.tracking.localizableProperty);
 
@@ -228,10 +227,23 @@ export class Lunaria {
 	findFileConfig(path: string) {
 		return this.#config.files.find((file) => {
 			// TODO: We should update this since the pattern might match, but not the include that determines a different type for it.
-			const { isSourcePathMatch, isLocalesPathMatch } = this.getPathResolver(file.pattern);
-			// We're checking if the path matches either the source or locales pattern,
-			// that way we can determine the `files` entry that should be used for the path.
-			return isSourcePathMatch(path) || isLocalesPathMatch(path);
+			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
+
+			try {
+				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
+
+				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
+				// therefore we need to test both to find the correct `files` config.
+				return (
+					isSourcePath(path) &&
+					picomatch.isMatch(sourcePath, file.include, {
+						ignore: file.exclude,
+					})
+				);
+				// If it fails to match, we assume it's not the respective `files` config and return false.
+			} catch {
+				return false;
+			}
 		});
 	}
 }
