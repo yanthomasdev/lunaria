@@ -1,4 +1,7 @@
 import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { jsonLoader } from '../files/loaders.js';
 
 export function isRelative(path: string) {
 	return path.startsWith('./') || path.startsWith('../');
@@ -22,4 +25,45 @@ export function stringFromFormat(format: string, placeholders: Record<string, st
 		formatResult = formatResult.replace(key, placeholders[key] ?? '');
 	}
 	return formatResult;
+}
+
+export class Cache {
+	#dir: string;
+	#file: string;
+	#path: string;
+	#hash: string;
+
+	constructor(dir: string, entry: string, hash: string) {
+		this.#file = `${entry}.json`;
+		this.#dir = resolve(dir);
+		this.#path = join(this.#dir, this.#file);
+		this.#hash = hash;
+
+		if (!existsSync(this.#path)) {
+			mkdirSync(this.#dir, { recursive: true });
+			this.write({ __validation: this.#hash });
+		} else {
+			this.#revalidate(this.#hash);
+		}
+	}
+
+	get contents() {
+		return jsonLoader(this.#path);
+	}
+
+	write(contents: Record<string, string>) {
+		writeFileSync(
+			this.#path,
+			JSON.stringify({
+				__validation: this.#hash,
+				...contents,
+			}),
+		);
+	}
+
+	#revalidate(hash: string) {
+		if (this.contents?.__validation !== hash) {
+			this.write({});
+		}
+	}
 }

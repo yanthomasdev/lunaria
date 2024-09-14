@@ -10,10 +10,7 @@ import { createPathResolver } from './files/paths.js';
 import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
-
-// Additional data to ensure we can force rebuild the cache.
-// Bump this whenever there are breaking changes to the status output.
-const CACHE_VERSION = '1.0.0';
+import { Cache, md5 } from './utils/utils.js';
 
 // Logging levels available for the console.
 // Used to translate consola's numeric values into human-readable strings.
@@ -35,18 +32,13 @@ export class Lunaria {
 	#config: LunariaConfig;
 	#git: LunariaGitInstance;
 	#logger: ConsolaInstance;
-	// Force a fresh status build, ignoring the cache.
 	#force: boolean;
-	// Hash built out of the cache version + latest commit hash.
-	// If either changed, the status will be rebuilt.
-	#cacheHash?: string;
+	#hash: string;
 
 	constructor({ logLevel = 'info', force = false, config }: LunariaOpts = {}) {
-		const logger = createConsola({
+		this.#logger = createConsola({
 			level: CONSOLE_LEVELS[logLevel],
 		});
-
-		this.#logger = logger;
 		this.#force = force;
 
 		try {
@@ -56,34 +48,16 @@ export class Lunaria {
 			process.exit(1);
 		}
 
-		this.#git = new LunariaGitInstance(this.#config, logger);
+		// Hash used to revalidate the cache -- the tracking properties manipulate how the changes are tracked,
+		// therefore we have to account for them so that the cache is fresh.
+		this.#hash = md5(
+			`ignoredKeywords::${this.#config.tracking.ignoredKeywords.join('|')}:localizableProperty::${this.#config.tracking.localizableProperty}`,
+		);
+
+		this.#git = new LunariaGitInstance(this.#config, this.#logger, this.#force, this.#hash);
 	}
 
 	async getFullStatus() {
-		/** Uncomment when working in caching
-		const latestCommitHash = await this.#git.revparse(['HEAD']);
-		// The configuration has to be accounted to invalidate the cache
-		// since it can affect the status output.
-		const configString = JSON.stringify(this.#config);
-		const cacheHash = md5(CACHE_VERSION + latestCommitHash + configString);
-
-		const cachePath = join(this.#config.cacheDir, 'status.json');
-
-		if (existsSync(cachePath) && cacheHash === this.#cacheHash && !this.#force) {
-			try {
-				const statusJSON = readFileSync(cachePath, {
-					encoding: 'utf-8',
-				});
-				const status = JSON.parse(statusJSON);
-				this.#logger.success('Successfully loaded status from cache.');
-
-				return status as LunariaStatus;
-			} catch (e) {
-				this.#logger.warn('Failed to read status from cache, rebuilding...');
-			}
-		}
-		*/
-
 		const { files } = this.#config;
 
 		const status: LunariaStatus = [];
@@ -124,16 +98,31 @@ export class Lunaria {
 			/** We use `Promise.all` to allow the promises to run in parallel, increasing the performance considerably. */
 			await Promise.all(
 				sourceFilePaths.sort().map(async (path) => {
-					const fileStatus = await this.getFileStatus(path);
+					const fileStatus = await this.#getFileStatus(path, false);
 					if (fileStatus) status.push(fileStatus);
 				}),
 			);
 		}
 
+		// Save the existing git data into the cache for next builds.
+		if (!this.#force) {
+			new Cache(this.#config.cacheDir, 'git', this.#hash).write(this.#git.cache);
+		}
+
 		return status;
 	}
 
+	// The existence of both a public and private `getFileStatus()` is to hide
+	// the cache parameter from the public API. We do that so when we invoke
+	// it from `getFullStatus()` we only write to the cache once, considerably
+	// increasing performance (1 cache write instead of one for each file).
+	// Otherwise, when users invoke this method, they will also want to enjoy
+	// caching normally, unless they explicitly want to force a fresh status.
 	async getFileStatus(path: string) {
+		return this.#getFileStatus(path, !this.#force);
+	}
+
+	async #getFileStatus(path: string, cache: boolean) {
 		const fileConfig = this.findFileConfig(path);
 
 		if (!fileConfig) {
@@ -154,6 +143,11 @@ export class Lunaria {
 		}
 
 		const latestSourceChanges = await this.#git.getFileLatestChanges(sourcePath);
+
+		// Save the existing git data into the cache for next builds.
+		if (cache) {
+			new Cache(this.#config.cacheDir, 'git', this.#hash).write(this.#git.cache);
+		}
 
 		return {
 			...fileConfig,

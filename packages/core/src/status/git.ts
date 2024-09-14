@@ -4,8 +4,9 @@ import type { ConsolaInstance } from 'consola';
 import picomatch from 'picomatch';
 import { type DefaultLogFields, type ListLogLine, simpleGit } from 'simple-git';
 import type { LunariaConfig } from '../config/types.js';
-import { FileCommitsNotFound, UncommittedFileFound } from '../errors/errors.js';
+import { UncommittedFileFound } from '../errors/errors.js';
 import type { RegExpGroups } from '../utils/types.js';
+import { Cache } from '../utils/utils.js';
 
 export class LunariaGitInstance {
 	#git = simpleGit({
@@ -13,44 +14,44 @@ export class LunariaGitInstance {
 	});
 	#config: LunariaConfig;
 	#logger: ConsolaInstance;
+	#force: boolean;
+	#cache: Record<string, string>;
 
-	constructor(config: LunariaConfig, logger: ConsolaInstance) {
+	constructor(config: LunariaConfig, logger: ConsolaInstance, force: boolean, hash: string) {
 		this.#logger = logger;
 		this.#config = config;
-	}
+		this.#force = force;
 
-	// TODO: Try to cache the latest changes hash for each file so that you don't have to fetch the entire history every run, only new ones.
-	async #getFileHistory(path: string) {
-		try {
-			const log = await this.#git.log({
-				file: resolve(path),
-				strictDate: true,
-			});
-
-			return log;
-		} catch (e) {
-			this.#logger.error(FileCommitsNotFound.message(path));
-			throw e;
+		if (this.#force) {
+			this.#cache = {};
+		} else {
+			const cache = new Cache(this.#config.cacheDir, 'git', hash);
+			this.#cache = cache.contents;
 		}
 	}
 
 	async getFileLatestChanges(path: string) {
-		const logHistory = await this.#getFileHistory(path);
+		// The cache will keep the latest tracked change hash, that means it will be able
+		// to completely skip looking into older commits, considerably increasing performance.
+		const log = await this.#git.log({
+			file: resolve(path),
+			strictDate: true,
+			from: this.#cache[path] ? `${this.#cache[path]}^` : undefined,
+		});
 
-		const latestChange = logHistory.latest;
-		/**
-		 * Edge case: it might be possible all the changes for a file have
-		 * been purposefully ignored in Lunaria, therefore we need to define
-		 * the latest change as the latest tracked change.
-		 * TODO: Check if this is not an stupid assumption.
-		 */
+		const latestChange = log.latest;
+		// Edge case: sometimes all the changes for a file (or the only one)
+		// have been purposefully ignored in Lunaria, therefore we need to
+		// define the latest change as the latest tracked change.
 		const latestTrackedChange =
-			findLatestTrackedCommit(this.#config.tracking, path, logHistory.all) ?? latestChange;
+			findLatestTrackedCommit(this.#config.tracking, path, log.all) ?? latestChange;
 
 		if (!latestChange || !latestTrackedChange) {
 			this.#logger.error(UncommittedFileFound.message(path));
 			process.exit(1);
 		}
+
+		if (!this.#force) this.#cache[path] = latestTrackedChange.hash;
 
 		return {
 			latestChange: {
@@ -64,6 +65,10 @@ export class LunariaGitInstance {
 				hash: latestTrackedChange.hash,
 			},
 		};
+	}
+
+	get cache() {
+		return this.#cache;
 	}
 }
 

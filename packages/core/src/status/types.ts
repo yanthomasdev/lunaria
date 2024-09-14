@@ -4,7 +4,7 @@ export type Dictionary = {
 	[k: string]: string | Dictionary;
 };
 
-type FileGitData = {
+export type FileGitData = {
 	latestChange: {
 		message: string;
 		date: string;
