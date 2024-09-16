@@ -7,6 +7,7 @@ import { loadConfig, validateConfig } from './config/config.js';
 import type { LunariaConfig, LunariaUserConfig, Pattern } from './config/types.js';
 import { FileConfigNotFound } from './errors/errors.js';
 import { createPathResolver } from './files/paths.js';
+import { useCache } from './status/cache.js';
 import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
