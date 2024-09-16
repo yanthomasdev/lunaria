@@ -1,4 +1,5 @@
-import * as find from 'empathic/find';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { ConfigNotFound } from '../errors/errors.js';
 import { parseWithFriendlyErrors } from '../errors/index.js';
 import { moduleLoader } from '../files/loaders.js';
@@ -7,19 +8,20 @@ import type { LunariaConfig, LunariaUserConfig } from './types.js';
 
 // Paths to search for the Lunaria config file,
 // sorted by chance of appearing.
-const configPaths = [
+const configPaths = Object.freeze([
 	'lunaria.config.mjs',
 	'lunaria.config.js',
 	'lunaria.config.ts',
 	'lunaria.config.mts',
 	'lunaria.config.cjs',
 	'lunaria.config.cts',
-] as const;
+]);
 
 function findConfig() {
 	for (const path of configPaths) {
-		const filePath = find.up(path);
-		if (filePath) return filePath;
+		if (existsSync(resolve(path))) {
+			return path;
+		}
 	}
 
 	return new Error(ConfigNotFound.message);
