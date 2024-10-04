@@ -126,7 +126,6 @@ describe('Path resolver', () => {
 		assert.equal(isSourcePathMatch('docs/es/reference/api-reference.mdx'), false);
 		assert.equal(isSourcePathMatch('not/docs/pt/guides/example.md'), false);
 
-		console.log(sourcePattern, localesPattern);
 		assert.equal(isLocalesPathMatch('docs/es/test.mdx'), true);
 		assert.equal(isLocalesPathMatch('docs/zh-cn/reference/api-reference.mdx'), false);
 		assert.equal(isLocalesPathMatch('not/docs/en/guides/example.md'), false);

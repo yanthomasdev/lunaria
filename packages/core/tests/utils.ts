@@ -1,17 +1,12 @@
-import type { LunariaUserConfig } from '../dist/types.js';
+import type { LunariaUserConfig } from '../dist/index.js';
+import type { CompleteLunariaUserConfig } from '../dist/integrations/types.js';
 
-export const sampleValidConfig: LunariaUserConfig = {
-	repository: 'yanthomasdev/lunaria',
-	sourceLocale: {
-		lang: 'en',
-		label: 'English',
+export const sampleValidConfig: CompleteLunariaUserConfig = {
+	repository: {
+		name: 'yanthomasdev/lunaria',
 	},
-	locales: [
-		{
-			lang: 'es',
-			label: 'Spanish',
-		},
-	],
+	sourceLocale: 'en',
+	locales: ['es'],
 	files: [
 		{
 			include: ['src/content/**/*.mdx'],

@@ -2,6 +2,9 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { jsonLoader } from '../files/loaders.js';
+import type { z } from 'zod';
+import { ConfigValidationError } from '../errors/errors.js';
+import { errorMap } from '../errors/zod-map.js';
 
 export function isRelative(path: string) {
 	return path.startsWith('./') || path.startsWith('../');
@@ -25,6 +28,23 @@ export function stringFromFormat(format: string, placeholders: Record<string, st
 		formatResult = formatResult.replace(key, placeholders[key] ?? '');
 	}
 	return formatResult;
+}
+
+export function parseWithFriendlyErrors<T extends z.Schema>(
+	schema: T,
+	input: z.input<T>,
+	message: (issues: string) => string,
+): z.output<T> {
+	const parsedConfig = schema.safeParse(input, { errorMap });
+
+	if (!parsedConfig.success) {
+		// TODO: Move the error message to be a parameter so it can be used
+		// outside the configuration loading context.
+		const issues = parsedConfig.error.issues.map((i) => `- ${i.message}`).join('\n');
+		throw new Error(message(issues));
+	}
+
+	return parsedConfig.data;
 }
 
 export class Cache {

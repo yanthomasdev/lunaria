@@ -22,8 +22,7 @@ export function createPathResolver(
 	 * We have to change the accepted locales for each pattern, since the source pattern
 	 * should only accept the source locale, and the locales pattern should accept all the other locales.
 	 */
-	const allLocalizedLangs = locales.map(({ lang }) => lang);
-	const allLocalizedLocalesJoin = allLocalizedLangs.join('|');
+	const joinedLocales = locales.join('|');
 
 	// @lang - Matches the locale part of the path.
 	const langPattern = (locales: string) => `:lang(${locales})`;
@@ -43,11 +42,8 @@ export function createPathResolver(
 	const baseSourcePattern = typeof pattern === 'string' ? pattern : pattern.source;
 	const baseLocalesPattern = typeof pattern === 'string' ? pattern : pattern.locales;
 
-	const sourcePattern = stringFromFormat(baseSourcePattern, placeholders(sourceLocale.lang));
-	const localesPattern = stringFromFormat(
-		baseLocalesPattern,
-		placeholders(allLocalizedLocalesJoin),
-	);
+	const sourcePattern = stringFromFormat(baseSourcePattern, placeholders(sourceLocale));
+	const localesPattern = stringFromFormat(baseLocalesPattern, placeholders(joinedLocales));
 
 	const missingSourceParameter = findMissingParameter(sourcePattern, [':path']);
 
@@ -79,7 +75,7 @@ export function createPathResolver(
 			// Since the path for the same source and localized content can have different patterns,
 			// we have to check if the `toLang` is from the sourceLocale (i.e. source content) or
 			// from the localized content, meaning we get the correct path always.
-			const selectedPattern = allLocalizedLangs.includes(toLang) ? localesPattern : sourcePattern;
+			const selectedPattern = locales.includes(toLang) ? localesPattern : sourcePattern;
 			const inverseSelectedPattern =
 				selectedPattern === sourcePattern ? localesPattern : sourcePattern;
 

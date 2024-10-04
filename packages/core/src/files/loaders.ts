@@ -51,7 +51,7 @@ export function jsonLoader(path: string) {
 }
 
 /** Loader for JS/TS modules, JSON, and frontmatter.  */
-export function universalLoader(path: string) {
+export function fileLoader(path: string) {
 	if (moduleFileRe.test(path)) return moduleLoader(path);
 	if (fileSupportsFrontmatterRe.test(path)) return frontmatterLoader(path);
 	if (jsonFileRe.test(path)) return jsonLoader(path);

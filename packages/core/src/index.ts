@@ -3,31 +3,22 @@ import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
 import picomatch from 'picomatch';
 import { glob } from 'tinyglobby';
-import { loadConfig, validateConfig } from './config/config.js';
-import type { LunariaConfig, LunariaUserConfig, Pattern } from './config/types.js';
+import { loadConfig, validateInitialConfig } from './config/config.js';
+import type { LunariaConfig, Pattern } from './config/types.js';
 import { FileConfigNotFound } from './errors/errors.js';
 import { createPathResolver } from './files/paths.js';
-import { useCache } from './status/cache.js';
 import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 import { Cache, md5 } from './utils/utils.js';
+import { runSetupHook } from './integrations/integrations.js';
+import { CONSOLE_LEVELS } from './constants.js';
+import type { LunariaOpts } from './types.js';
 
-// Logging levels available for the console.
-// Used to translate consola's numeric values into human-readable strings.
-export const CONSOLE_LEVELS = {
-	error: 0,
-	warn: 1,
-	info: 3,
-	debug: 999,
-	silent: -999,
-} as const;
-
-interface LunariaOpts {
-	logLevel?: keyof typeof CONSOLE_LEVELS;
-	force?: boolean;
-	config?: LunariaUserConfig;
-}
+export type { LunariaIntegration } from './integrations/types.js';
+export type * from './files/types.js';
+export type * from './status/types.js';
+export type * from './config/types.js';
 
 export class Lunaria {
 	#config: LunariaConfig;
@@ -43,7 +34,8 @@ export class Lunaria {
 		this.#force = force;
 
 		try {
-			this.#config = config ? validateConfig(config) : loadConfig();
+			const initialConfig = config ? validateInitialConfig(config) : loadConfig();
+			this.#config = runSetupHook(initialConfig, this.#logger);
 		} catch (e) {
 			if (e instanceof Error) this.#logger.error(e.message);
 			process.exit(1);
@@ -134,7 +126,7 @@ export class Lunaria {
 		const { isSourcePath, toPath } = this.getPathResolver(fileConfig.pattern);
 
 		/** The given path can be of another locale, therefore we always convert it to the source path */
-		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
+		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
 
 		const isLocalizable = isFileLocalizable(path, this.#config.tracking.localizableProperty);
 
@@ -153,12 +145,12 @@ export class Lunaria {
 		return {
 			...fileConfig,
 			source: {
-				lang: this.#config.sourceLocale.lang,
+				lang: this.#config.sourceLocale,
 				path: sourcePath,
 				git: latestSourceChanges,
 			},
 			localizations: await Promise.all(
-				this.#config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
+				this.#config.locales.map(async (lang): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
 
 					if (!existsSync(resolve(localizedPath))) {
@@ -225,7 +217,7 @@ export class Lunaria {
 			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
 
 			try {
-				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
+				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
 
 				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
 				// therefore we need to test both to find the correct `files` config.

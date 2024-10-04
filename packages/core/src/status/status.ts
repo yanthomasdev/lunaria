@@ -1,7 +1,7 @@
 import { Traverse } from 'neotraverse/modern';
 import type { OptionalKeys } from '../config/types.js';
 import { InvalidDictionaryFormat } from '../errors/errors.js';
-import { fileSupportsFrontmatterRe, frontmatterLoader, universalLoader } from '../files/loaders.js';
+import { fileSupportsFrontmatterRe, frontmatterLoader, fileLoader } from '../files/loaders.js';
 import { DictionarySchema } from './schema.js';
 import type { Dictionary } from './types.js';
 
@@ -31,8 +31,8 @@ export function getDictionaryCompletion(
 	sourceDictPath: string,
 	localeDictPath: string,
 ) {
-	const sourceDict = universalLoader(sourceDictPath);
-	const localeDict = universalLoader(localeDictPath);
+	const sourceDict = fileLoader(sourceDictPath);
+	const localeDict = fileLoader(localeDictPath);
 
 	if (sourceDict instanceof Error || localeDict instanceof Error) {
 		throw sourceDict instanceof Error ? sourceDict : localeDict;

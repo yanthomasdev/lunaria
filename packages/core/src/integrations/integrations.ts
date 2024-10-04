@@ -1,0 +1,45 @@
+import type { ConsolaInstance } from 'consola';
+import type { LunariaUserConfig } from '../config/types.js';
+import { fileLoader } from '../files/loaders.js';
+import { UnsupportedIntegrationSelfUpdate } from '../errors/errors.js';
+import { validateFinalConfig, validateInitialConfig } from '../config/config.js';
+import type { CompleteLunariaUserConfig } from './types.js';
+
+export function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance) {
+	// If no integrations are present, we can just return the parsed config.
+	if (!config.integrations) {
+		return validateFinalConfig(config as CompleteLunariaUserConfig);
+	}
+
+	let lunariaConfig = config;
+
+	for (const integration of config.integrations) {
+		const {
+			name,
+			hooks: { setup },
+		} = integration;
+
+		// Skip to the next integration if no setup hook is found.
+		if (!setup) continue;
+
+		setup({
+			config: lunariaConfig,
+			updateConfig: (newConfig: Partial<LunariaUserConfig>) => {
+				if ('integrations' in newConfig) {
+					throw new Error(UnsupportedIntegrationSelfUpdate.message(name));
+				}
+
+				// Not all integrations will add the missing fields, so we need to parse
+				// for a final Lunaria config only at the end.
+				lunariaConfig = validateInitialConfig({
+					...lunariaConfig,
+					...newConfig,
+				});
+			},
+			logger,
+			fileLoader,
+		});
+	}
+
+	return validateFinalConfig(lunariaConfig as CompleteLunariaUserConfig);
+}

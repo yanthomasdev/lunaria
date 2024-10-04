@@ -9,7 +9,7 @@ export const UnknownError = {
 	title: 'An unknown error occurred.',
 	message:
 		"An unknown error occurred. If restarting the development server or reinstalling `\node_modules` doesn't fix it, please open a GitHub issue.",
-};
+} satisfies ErrorContext;
 
 export const ConfigNotFound = {
 	name: 'ConfigNotFound',
@@ -65,4 +65,11 @@ export const InvalidDictionaryFormat = {
 	title: 'A file with an invalid dictionary format was found.',
 	message: (path: string) =>
 		`The \`type: "dictionary"\` file \`${path}\` has an invalid format. Dictionaries are expected to be a recursive Record of string keys and values. Alternatively, you can track this file without key completion checking by setting it to \`type: "universal"\` instead.`,
-};
+} satisfies ErrorContext;
+
+export const UnsupportedIntegrationSelfUpdate = {
+	name: 'UnsupportedIntegrationSelfUpdate',
+	title: "An integration attempted to update the configuration's `integrations` field.",
+	message: (name: string) =>
+		`The integration \`${name}\` attempted to update the \`integrations\` field, which is not supported.`,
+} satisfies ErrorContext;

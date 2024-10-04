@@ -1,7 +1,4 @@
-type Locale = {
-	label: string;
-	lang: string;
-};
+import type { LunariaIntegration } from '../integrations/types.js';
 
 export type Pattern = string | { source: string; locales: string };
 
@@ -30,33 +27,33 @@ export interface LunariaConfig {
 		rootDir: string;
 		hosting: GitHostingOptions;
 	};
-	sourceLocale: Locale;
-	locales: [Locale, ...Locale[]];
+	sourceLocale: string;
+	locales: [string, ...string[]];
 	files: [File, ...File[]];
 	tracking: {
 		ignoredKeywords: string[];
 		localizableProperty?: string;
 	};
+	integrations: LunariaIntegration[];
 	cacheDir: string;
 	cloneDir: string;
 }
 
 export interface LunariaUserConfig {
-	repository:
-		| string
-		| {
-				name: string;
-				branch?: string;
-				rootDir?: string;
-				hosting?: GitHostingOptions;
-		  };
-	sourceLocale: Locale;
-	locales: [Locale, ...Locale[]];
-	files: [File, ...File[]];
+	repository: {
+		name: string;
+		branch?: string;
+		rootDir?: string;
+		hosting?: 'github' | 'gitlab';
+	};
+	sourceLocale?: string;
+	locales?: [string, ...string[]];
+	files?: [File, ...File[]];
 	tracking?: {
 		ignoredKeywords?: string[];
 		localizableProperty?: string;
 	};
+	integrations?: LunariaIntegration[];
 	cacheDir?: string;
 	cloneDir?: string;
 }
