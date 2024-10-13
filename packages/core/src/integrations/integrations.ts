@@ -5,7 +5,7 @@ import { UnsupportedIntegrationSelfUpdate } from '../errors/errors.js';
 import { fileLoader } from '../files/loaders.js';
 import type { CompleteLunariaUserConfig } from './types.js';
 
-export function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance) {
+export async function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance) {
 	// If no integrations are present, we can just return the parsed config.
 	if (!config.integrations) {
 		return validateFinalConfig(config as CompleteLunariaUserConfig);
@@ -22,7 +22,7 @@ export function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance)
 		// Skip to the next integration if no setup hook is found.
 		if (!setup) continue;
 
-		setup({
+		await setup({
 			config: lunariaConfig,
 			updateConfig: (newConfig: Partial<LunariaUserConfig>) => {
 				if ('integrations' in newConfig) {

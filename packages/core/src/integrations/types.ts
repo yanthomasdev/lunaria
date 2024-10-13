@@ -8,8 +8,8 @@ export interface LunariaIntegration {
 			config: LunariaUserConfig;
 			updateConfig: (config: Partial<LunariaUserConfig>) => void;
 			logger: ConsolaInstance;
-			fileLoader: (path: string) => unknown;
-		}) => void;
+			fileLoader: (path: string) => Promise<unknown>;
+		}) => void | Promise<void>;
 	};
 }
 

@@ -6,25 +6,31 @@ import { validateFinalConfig } from '../../src/config/config.js';
 import type { CompleteLunariaUserConfig } from '../../src/integrations/types.js';
 import { sampleValidConfig } from '../utils.js';
 
-describe('Integration setup hook', () => {
-	it("should throw if it tries to update the config's `integrations` field", () => {
+describe('Integration setup hook', async () => {
+	it("should throw if it tries to update the config's `integrations` field", async () => {
 		const sampleIntegration = {
 			name: '@lunariajs/test',
 			hooks: { setup: ({ updateConfig }) => updateConfig({ integrations: [] }) },
 		};
 
-		assert.throws(() =>
-			runSetupHook(
-				{
-					...sampleValidConfig,
-					integrations: [sampleIntegration],
-				},
-				consola,
-			),
+		await assert.rejects(
+			async () =>
+				await runSetupHook(
+					{
+						...sampleValidConfig,
+						integrations: [sampleIntegration],
+					},
+					consola,
+				),
+			{
+				name: 'Error',
+				message:
+					'The integration `@lunariajs/test` attempted to update the `integrations` field, which is not supported.',
+			},
 		);
 	});
 
-	it('should successfully update the configuration', () => {
+	it('should successfully update the configuration', async () => {
 		const addedConfigFields = {
 			sourceLocale: 'en',
 			locales: ['es', 'fr', 'ja'],
@@ -43,7 +49,7 @@ describe('Integration setup hook', () => {
 		};
 
 		// Here we ignore `integrations` since it causes an nasty non-reference equality error.
-		const { integrations, ...resultingConfig } = runSetupHook(
+		const { integrations, ...resultingConfig } = await runSetupHook(
 			{
 				repository: {
 					name: 'yanthomasdev/lunaria',
@@ -59,6 +65,35 @@ describe('Integration setup hook', () => {
 			},
 			...addedConfigFields,
 		} as CompleteLunariaUserConfig);
+
+		assert.deepEqual(resultingConfig, expectedConfig);
+	});
+
+	it('should successfully resolve an async hook', async () => {
+		const sampleIntegration = {
+			name: '@lunariajs/test',
+			hooks: {
+				setup: async ({ updateConfig }) =>
+					new Promise<void>((resolve) => {
+						setTimeout(() => {
+							resolve(updateConfig({ locales: ['es', 'pt'] }));
+						}, 200);
+					}),
+			},
+		};
+
+		const { integrations, ...expectedConfig } = validateFinalConfig({
+			...sampleValidConfig,
+			locales: ['es', 'pt'],
+		});
+
+		const { integrations: _, ...resultingConfig } = await runSetupHook(
+			{
+				...sampleValidConfig,
+				integrations: [sampleIntegration],
+			},
+			consola,
+		);
 
 		assert.deepEqual(resultingConfig, expectedConfig);
 	});

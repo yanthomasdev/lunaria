@@ -33,18 +33,18 @@ function findConfig() {
 }
 
 /** Loads a CJS/ESM `lunaria.config.*` file from the root of the current working directory. */
-export function loadConfig() {
+export async function loadConfig() {
 	const path = findConfig();
 	if (path instanceof Error) {
 		throw path;
 	}
 
-	const mod = moduleLoader(path);
+	const mod = await moduleLoader(path);
 	if (mod instanceof Error) {
 		throw mod;
 	}
 
-	return validateInitialConfig(mod);
+	return validateInitialConfig(mod as LunariaUserConfig);
 }
 
 /** Validates the Lunaria config before the integrations' setup hook have run. */

@@ -20,26 +20,17 @@ export type * from './files/types.js';
 export type * from './status/types.js';
 export type * from './config/types.js';
 
-export class Lunaria {
+class Lunaria {
 	#config: LunariaConfig;
 	#git: LunariaGitInstance;
 	#logger: ConsolaInstance;
 	#force: boolean;
 	#hash: string;
 
-	constructor({ logLevel = 'info', force = false, config }: LunariaOpts = {}) {
-		this.#logger = createConsola({
-			level: CONSOLE_LEVELS[logLevel],
-		});
+	constructor(config: LunariaConfig, logger: ConsolaInstance, force = false) {
 		this.#force = force;
-
-		try {
-			const initialConfig = config ? validateInitialConfig(config) : loadConfig();
-			this.#config = runSetupHook(initialConfig, this.#logger);
-		} catch (e) {
-			if (e instanceof Error) this.#logger.error(e.message);
-			process.exit(1);
-		}
+		this.#config = config;
+		this.#logger = logger;
 
 		// Hash used to revalidate the cache -- the tracking properties manipulate how the changes are tracked,
 		// therefore we have to account for them so that the cache is fresh.
@@ -232,5 +223,21 @@ export class Lunaria {
 				return false;
 			}
 		});
+	}
+}
+
+export async function createLunaria(opts?: LunariaOpts) {
+	const logger = createConsola({
+		level: CONSOLE_LEVELS[opts?.logLevel ?? 'info'],
+	});
+
+	try {
+		const initialConfig = opts?.config ? validateInitialConfig(opts.config) : await loadConfig();
+		const config = await runSetupHook(initialConfig, logger);
+
+		return new Lunaria(config, logger, opts?.force);
+	} catch (e) {
+		if (e instanceof Error) logger.error(e.message);
+		process.exit(1);
 	}
 }

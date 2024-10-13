@@ -1,30 +1,21 @@
 import { defineConfig } from '@lunariajs/core/config';
 
 export default defineConfig({
-	repository: 'yanthomasdev/lunaria',
-	//sourceLocale: {
-	//	label: 'English',
-	//	lang: 'en',
-	//},
-	//locales: [
-	//	{
-	//		lang: 'pt',
-	//		label: 'Português',
-	//	},
-	//],
-	tracking: {
-		ignoredKeywords: ['TEST'],
+	repository: {
+		name: 'yanthomasdev/lunaria',
+		rootDir: 'examples/starlight',
 	},
-	//files: [
-	//	{
-	//		include: ['src/content/docs/**/*.(md|mdx)'],
-	//		exclude: ['src/content/docs/pt/**/*.(md|mdx)'],
-	//		pattern: {
-	//			source: 'src/content/docs/@path',
-	//			locales: 'src/content/docs/@lang/@path',
-	//		},
-	//		type: 'universal',
-	//	},
-	//],
-	integrations: [],
+	sourceLocale: 'en',
+	locales: ['pt'],
+	files: [
+		{
+			include: ['src/content/docs/**/*.(md|mdx)'],
+			exclude: ['src/content/docs/pt/**/*.(md|mdx)'],
+			pattern: {
+				source: 'src/content/docs/@path',
+				locales: 'src/content/docs/@lang/@path',
+			},
+			type: 'universal',
+		},
+	],
 });

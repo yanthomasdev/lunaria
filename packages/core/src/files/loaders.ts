@@ -1,23 +1,16 @@
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+import { createJiti } from 'jiti';
 import { parse } from 'ultramatter';
 
 /** Regex to match ESM and CJS JavaScript/TypeScript files. */
 export const moduleFileRe = /\.(c|m)?(ts|js)$/;
 /** Loader for JavaScript/TypeScript modules (CJS, ESM). */
-export function moduleLoader(path: string) {
+export async function moduleLoader(path: string) {
 	const resolvedPath = resolve(path);
+	const jiti = createJiti(import.meta.url);
 
-	const require = createRequire(import.meta.url);
-	const jiti = require('jiti');
-
-	const loadFile = jiti(process.cwd(), {
-		interopDefault: true,
-		esmResolve: true,
-	});
-
-	return loadFile(resolvedPath);
+	return await jiti.import(resolvedPath, { default: true });
 }
 
 /** Regex to match files that support frontmatter. */
@@ -51,8 +44,8 @@ export function jsonLoader(path: string) {
 }
 
 /** Loader for JS/TS modules, JSON, and frontmatter.  */
-export function fileLoader(path: string) {
-	if (moduleFileRe.test(path)) return moduleLoader(path);
+export async function fileLoader(path: string) {
+	if (moduleFileRe.test(path)) return await moduleLoader(path);
 	if (fileSupportsFrontmatterRe.test(path)) return frontmatterLoader(path);
 	if (jsonFileRe.test(path)) return jsonLoader(path);
 }

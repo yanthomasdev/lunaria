@@ -119,8 +119,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       jiti:
-        specifier: 2.0.0-beta.3
-        version: 2.0.0-beta.3
+        specifier: 2.3.3
+        version: 2.3.3
       neotraverse:
         specifier: ^0.6.18
         version: 0.6.18
@@ -3098,8 +3098,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jiti@2.0.0-beta.3:
-    resolution: {integrity: sha512-pmfRbVRs/7khFrSAYnSiJ8C0D5GvzkE4Ey2pAvUcJsw1ly/p+7ut27jbJrjY79BpAJQJ4gXYFtK6d1Aub+9baQ==}
+  jiti@2.3.3:
+    resolution: {integrity: sha512-EX4oNDwcXSivPrw2qKH2LB5PoFxEvgtv2JgwW0bU858HoLQ+kutSvjLMUqBd0PeJYEinLWhoI9Ol0eYMqj/wNQ==}
     hasBin: true
 
   js-tokens@4.0.0:
@@ -8554,7 +8554,7 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jiti@2.0.0-beta.3: {}
+  jiti@2.3.3: {}
 
   js-tokens@4.0.0: {}
 

@@ -1,7 +1,7 @@
-import { Lunaria } from '@lunariajs/core';
+import { createLunaria } from '@lunariajs/core';
 
 console.time('Lunaria benchmark');
-const lunaria = new Lunaria();
+const lunaria = await createLunaria();
 const status = await lunaria.getFullStatus();
 console.log(status);
 console.timeEnd('Lunaria benchmark');
