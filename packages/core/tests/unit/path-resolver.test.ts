@@ -3,22 +3,6 @@ import { describe, it } from 'node:test';
 import { createPathResolver } from '../../dist/status/paths.js';
 
 describe('Path resolver', () => {
-	/** TODO */
-	/**it("should throw when no `lang` and `path` are in the pattern (path for both, lang only in locales pattern)", () => {
-        assert.throws(() => createPathResolver("src/content/docs/@lang", { lang: "en", label: "English" }, [{ lang: "pt", label: "Português" }]));
-    } **/
-
-	/** Tests to do:
-	 * - Properly converts @lang and @path in sourcePattern/localesPattern to path-to-regexp format. (X)
-	 * - Makes valid paths from single-string pattern. (toPath) (X)
-	 * - Makes valid paths from double-string pattern. (toPath) (X)
-	 * - Makes valid paths when the source locale is root (no @lang in source) (both single and double-string pattern) (toPath).
-	 * - Correctly matches source and locale paths from single-string pattern. (isSourceMatch/isLocalesMatch).
-	 * - Correctly matches source and locale paths from double-string pattern. (isSourceMatch/isLocalesMatch).
-	 * - Throws when there's no `lang` (in localesPattern or single string pattern) and `path` (any case).
-	 * - Works with a mix between `:path` and `@lang`, or vice-versa.
-	 */
-
 	it("should convert pattern from Lunaria's format into path-to-regexp's format", () => {
 		/**
 		 * Case 1

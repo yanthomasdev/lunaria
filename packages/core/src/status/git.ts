@@ -108,12 +108,20 @@ export function findLatestTrackedCommit(
 
 		const { directive, pathsOrGlobs } = trackerDirectiveMatch.groups;
 
-		// TODO: Test this function with multiple paths and globs.
-		return (
-			pathsOrGlobs.split(';').find((pathOrGlob) => {
+		const foundPath = pathsOrGlobs
+			.split(';')
+			// We filter here to avoid empty strings if an extra semicolon is added at the end.
+			.filter((val) => val.length > 0)
+			.find((pathOrGlob) => {
 				if (directive === '@lunaria-track') return picomatch.isMatch(path, pathOrGlob);
-				if (directive === '@lunaria-ignore') return !picomatch.isMatch(path, pathOrGlob);
-			}) !== undefined
-		);
+				if (directive === '@lunaria-ignore') return picomatch.isMatch(path, pathOrGlob);
+			});
+
+		// If we find the path and it's a `track` directive, we consider the commit as the latest tracked.
+		// Otherwise, we consider the commit as ignored.
+		if (foundPath) return directive === '@lunaria-track';
+
+		// If we don't find the path (undefined), for a `track` directive, we consider the commit as ignored, and for `ignore` as tracked.
+		return directive === '@lunaria-ignore';
 	});
 }
