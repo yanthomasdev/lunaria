@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createJiti } from 'jiti';
 import { parse } from 'ultramatter';
+import { FailedToLoadModule } from '../errors/errors.js';
 
 /** Regex to match ESM and CJS JavaScript/TypeScript files. */
 export const moduleFileRe = /\.(c|m)?(ts|js)$/;
@@ -10,7 +11,11 @@ export async function moduleLoader(path: string) {
 	const resolvedPath = resolve(path);
 	const jiti = createJiti(import.meta.url);
 
-	return await jiti.import(resolvedPath, { default: true });
+	try {
+		return await jiti.import(resolvedPath, { default: true });
+	} catch (e) {
+		FailedToLoadModule.message(resolvedPath);
+	}
 }
 
 /** Regex to match files that support frontmatter. */

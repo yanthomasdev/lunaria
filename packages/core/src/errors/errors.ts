@@ -4,13 +4,6 @@ interface ErrorContext {
 	message: string | ((...context: string[]) => string);
 }
 
-export const UnknownError = {
-	name: 'UnknownError',
-	title: 'An unknown error occurred.',
-	message:
-		"An unknown error occurred. If restarting the development server or reinstalling `\node_modules` doesn't fix it, please open a GitHub issue.",
-} satisfies ErrorContext;
-
 export const ConfigNotFound = {
 	name: 'ConfigNotFound',
 	title: 'Configuration file not found.',
@@ -29,7 +22,7 @@ export const FailedToLoadModule = {
 	name: 'FailedToLoadModule',
 	title: 'Failed to load module using jiti.',
 	message: (path: string) =>
-		`Failed to load module at \`${path}\`. This might've been caused by syntax error in the specified file.`,
+		`Failed to load module at \`${path}\`. This might've been caused by a syntax error in the specified file.`,
 } satisfies ErrorContext;
 
 export const InvalidFilesPattern = {
@@ -46,18 +39,11 @@ export const FileConfigNotFound = {
 		`The file \`${path}\` doesn't not match any of the existing \`files\` entries. Verify that the path is correct and a corresponding \`files\` entry is properly set in your Lunaria configuration file.`,
 } satisfies ErrorContext;
 
-export const FileCommitsNotFound = {
-	name: 'FileCommitsNotFound',
-	title: 'No commits were found for the specified file.',
-	message: (path: string) =>
-		`No commits were found for the file \`${path}\`. Have you made any commits for this file yet?`,
-} satisfies ErrorContext;
-
 export const UncommittedFileFound = {
 	name: 'UncommittedFileFound',
 	title: 'An uncommitted file was found.',
 	message: (path: string) =>
-		`The file \`${path}\` is being tracked but has not been committed yet. Ensure all tracked files in your working branch are committed before running Lunaria.`,
+		`The file \`${path}\` is being tracked but no commits have been found. Ensure all tracked files in your working branch are committed before running Lunaria.`,
 } satisfies ErrorContext;
 
 export const InvalidDictionaryFormat = {
