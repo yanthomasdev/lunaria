@@ -46,7 +46,6 @@ class Lunaria {
 
 		const status: LunariaStatus = [];
 
-		// TODO: Check if it might make sense to await Promise.all this as well.
 		for (const file of files) {
 			const { include, exclude, pattern } = file;
 
@@ -204,7 +203,6 @@ class Lunaria {
 	/** Finds the matching `files` configuration for the specified path. */
 	findFileConfig(path: string) {
 		return this.#config.files.find((file) => {
-			// TODO: We should update this since the pattern might match, but not the include that determines a different type for it.
 			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
 
 			try {

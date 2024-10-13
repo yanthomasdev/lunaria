@@ -37,8 +37,6 @@ export function parseWithFriendlyErrors<T extends z.Schema>(
 	const parsedConfig = schema.safeParse(input, { errorMap });
 
 	if (!parsedConfig.success) {
-		// TODO: Move the error message to be a parameter so it can be used
-		// outside the configuration loading context.
 		const issues = parsedConfig.error.issues.map((i) => `- ${i.message}`).join('\n');
 		throw new Error(message(issues));
 	}
