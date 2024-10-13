@@ -1,4 +1,3 @@
-import type { LunariaUserConfig } from '../dist/index.js';
 import type { CompleteLunariaUserConfig } from '../dist/integrations/types.js';
 
 export const sampleValidConfig: CompleteLunariaUserConfig = {
