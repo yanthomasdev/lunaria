@@ -1,8 +1,8 @@
 import type { ConsolaInstance } from 'consola';
-import type { LunariaUserConfig } from '../config/types.js';
-import { fileLoader } from '../files/loaders.js';
-import { UnsupportedIntegrationSelfUpdate } from '../errors/errors.js';
 import { validateFinalConfig, validateInitialConfig } from '../config/config.js';
+import type { LunariaUserConfig } from '../config/types.js';
+import { UnsupportedIntegrationSelfUpdate } from '../errors/errors.js';
+import { fileLoader } from '../files/loaders.js';
 import type { CompleteLunariaUserConfig } from './types.js';
 
 export function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance) {

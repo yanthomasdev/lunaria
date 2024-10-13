@@ -1,7 +1,7 @@
+import type { Consola, InputLogObject, LogType } from 'consola';
 import { z } from 'zod';
 import { isRelative, stripTrailingSlash } from '../utils/utils.js';
 import type { LunariaUserConfig, OptionalKeys } from './types.js';
-import type { Consola, InputLogObject, LogType } from 'consola';
 
 const RepositorySchema = z.object({
 	name: z.string().transform((path) => stripTrailingSlash(path)),

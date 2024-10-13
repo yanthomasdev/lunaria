@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import type { LunariaUserConfig } from '../config/types.js';
 import type { Consola, InputLogObject, LogType } from 'consola';
+import { z } from 'zod';
 import { BaseLunariaConfigSchema, FileSchema } from '../config/schema.js';
+import type { LunariaUserConfig } from '../config/types.js';
 
 export const LunariaPreSetupSchema = BaseLunariaConfigSchema.extend({
 	sourceLocale: z.string().optional(),

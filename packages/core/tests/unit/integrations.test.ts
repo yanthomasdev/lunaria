@@ -1,10 +1,10 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { runSetupHook } from '../../dist/integrations/integrations.js';
-import { sampleValidConfig } from '../utils.js';
 import consola from 'consola';
+import { runSetupHook } from '../../dist/integrations/integrations.js';
 import { validateFinalConfig } from '../../src/config/config.js';
 import type { CompleteLunariaUserConfig } from '../../src/integrations/types.js';
+import { sampleValidConfig } from '../utils.js';
 
 describe('Integration setup hook', () => {
 	it("should throw if it tries to update the config's `integrations` field", () => {

@@ -2,11 +2,11 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ConfigNotFound, ConfigValidationError } from '../errors/errors.js';
 import { moduleLoader } from '../files/loaders.js';
-import { parseWithFriendlyErrors } from '../utils/utils.js';
 import { LunariaPreSetupSchema } from '../integrations/schema.js';
+import type { CompleteLunariaUserConfig } from '../integrations/types.js';
+import { parseWithFriendlyErrors } from '../utils/utils.js';
 import { LunariaConfigSchema } from './schema.js';
 import type { LunariaUserConfig } from './types.js';
-import type { CompleteLunariaUserConfig } from '../integrations/types.js';
 
 /**
  * Paths to search for the Lunaria config file,

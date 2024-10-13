@@ -5,15 +5,15 @@ import picomatch from 'picomatch';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateInitialConfig } from './config/config.js';
 import type { LunariaConfig, Pattern } from './config/types.js';
+import { CONSOLE_LEVELS } from './constants.js';
 import { FileConfigNotFound } from './errors/errors.js';
 import { createPathResolver } from './files/paths.js';
+import { runSetupHook } from './integrations/integrations.js';
 import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
-import { Cache, md5 } from './utils/utils.js';
-import { runSetupHook } from './integrations/integrations.js';
-import { CONSOLE_LEVELS } from './constants.js';
 import type { LunariaOpts } from './types.js';
+import { Cache, md5 } from './utils/utils.js';
 
 export type { LunariaIntegration } from './integrations/types.js';
 export type * from './files/types.js';

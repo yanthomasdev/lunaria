@@ -1,7 +1,7 @@
 import { Traverse } from 'neotraverse/modern';
 import type { OptionalKeys } from '../config/types.js';
 import { InvalidDictionaryFormat } from '../errors/errors.js';
-import { fileSupportsFrontmatterRe, frontmatterLoader, fileLoader } from '../files/loaders.js';
+import { fileLoader, fileSupportsFrontmatterRe, frontmatterLoader } from '../files/loaders.js';
 import { DictionarySchema } from './schema.js';
 import type { Dictionary } from './types.js';
 

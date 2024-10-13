@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { jsonLoader } from '../files/loaders.js';
 import type { z } from 'zod';
 import { ConfigValidationError } from '../errors/errors.js';
 import { errorMap } from '../errors/zod-map.js';
+import { jsonLoader } from '../files/loaders.js';
 
 export function isRelative(path: string) {
 	return path.startsWith('./') || path.startsWith('../');

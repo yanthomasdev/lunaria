@@ -1,5 +1,5 @@
 import type { ConsolaInstance } from 'consola';
-import type { LunariaUserConfig, File } from '../config/types.js';
+import type { File, LunariaUserConfig } from '../config/types.js';
 
 export interface LunariaIntegration {
 	name: string;
