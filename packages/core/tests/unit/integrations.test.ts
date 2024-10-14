@@ -77,7 +77,7 @@ describe('Integration setup hook', async () => {
 					new Promise<void>((resolve) => {
 						setTimeout(() => {
 							resolve(updateConfig({ locales: ['es', 'pt'] }));
-						}, 200);
+						}, 50);
 					}),
 			},
 		};

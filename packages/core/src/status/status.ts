@@ -62,6 +62,17 @@ export function findMissingKeys(
 	const sourceDictTraverse = new Traverse(sourceDict);
 	const localeDictTraverse = new Traverse(localeDict);
 
+	const hasOptionalParent = (path: PropertyKey[]) => {
+		// is upmost parent
+		if (path.length === 1) return optionalKeysTraverse.get(path) === true;
+
+		// not upmost parent
+		if (optionalKeysTraverse.get(path) === true) return true;
+
+		// check if parent of parent is optional
+		return hasOptionalParent([...path].slice(0, -1));
+	};
+
 	const missingKeys = sourceDictTraverse
 		.paths()
 		.map((path) => {
@@ -70,9 +81,10 @@ export function findMissingKeys(
 			// Key is missing
 			if (!localeDictTraverse.has(path)) {
 				// but parent is optional
-				if (path.length > 1 && optionalKeysTraverse.get([...path].slice(0, -1)) === true)
-					return undefined;
-				// and really is missing
+				if (path.length > 1 && hasOptionalParent(path)) return undefined;
+				// but leaf is optional
+				if (optionalKeysTraverse.get(path) === true) return undefined;
+				// and is NOT optional
 				return path;
 			}
 			// Key is not missing
