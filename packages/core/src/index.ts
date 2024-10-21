@@ -13,7 +13,7 @@ import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 import type { LunariaOpts } from './types.js';
-import { Cache, md5 } from './utils/utils.js';
+import { Cache, externalSafePath, md5 } from './utils/utils.js';
 
 export type { LunariaIntegration } from './integrations/types.js';
 export type * from './files/types.js';
@@ -26,19 +26,24 @@ class Lunaria {
 	#logger: ConsolaInstance;
 	#force: boolean;
 	#hash: string;
+	#cwd: string;
 
-	constructor(config: LunariaConfig, logger: ConsolaInstance, force = false) {
-		this.#force = force;
+	constructor(
+		config: LunariaConfig,
+		git: LunariaGitInstance,
+		logger: ConsolaInstance,
+		hash: string,
+		cwd: string,
+		force = false,
+	) {
 		this.#config = config;
+		this.#git = git;
 		this.#logger = logger;
-
+		this.#force = force;
 		// Hash used to revalidate the cache -- the tracking properties manipulate how the changes are tracked,
 		// therefore we have to account for them so that the cache is fresh.
-		this.#hash = md5(
-			`ignoredKeywords::${this.#config.tracking.ignoredKeywords.join('|')}:localizableProperty::${this.#config.tracking.localizableProperty}`,
-		);
-
-		this.#git = new LunariaGitInstance(this.#config, this.#logger, this.#force, this.#hash);
+		this.#hash = hash;
+		this.#cwd = cwd;
 	}
 
 	async getFullStatus() {
@@ -49,7 +54,9 @@ class Lunaria {
 		for (const file of files) {
 			const { include, exclude, pattern } = file;
 
-			this.#logger.trace(`Processing files with pattern: ${pattern}`);
+			this.#logger.debug(
+				`Processing files with pattern: ${typeof pattern === 'string' ? pattern : `${pattern.source} (source) - ${pattern.locales} (locales)`}`,
+			);
 
 			// Paths that were filtered out by not matching the source pattern.
 			// We keep track of those to warn the user about them.
@@ -63,6 +70,7 @@ class Lunaria {
 				await glob(include, {
 					expandDirectories: false,
 					ignore: exclude,
+					cwd: this.#cwd,
 				})
 			).filter((path) => {
 				if (!isSourcePath(path)) {
@@ -106,6 +114,8 @@ class Lunaria {
 	}
 
 	async #getFileStatus(path: string, cache: boolean) {
+		const { external } = this.#config;
+
 		const fileConfig = this.findFileConfig(path);
 
 		if (!fileConfig) {
@@ -118,7 +128,11 @@ class Lunaria {
 		/** The given path can be of another locale, therefore we always convert it to the source path */
 		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
 
-		const isLocalizable = isFileLocalizable(path, this.#config.tracking.localizableProperty);
+		// TODO: Need to handle files that aren't localizable.
+		const isLocalizable = isFileLocalizable(
+			externalSafePath(external, this.#cwd, path),
+			this.#config.tracking.localizableProperty,
+		);
 
 		if (isLocalizable instanceof Error) {
 			this.#logger.error(isLocalizable.message);
@@ -143,7 +157,7 @@ class Lunaria {
 				this.#config.locales.map(async (lang): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
 
-					if (!existsSync(resolve(localizedPath))) {
+					if (!existsSync(resolve(externalSafePath(external, this.#cwd, localizedPath)))) {
 						return {
 							lang: lang,
 							path: localizedPath,
@@ -166,8 +180,8 @@ class Lunaria {
 							try {
 								const missingKeys = getDictionaryCompletion(
 									fileConfig.optionalKeys,
-									sourcePath,
-									localizedPath,
+									externalSafePath(external, this.#cwd, sourcePath),
+									externalSafePath(external, this.#cwd, localizedPath),
 								);
 
 								return {
@@ -233,7 +247,19 @@ export async function createLunaria(opts?: LunariaOpts) {
 		const initialConfig = opts?.config ? validateInitialConfig(opts.config) : await loadConfig();
 		const config = await runSetupHook(initialConfig, logger);
 
-		return new Lunaria(config, logger, opts?.force);
+		const hash = md5(
+			`ignoredKeywords::${config.tracking.ignoredKeywords.join('|')}:localizableProperty::${config.tracking.localizableProperty}`,
+		);
+
+		const git = new LunariaGitInstance(config, logger, hash, opts?.force);
+
+		let cwd = process.cwd();
+
+		if (config.external) {
+			cwd = await git.handleExternalRepository();
+		}
+
+		return new Lunaria(config, git, logger, hash, cwd, opts?.force);
 	} catch (e) {
 		if (e instanceof Error) logger.error(e.message);
 		process.exit(1);

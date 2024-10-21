@@ -44,6 +44,14 @@ export function parseWithFriendlyErrors<T extends z.Schema>(
 	return parsedConfig.data;
 }
 
+/** Makes a string compatible with `external: true` repositories. This is necessary for reading tracked files within the external path. */
+export function externalSafePath(external: boolean, cwd: string, path: string) {
+	if (external) {
+		return join(cwd, path);
+	}
+	return path;
+}
+
 export class Cache {
 	#dir: string;
 	#file: string;

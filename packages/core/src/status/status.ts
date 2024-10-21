@@ -26,13 +26,13 @@ export function isFileLocalizable(path: string, localizableProperty: string | un
 	return isLocalizable;
 }
 
-export function getDictionaryCompletion(
+export async function getDictionaryCompletion(
 	optionalKeys: OptionalKeys | undefined,
 	sourceDictPath: string,
 	localeDictPath: string,
 ) {
-	const sourceDict = fileLoader(sourceDictPath);
-	const localeDict = fileLoader(localeDictPath);
+	const sourceDict = await fileLoader(sourceDictPath);
+	const localeDict = await fileLoader(localeDictPath);
 
 	if (sourceDict instanceof Error || localeDict instanceof Error) {
 		throw sourceDict instanceof Error ? sourceDict : localeDict;

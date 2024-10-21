@@ -34,6 +34,7 @@ export interface LunariaConfig {
 		ignoredKeywords: string[];
 		localizableProperty?: string;
 	};
+	external: boolean;
 	integrations: LunariaIntegration[];
 	cacheDir: string;
 	cloneDir: string;
@@ -53,6 +54,7 @@ export interface LunariaUserConfig {
 		ignoredKeywords?: string[];
 		localizableProperty?: string;
 	};
+	external?: boolean;
 	integrations?: LunariaIntegration[];
 	cacheDir?: string;
 	cloneDir?: string;

@@ -1,5 +1,6 @@
+import { existsSync } from 'node:fs';
 import { cpus } from 'node:os';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import type { ConsolaInstance } from 'consola';
 import picomatch from 'picomatch';
 import { type DefaultLogFields, type ListLogLine, simpleGit } from 'simple-git';
@@ -17,7 +18,7 @@ export class LunariaGitInstance {
 	#force: boolean;
 	#cache: Record<string, string>;
 
-	constructor(config: LunariaConfig, logger: ConsolaInstance, force: boolean, hash: string) {
+	constructor(config: LunariaConfig, logger: ConsolaInstance, hash: string, force = false) {
 		this.#logger = logger;
 		this.#config = config;
 		this.#force = force;
@@ -34,7 +35,7 @@ export class LunariaGitInstance {
 		// The cache will keep the latest tracked change hash, that means it will be able
 		// to completely skip looking into older commits, considerably increasing performance.
 		const log = await this.#git.log({
-			file: resolve(path),
+			file: path,
 			strictDate: true,
 			from: this.#cache[path] ? `${this.#cache[path]}^` : undefined,
 		});
@@ -65,6 +66,32 @@ export class LunariaGitInstance {
 				hash: latestTrackedChange.hash,
 			},
 		};
+	}
+
+	async handleExternalRepository() {
+		const { cloneDir, repository } = this.#config;
+		const { name, hosting, rootDir } = repository;
+
+		// The name can contain a slash, which is not allowed in a directory name.
+		const safeName = name.replace('/', '-');
+		const clonePath = resolve(cloneDir, safeName);
+
+		// We need to prepend the root directory so it works in monorepos.
+		// TODO: Test if this causes any issues in non-monorepo contexts.
+		const monorepoSafePath = join(clonePath, rootDir);
+
+		// The external repository has to be a full clone since we need the source contents for features like using `localizableProperty`.
+		if (!existsSync(clonePath)) {
+			// TODO: Implement a way to support private repositories.
+			this.#logger.start("External repository is enabled. Cloning repository's contents...");
+			await this.#git.clone(`https://${hosting}.com/${name}.git`, clonePath);
+			// We need to change the working directory to the cloned repository, so all git commands are executed in the correct context.
+			await this.#git.cwd(monorepoSafePath);
+		} else {
+			await this.#git.cwd(monorepoSafePath);
+			await this.#git.pull();
+		}
+		return monorepoSafePath;
 	}
 
 	get cache() {

@@ -18,4 +18,16 @@ export default defineConfig({
 			type: 'universal',
 		},
 	],
+	tracking: {
+		localizableProperty: 'i18nReady',
+		ignoredKeywords: [
+			'lunaria-ignore',
+			'typo',
+			'en-only',
+			'broken link',
+			'i18nReady',
+			'i18nIgnore',
+		],
+	},
+	external: true,
 });

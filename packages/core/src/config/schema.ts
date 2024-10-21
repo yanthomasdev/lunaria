@@ -84,6 +84,7 @@ export const BaseLunariaConfigSchema = z.object({
 			localizableProperty: z.string().optional(),
 		})
 		.default({}),
+	external: z.boolean().default(false),
 	integrations: z.array(LunariaIntegrationSchema).default([]),
 	cacheDir: z.string().default('./node_modules/.cache/lunaria'),
 	cloneDir: z.string().default('./node_modules/.cache/lunaria/history'),
