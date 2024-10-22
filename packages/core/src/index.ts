@@ -128,14 +128,21 @@ class Lunaria {
 		/** The given path can be of another locale, therefore we always convert it to the source path */
 		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
 
-		// TODO: Need to handle files that aren't localizable.
-		const isLocalizable = isFileLocalizable(
+		const isLocalizable = await isFileLocalizable(
 			externalSafePath(external, this.#cwd, path),
 			this.#config.tracking.localizableProperty,
 		);
 
 		if (isLocalizable instanceof Error) {
 			this.#logger.error(isLocalizable.message);
+			return undefined;
+		}
+
+		// If the file isn't localizable, we don't need to track it.
+		if (!isLocalizable) {
+			this.#logger.debug(
+				`The file \`${path}\` is being tracked but is not localizable. Frontmatter property \`${this.#config.tracking.localizableProperty}\` needs to be \`true\` to get a status for this file.`,
+			);
 			return undefined;
 		}
 
