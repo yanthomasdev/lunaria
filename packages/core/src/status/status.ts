@@ -5,13 +5,13 @@ import { fileLoader, fileSupportsFrontmatterRe, frontmatterLoader } from '../fil
 import { DictionarySchema } from './schema.js';
 import type { Dictionary } from './types.js';
 
-export function isFileLocalizable(path: string, localizableProperty: string | undefined) {
+export async function isFileLocalizable(path: string, localizableProperty: string | undefined) {
 	// If no localizableProperty is specified, all files are supposed to be localizable.
 	if (!localizableProperty) return true;
 	// If the file doesn't support frontmatter, it's automatically supposed to be localizable.
 	if (!fileSupportsFrontmatterRe.test(path)) return true;
 
-	const frontmatter = frontmatterLoader(path);
+	const frontmatter = await frontmatterLoader(path);
 
 	if (frontmatter instanceof Error) return frontmatter;
 

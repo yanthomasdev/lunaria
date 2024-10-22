@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
 import picomatch from 'picomatch';
@@ -13,7 +12,7 @@ import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 import type { LunariaOpts } from './types.js';
-import { Cache, externalSafePath, md5 } from './utils/utils.js';
+import { createCache, exists, externalSafePath, md5 } from './utils/utils.js';
 
 export type { LunariaIntegration } from './integrations/types.js';
 export type * from './files/types.js';
@@ -97,7 +96,8 @@ class Lunaria {
 
 		// Save the existing git data into the cache for next builds.
 		if (!this.#force) {
-			new Cache(this.#config.cacheDir, 'git', this.#hash).write(this.#git.cache);
+			const cache = await createCache(this.#config.cacheDir, 'git', this.#hash);
+			await cache.write(this.#git.cache);
 		}
 
 		return status;
@@ -143,7 +143,8 @@ class Lunaria {
 
 		// Save the existing git data into the cache for next builds.
 		if (cache) {
-			new Cache(this.#config.cacheDir, 'git', this.#hash).write(this.#git.cache);
+			const cache = await createCache(this.#config.cacheDir, 'git', this.#hash);
+			await cache.write(this.#git.cache);
 		}
 
 		return {
@@ -157,7 +158,7 @@ class Lunaria {
 				this.#config.locales.map(async (lang): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
 
-					if (!existsSync(resolve(externalSafePath(external, this.#cwd, localizedPath)))) {
+					if (!(await exists(resolve(externalSafePath(external, this.#cwd, localizedPath))))) {
 						return {
 							lang: lang,
 							path: localizedPath,
@@ -251,7 +252,11 @@ export async function createLunaria(opts?: LunariaOpts) {
 			`ignoredKeywords::${config.tracking.ignoredKeywords.join('|')}:localizableProperty::${config.tracking.localizableProperty}`,
 		);
 
-		const git = new LunariaGitInstance(config, logger, hash, opts?.force);
+		const cache = opts?.force
+			? {}
+			: await (await createCache(config.cacheDir, 'git', hash)).contents();
+
+		const git = new LunariaGitInstance(config, logger, cache, opts?.force);
 
 		let cwd = process.cwd();
 

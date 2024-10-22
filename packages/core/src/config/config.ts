@@ -1,10 +1,9 @@
-import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ConfigNotFound, ConfigValidationError } from '../errors/errors.js';
 import { moduleLoader } from '../files/loaders.js';
 import { LunariaPreSetupSchema } from '../integrations/schema.js';
 import type { CompleteLunariaUserConfig } from '../integrations/types.js';
-import { parseWithFriendlyErrors } from '../utils/utils.js';
+import { exists, parseWithFriendlyErrors } from '../utils/utils.js';
 import { LunariaConfigSchema } from './schema.js';
 import type { LunariaUserConfig } from './types.js';
 
@@ -22,9 +21,9 @@ const configPaths = Object.freeze([
 ]);
 
 /** Finds the first `lunaria.config.*` file in the current working directoy and return its path.  */
-function findConfig() {
+async function findConfig() {
 	for (const path of configPaths) {
-		if (existsSync(resolve(path))) {
+		if (await exists(resolve(path))) {
 			return path;
 		}
 	}
@@ -34,7 +33,7 @@ function findConfig() {
 
 /** Loads a CJS/ESM `lunaria.config.*` file from the root of the current working directory. */
 export async function loadConfig() {
-	const path = findConfig();
+	const path = await findConfig();
 	if (path instanceof Error) {
 		throw path;
 	}

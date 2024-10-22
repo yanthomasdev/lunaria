@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createJiti } from 'jiti';
 import { parse } from 'ultramatter';
@@ -21,11 +21,11 @@ export async function moduleLoader(path: string) {
 /** Regex to match files that support frontmatter. */
 export const fileSupportsFrontmatterRe = /\.(yml|md|markdown|mdx|mdoc)$/;
 /** Loader for frontmatter in `.yml`, `.md`, `.markdown`, `.mdx`, `.mdoc`. */
-export function frontmatterLoader(path: string) {
+export async function frontmatterLoader(path: string) {
 	const resolvedPath = resolve(path);
 
 	try {
-		const file = readFileSync(resolvedPath, 'utf-8');
+		const file = await readFile(resolvedPath, 'utf-8');
 		const frontmatter = parse(file).frontmatter;
 
 		return frontmatter;
@@ -37,12 +37,12 @@ export function frontmatterLoader(path: string) {
 /** Regex to match JSON files. */
 export const jsonFileRe = /\.json$/;
 /** Loader for JSON files. */
-export function jsonLoader(path: string) {
+export async function jsonLoader(path: string) {
 	const resolvedPath = resolve(path);
 
 	try {
-		const file = JSON.parse(readFileSync(resolvedPath, 'utf-8'));
-		return file;
+		const file = await readFile(resolvedPath, 'utf-8');
+		return JSON.parse(file);
 	} catch (e) {
 		if (e instanceof Error) return e;
 	}
@@ -51,6 +51,6 @@ export function jsonLoader(path: string) {
 /** Loader for JS/TS modules, JSON, and frontmatter.  */
 export async function fileLoader(path: string) {
 	if (moduleFileRe.test(path)) return await moduleLoader(path);
-	if (fileSupportsFrontmatterRe.test(path)) return frontmatterLoader(path);
+	if (fileSupportsFrontmatterRe.test(path)) return await frontmatterLoader(path);
 	if (jsonFileRe.test(path)) return jsonLoader(path);
 }

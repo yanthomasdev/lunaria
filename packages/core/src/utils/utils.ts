@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { z } from 'zod';
 import { errorMap } from '../errors/zod-map.js';
@@ -52,43 +52,43 @@ export function externalSafePath(external: boolean, cwd: string, path: string) {
 	return path;
 }
 
-export class Cache {
-	#dir: string;
-	#file: string;
-	#path: string;
-	#hash: string;
-
-	constructor(dir: string, entry: string, hash: string) {
-		this.#file = `${entry}.json`;
-		this.#dir = resolve(dir);
-		this.#path = join(this.#dir, this.#file);
-		this.#hash = hash;
-
-		if (!existsSync(this.#path)) {
-			mkdirSync(this.#dir, { recursive: true });
-			this.write({ __validation: this.#hash });
-		} else {
-			this.#revalidate(this.#hash);
-		}
+export async function exists(path: string) {
+	try {
+		await stat(path);
+		return true;
+	} catch {
+		return false;
 	}
+}
 
-	get contents() {
-		return jsonLoader(this.#path);
-	}
+export async function createCache(dir: string, entry: string, hash: string) {
+	const file = `${entry}.json`;
+	const path = join(resolve(dir, file));
 
-	write(contents: Record<string, string>) {
-		writeFileSync(
-			this.#path,
+	const write = async (contents: Record<string, string>) => {
+		await writeFile(
+			path,
 			JSON.stringify({
-				__validation: this.#hash,
+				__validation: hash,
 				...contents,
 			}),
 		);
+	};
+
+	const contents = async () => await jsonLoader(path);
+
+	const revalidate = async (hash: string) => {
+		if ((await contents())?.__validation !== hash) {
+			await write({});
+		}
+	};
+
+	if (!(await exists(path))) {
+		mkdir(resolve(dir), { recursive: true });
+		await write({ __validation: hash });
+	} else {
+		await revalidate(hash);
 	}
 
-	#revalidate(hash: string) {
-		if (this.contents?.__validation !== hash) {
-			this.write({});
-		}
-	}
+	return { contents, write };
 }

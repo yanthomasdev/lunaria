@@ -1,4 +1,3 @@
-import { existsSync } from 'node:fs';
 import { cpus } from 'node:os';
 import { join, resolve } from 'node:path';
 import type { ConsolaInstance } from 'consola';
@@ -7,7 +6,7 @@ import { type DefaultLogFields, type ListLogLine, simpleGit } from 'simple-git';
 import type { LunariaConfig } from '../config/types.js';
 import { UncommittedFileFound } from '../errors/errors.js';
 import type { RegExpGroups } from '../utils/types.js';
-import { Cache } from '../utils/utils.js';
+import { exists } from '../utils/utils.js';
 
 export class LunariaGitInstance {
 	#git = simpleGit({
@@ -18,17 +17,16 @@ export class LunariaGitInstance {
 	#force: boolean;
 	#cache: Record<string, string>;
 
-	constructor(config: LunariaConfig, logger: ConsolaInstance, hash: string, force = false) {
+	constructor(
+		config: LunariaConfig,
+		logger: ConsolaInstance,
+		cache: Record<string, string>,
+		force = false,
+	) {
 		this.#logger = logger;
 		this.#config = config;
 		this.#force = force;
-
-		if (this.#force) {
-			this.#cache = {};
-		} else {
-			const cache = new Cache(this.#config.cacheDir, 'git', hash);
-			this.#cache = cache.contents;
-		}
+		this.#cache = cache;
 	}
 
 	async getFileLatestChanges(path: string) {
@@ -81,7 +79,7 @@ export class LunariaGitInstance {
 		const monorepoSafePath = join(clonePath, rootDir);
 
 		// The external repository has to be a full clone since we need the source contents for features like using `localizableProperty`.
-		if (!existsSync(clonePath)) {
+		if (!(await exists(clonePath))) {
 			// TODO: Implement a way to support private repositories.
 			this.#logger.start("External repository is enabled. Cloning repository's contents...");
 			await this.#git.clone(`https://${hosting}.com/${name}.git`, clonePath);
