@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { ConfigNotFound, ConfigValidationError } from '../errors/errors.js';
-import { moduleLoader } from '../files/loaders.js';
+import { loadModule } from '../files/loaders.js';
 import { LunariaPreSetupSchema } from '../integrations/schema.js';
 import type { CompleteLunariaUserConfig } from '../integrations/types.js';
 import { exists, parseWithFriendlyErrors } from '../utils/utils.js';
@@ -38,7 +38,7 @@ export async function loadConfig() {
 		throw path;
 	}
 
-	const mod = await moduleLoader(path);
+	const mod = await loadModule(path);
 	if (mod instanceof Error) {
 		throw mod;
 	}

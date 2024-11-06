@@ -3,7 +3,7 @@ import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { z } from 'zod';
 import { errorMap } from '../errors/zod-map.js';
-import { jsonLoader } from '../files/loaders.js';
+import { loadJSON } from '../files/loaders.js';
 
 export function isRelative(path: string) {
 	return path.startsWith('./') || path.startsWith('../');
@@ -75,7 +75,7 @@ export async function createCache(dir: string, entry: string, hash: string) {
 		);
 	};
 
-	const contents = async () => await jsonLoader(path);
+	const contents = async () => await loadJSON(path);
 
 	const revalidate = async (hash: string) => {
 		if ((await contents())?.__validation !== hash) {

@@ -2,7 +2,6 @@ import type { ConsolaInstance } from 'consola';
 import { validateFinalConfig, validateInitialConfig } from '../config/config.js';
 import type { LunariaUserConfig } from '../config/types.js';
 import { UnsupportedIntegrationSelfUpdate } from '../errors/errors.js';
-import { fileLoader } from '../files/loaders.js';
 import type { CompleteLunariaUserConfig } from './types.js';
 
 export async function runSetupHook(config: LunariaUserConfig, logger: ConsolaInstance) {
@@ -37,7 +36,6 @@ export async function runSetupHook(config: LunariaUserConfig, logger: ConsolaIns
 				});
 			},
 			logger,
-			fileLoader,
 		});
 	}
 

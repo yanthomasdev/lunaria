@@ -99,6 +99,9 @@ importers:
       jiti:
         specifier: 2.3.3
         version: 2.3.3
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
       neotraverse:
         specifier: ^0.6.18
         version: 0.6.18
@@ -121,6 +124,9 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
     devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^22.5.4
         version: 22.5.4
@@ -1373,6 +1379,9 @@ packages:
 
   '@types/is-ci@3.0.3':
     resolution: {integrity: sha512-FdHbjLiN2e8fk9QYQyVYZrK8svUDJpxSaSWLUga8EZS1RGAvvrqM9zbVARBtQuYPeLgnJxM2xloOswPwj1o2cQ==}
+
+  '@types/js-yaml@4.0.9':
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
 
   '@types/linkify-it@3.0.3':
     resolution: {integrity: sha512-pTjcqY9E4nOI55Wgpz7eiI8+LzdYnw3qxXCfHyBDdPbYvbyLgWLJGh8EdPvqawwMK1Uo1794AUkkR38Fr0g+2g==}
@@ -5615,6 +5624,8 @@ snapshots:
   '@types/is-ci@3.0.3':
     dependencies:
       ci-info: 3.9.0
+
+  '@types/js-yaml@4.0.9': {}
 
   '@types/linkify-it@3.0.3': {}
 

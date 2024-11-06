@@ -1,7 +1,16 @@
 import { Traverse } from 'neotraverse/modern';
 import type { OptionalKeys } from '../config/types.js';
-import { InvalidDictionaryFormat } from '../errors/errors.js';
-import { fileLoader, fileSupportsFrontmatterRe, frontmatterLoader } from '../files/loaders.js';
+import { InvalidDictionaryStructure, UnsupportedDictionaryFileFormat } from '../errors/errors.js';
+import {
+	frontmatterFileRe,
+	jsonFileRe,
+	loadFrontmatter,
+	loadJSON,
+	loadModule,
+	loadYAML,
+	moduleFileRe,
+	yamlFileRe,
+} from '../files/loaders.js';
 import { DictionarySchema } from './schema.js';
 import type { Dictionary } from './types.js';
 
@@ -9,9 +18,9 @@ export async function isFileLocalizable(path: string, localizableProperty: strin
 	// If no localizableProperty is specified, all files are supposed to be localizable.
 	if (!localizableProperty) return true;
 	// If the file doesn't support frontmatter, it's automatically supposed to be localizable.
-	if (!fileSupportsFrontmatterRe.test(path)) return true;
+	if (!frontmatterFileRe.test(path)) return true;
 
-	const frontmatter = await frontmatterLoader(path);
+	const frontmatter = await loadFrontmatter(path);
 
 	if (frontmatter instanceof Error) return frontmatter;
 
@@ -31,8 +40,7 @@ export async function getDictionaryCompletion(
 	sourceDictPath: string,
 	localeDictPath: string,
 ) {
-	const sourceDict = await fileLoader(sourceDictPath);
-	const localeDict = await fileLoader(localeDictPath);
+	const [sourceDict, localeDict] = await loadDictionaries(sourceDictPath, localeDictPath);
 
 	if (sourceDict instanceof Error || localeDict instanceof Error) {
 		throw sourceDict instanceof Error ? sourceDict : localeDict;
@@ -40,18 +48,17 @@ export async function getDictionaryCompletion(
 
 	const parsedSourceDict = DictionarySchema.safeParse(sourceDict);
 	if (parsedSourceDict.error) {
-		throw new Error(InvalidDictionaryFormat.message(sourceDictPath));
+		throw new Error(InvalidDictionaryStructure.message(sourceDictPath));
 	}
 
 	const parsedLocaleDict = DictionarySchema.safeParse(localeDict);
 	if (parsedLocaleDict.error) {
-		throw new Error(InvalidDictionaryFormat.message(localeDictPath));
+		throw new Error(InvalidDictionaryStructure.message(localeDictPath));
 	}
 
 	return findMissingKeys(optionalKeys, parsedSourceDict.data, parsedLocaleDict.data);
 }
 
-// TODO: Test this function.
 export function findMissingKeys(
 	optionalKeys: OptionalKeys | undefined,
 	sourceDict: Dictionary,
@@ -93,4 +100,21 @@ export function findMissingKeys(
 		.filter((key) => key !== undefined);
 
 	return missingKeys;
+}
+
+// TODO: Add integration tests for this function
+function loadDictionaries(sourcePath: string, localePath: string) {
+	if (moduleFileRe.test(sourcePath)) {
+		return Promise.all([loadModule(sourcePath), loadModule(localePath)]);
+	}
+
+	if (yamlFileRe.test(sourcePath)) {
+		return Promise.all([loadYAML(sourcePath), loadYAML(localePath)]);
+	}
+
+	if (jsonFileRe.test(sourcePath)) {
+		return Promise.all([loadJSON(sourcePath), loadJSON(localePath)]);
+	}
+
+	throw new Error(UnsupportedDictionaryFileFormat.message(sourcePath));
 }

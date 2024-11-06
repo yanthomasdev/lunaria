@@ -17,6 +17,14 @@ export default defineConfig({
 			},
 			type: 'universal',
 		},
+		{
+			include: ['src/content/i18n/en.yml'],
+			pattern: {
+				source: 'src/content/i18n/@lang.yml',
+				locales: 'src/content/i18n/@lang.yml',
+			},
+			type: 'dictionary',
+		},
 	],
 	tracking: {
 		localizableProperty: 'i18nReady',
@@ -29,5 +37,4 @@ export default defineConfig({
 			'i18nIgnore',
 		],
 	},
-	external: true,
 });

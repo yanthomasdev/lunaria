@@ -61,7 +61,6 @@ export const SetupOptionsSchema = z.object({
 				}
 			>
 	>,
-	fileLoader: z.function(z.tuple([z.string()]), z.any()),
 });
 
 const LunariaIntegrationSchema = z.object({

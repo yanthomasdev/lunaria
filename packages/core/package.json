@@ -24,6 +24,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
+    },
     "./config": {
       "types": "./dist/config/index.d.ts",
       "default": "./dist/config/index.js"
@@ -43,6 +47,7 @@
   "dependencies": {
     "consola": "^3.2.3",
     "jiti": "2.3.3",
+    "js-yaml": "^4.1.0",
     "neotraverse": "^0.6.18",
     "path-to-regexp": "6.3.0",
     "picomatch": "^4.0.2",
@@ -52,6 +57,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.5.4",
     "@types/picomatch": "^3.0.1"
   },

@@ -66,6 +66,9 @@ export class LunariaGitInstance {
 		};
 	}
 
+	// TODO: Using an external repo seems to introduce some sort of performance gains, this should be tested to ensure
+	// its not a bug e.g. not being able to read certain files or the git history not being complete and missing commits
+	// that are necessary for the status to be accurate.
 	async handleExternalRepository() {
 		const { cloneDir, repository } = this.#config;
 		const { name, hosting, rootDir } = repository;

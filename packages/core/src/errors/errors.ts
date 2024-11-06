@@ -28,8 +28,8 @@ export const FailedToLoadModule = {
 export const InvalidFilesPattern = {
 	name: 'InvalidFilesPattern',
 	title: 'Invalid `files` pattern was found.',
-	message: (pattern: string, parameter: string) =>
-		`The file pattern \`${pattern}\` is missing the \`${parameter}\` parameter. Add it to your pattern string.`,
+	message: (pattern: string) =>
+		`The file pattern \`${pattern}\` is missing a valid path parameter. Be sure to add at least one to your pattern string.`,
 } satisfies ErrorContext;
 
 export const FileConfigNotFound = {
@@ -46,11 +46,18 @@ export const UncommittedFileFound = {
 		`The file \`${path}\` is being tracked but no commits have been found. Ensure all tracked files in your working branch are committed before running Lunaria.`,
 } satisfies ErrorContext;
 
-export const InvalidDictionaryFormat = {
-	name: 'InvalidDictionaryFormat',
-	title: 'A file with an invalid dictionary format was found.',
+export const InvalidDictionaryStructure = {
+	name: 'InvalidDictionaryStructure',
+	title: 'A file with an invalid dictionary structure was found.',
 	message: (path: string) =>
-		`The \`type: "dictionary"\` file \`${path}\` has an invalid format. Dictionaries are expected to be a recursive Record of string keys and values. Alternatively, you can track this file without key completion checking by setting it to \`type: "universal"\` instead.`,
+		`The \`type: "dictionary"\` file \`${path}\` has an invalid structure. Dictionaries are expected to be a recursive Record of string keys and values. Alternatively, you can track this file without key completion checking by setting it to \`type: "universal"\` instead.`,
+} satisfies ErrorContext;
+
+export const UnsupportedDictionaryFileFormat = {
+	name: 'UnsupportedDictionaryFileFormat',
+	title: 'An unsupported file format was found.',
+	message: (file: string) =>
+		`The file \`${file}\` has an unsupported file format. Dictionaries can be Markdown/MDX/Markdoc, JSON, or JavaScript/TypeScript modules. Use one of these file formats or instead track this file without key completion checking by setting it to \`type: "universal"\` instead.`,
 } satisfies ErrorContext;
 
 export const UnsupportedIntegrationSelfUpdate = {

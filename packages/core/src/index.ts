@@ -183,10 +183,10 @@ class Lunaria {
 						new Date(latestSourceChanges.latestTrackedChange.date) >
 						new Date(latestLocaleChanges.latestTrackedChange.date);
 
-					const entryTypeData = () => {
+					const entryTypeData = async () => {
 						if (fileConfig.type === 'dictionary') {
 							try {
-								const missingKeys = getDictionaryCompletion(
+								const missingKeys = await getDictionaryCompletion(
 									fileConfig.optionalKeys,
 									externalSafePath(external, this.#cwd, sourcePath),
 									externalSafePath(external, this.#cwd, localizedPath),
@@ -210,7 +210,7 @@ class Lunaria {
 						path: localizedPath,
 						git: latestLocaleChanges,
 						status: isOutdated ? 'outdated' : 'up-to-date',
-						...entryTypeData(),
+						...(await entryTypeData()),
 					};
 				}),
 			),
