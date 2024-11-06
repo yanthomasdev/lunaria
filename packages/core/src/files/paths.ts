@@ -4,9 +4,9 @@ import { InvalidFilesPattern } from '../errors/errors.js';
 import { stringFromFormat } from '../utils/utils.js';
 import type { PathResolver } from './types.js';
 
-/** Returns any missing parameters found for the specified pattern */
-function findMissingParameter(pattern: string, parameters: string[]) {
-	return parameters.find((param) => !pattern.includes(param));
+/** Returns if a pattern has parameters or not */
+function hasParameters(pattern: string, parameters: string[]) {
+	return parameters.some((parameter) => pattern.includes(parameter));
 }
 
 /**
@@ -18,7 +18,7 @@ export function createPathResolver(
 	sourceLocale: LunariaConfig['sourceLocale'],
 	locales: LunariaConfig['locales'],
 ): PathResolver {
-	/**
+	/*
 	 * We have to change the accepted locales for each pattern, since the source pattern
 	 * should only accept the source locale, and the locales pattern should accept all the other locales.
 	 */
@@ -45,21 +45,27 @@ export function createPathResolver(
 	const sourcePattern = stringFromFormat(baseSourcePattern, placeholders(sourceLocale));
 	const localesPattern = stringFromFormat(baseLocalesPattern, placeholders(joinedLocales));
 
-	const missingSourceParameter = findMissingParameter(sourcePattern, [':path']);
+	/*
+	 * Originally, this was a strict check to see if the source pattern had the `@path` parameter
+	 * and the locales pattern had the `@lang` and `@path` parameter, which was the assumpting for the way
+	 * paths worked in Lunaria pre-v1. However, this is not the case anymore since Lunaria does not care
+	 * for having a common path for files anymore, allowing us to have paths like this:
+	 * - Source path: `src/i18n/en.yml`
+	 * - Locales path: `src/i18n/pt-BR.yml`
+	 * - Pattern: `src/i18n/@tag.yml`
+	 */
+	const parameters = [':lang', ':path'];
 
-	if (missingSourceParameter) {
-		throw new Error(InvalidFilesPattern.message(baseSourcePattern, missingSourceParameter));
+	if (!hasParameters(sourcePattern, parameters)) {
+		throw new Error(InvalidFilesPattern.message(baseSourcePattern));
 	}
 
-	const missingLocalesParameter = findMissingParameter(localesPattern, [':path', ':lang']);
-
-	if (missingLocalesParameter) {
-		throw new Error(InvalidFilesPattern.message(baseLocalesPattern, missingLocalesParameter));
+	if (!hasParameters(localesPattern, parameters)) {
+		throw new Error(InvalidFilesPattern.message(baseLocalesPattern));
 	}
 
 	return {
-		// `match` returns an object if true, here we're forcing it to return a boolean.
-		/**
+		/*
 		 * Explanation: why does `isSourcePath` checks if it isn't a locales path but `isLocalesPath` doesn't?
 		 * In a few cases, the source path can end up matching the locales path, like so:
 		 *
@@ -69,6 +75,7 @@ export function createPathResolver(
 		 * In this case, the locales path fulfills the source pattern match, but the opposite can't happen, considering
 		 * the locales path strictly requires the `@lang` parameter that is limited to the configured locales.
 		 */
+		// `match` returns an object if true, here we're forcing it to return a boolean.
 		isSourcePath: (path: string) => !!match(sourcePattern)(path) && !match(localesPattern)(path),
 		isLocalesPath: (path: string) => !!match(localesPattern)(path),
 		toPath: (fromPath: string, toLang: string) => {

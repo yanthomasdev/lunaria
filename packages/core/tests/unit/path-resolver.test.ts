@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { describe, it } from 'node:test';
-import { createPathResolver } from '../../dist/status/paths.js';
+import { createPathResolver } from '../../dist/files/paths.js';
 
 describe('Path resolver', () => {
 	it("should convert pattern from Lunaria's format into path-to-regexp's format", () => {
@@ -12,10 +12,7 @@ describe('Path resolver', () => {
 			locales: 'src/content/i18n/@lang/@path',
 		};
 
-		const firstResolver = createPathResolver(firstPattern, { lang: 'en', label: 'English' }, [
-			{ lang: 'es', label: 'Spanish' },
-			{ lang: 'pt', label: 'Portuguese' },
-		]);
+		const firstResolver = createPathResolver(firstPattern, 'en', ['es', 'pt']);
 
 		// Checks if the patterns are correctly converted in a double-string pattern.
 		assert.equal(firstResolver.sourcePattern, 'src/content/docs/:path(.*)');
@@ -27,10 +24,7 @@ describe('Path resolver', () => {
 		 */
 		const secondPattern = 'pages/:path+.@lang.mdx';
 
-		const secondResolver = createPathResolver(secondPattern, { lang: 'en', label: 'English' }, [
-			{ lang: 'es', label: 'Spanish' },
-			{ lang: 'pt', label: 'Portuguese' },
-		]);
+		const secondResolver = createPathResolver(secondPattern, 'en', ['es', 'pt']);
 
 		// Checks if the pattern is correctly converted in a single-string pattern.
 		// Also checks if the pattern for when `@lang` is correctly converted.
@@ -41,10 +35,7 @@ describe('Path resolver', () => {
 	it('should make valid paths from single-string pattern', () => {
 		const pattern = 'src/content/docs/@lang/@path';
 
-		const { toPath } = createPathResolver(pattern, { lang: 'en', label: 'English' }, [
-			{ lang: 'es', label: 'Spanish' },
-			{ lang: 'pt', label: 'Portuguese' },
-		]);
+		const { toPath } = createPathResolver(pattern, 'en', ['es', 'pt']);
 
 		assert.equal(toPath('src/content/docs/en/test.mdx', 'es'), 'src/content/docs/es/test.mdx');
 		assert.equal(
@@ -63,10 +54,7 @@ describe('Path resolver', () => {
 			locales: 'translations/@lang/@path',
 		};
 
-		const { toPath } = createPathResolver(pattern, { lang: 'en', label: 'English' }, [
-			{ lang: 'es', label: 'Spanish' },
-			{ lang: 'pt', label: 'Portuguese' },
-		]);
+		const { toPath } = createPathResolver(pattern, 'en', ['es', 'pt']);
 
 		assert.equal(toPath('docs/test.mdx', 'es'), 'translations/es/test.mdx');
 		assert.equal(toPath('docs/examples/theory.mdx', 'pt'), 'translations/pt/examples/theory.mdx');
@@ -76,22 +64,15 @@ describe('Path resolver', () => {
 	it('should correctly match source and locale paths from single-string pattern', () => {
 		const pattern = 'docs/@lang/@path';
 
-		const { isSourcePathMatch, isLocalesPathMatch } = createPathResolver(
-			pattern,
-			{ lang: 'pt', label: 'Portuguese' },
-			[
-				{ lang: 'es', label: 'Spanish' },
-				{ lang: 'en', label: 'English' },
-			],
-		);
+		const { isSourcePath, isLocalesPath } = createPathResolver(pattern, 'pt', ['es', 'en']);
 
-		assert.equal(isSourcePathMatch('docs/pt/test.mdx'), true);
-		assert.equal(isSourcePathMatch('docs/es/reference/api-reference.mdx'), false);
-		assert.equal(isSourcePathMatch('not/docs/pt/guides/example.md'), false);
+		assert.equal(isSourcePath('docs/pt/test.mdx'), true);
+		assert.equal(isSourcePath('docs/es/reference/api-reference.mdx'), false);
+		assert.equal(isSourcePath('not/docs/pt/guides/example.md'), false);
 
-		assert.equal(isLocalesPathMatch('docs/es/test.mdx'), true);
-		assert.equal(isLocalesPathMatch('docs/zh-cn/reference/api-reference.mdx'), false);
-		assert.equal(isLocalesPathMatch('not/docs/en/guides/example.md'), false);
+		assert.equal(isLocalesPath('docs/es/test.mdx'), true);
+		assert.equal(isLocalesPath('docs/zh-cn/reference/api-reference.mdx'), false);
+		assert.equal(isLocalesPath('not/docs/en/guides/example.md'), false);
 	});
 
 	it('should correctly match source and locale paths from double-string pattern', () => {
@@ -100,51 +81,22 @@ describe('Path resolver', () => {
 			locales: 'docs/@lang/@path',
 		};
 
-		const { isSourcePathMatch, isLocalesPathMatch, sourcePattern, localesPattern } =
-			createPathResolver(pattern, { lang: 'pt', label: 'Portuguese' }, [
-				{ lang: 'es', label: 'Spanish' },
-				{ lang: 'en', label: 'English' },
-			]);
+		const { isSourcePath, isLocalesPath } = createPathResolver(pattern, 'pt', ['es', 'en']);
 
-		assert.equal(isSourcePathMatch('docs/test.mdx'), true);
-		assert.equal(isSourcePathMatch('docs/es/reference/api-reference.mdx'), false);
-		assert.equal(isSourcePathMatch('not/docs/pt/guides/example.md'), false);
+		assert.equal(isSourcePath('docs/test.mdx'), true);
+		assert.equal(isSourcePath('docs/es/reference/api-reference.mdx'), false);
+		assert.equal(isSourcePath('not/docs/pt/guides/example.md'), false);
 
-		assert.equal(isLocalesPathMatch('docs/es/test.mdx'), true);
-		assert.equal(isLocalesPathMatch('docs/zh-cn/reference/api-reference.mdx'), false);
-		assert.equal(isLocalesPathMatch('not/docs/en/guides/example.md'), false);
+		assert.equal(isLocalesPath('docs/es/test.mdx'), true);
+		assert.equal(isLocalesPath('docs/zh-cn/reference/api-reference.mdx'), false);
+		assert.equal(isLocalesPath('not/docs/en/guides/example.md'), false);
 	});
 
-	it("throws when there's no `:path` in pattern or `:lang` in `localesPattern`", () => {
-		assert.throws(() =>
-			createPathResolver('docs/@lang', { lang: 'en', label: 'English' }, [
-				{
-					lang: 'es',
-					label: 'Spanish',
-				},
-			]),
-		);
-
-		assert.throws(() =>
-			createPathResolver('docs/@path', { lang: 'en', label: 'English' }, [
-				{
-					lang: 'es',
-					label: 'Spanish',
-				},
-			]),
-		);
-
-		assert.throws(() =>
-			createPathResolver(
-				{ source: 'docs/@path', locales: 'docs/@lang' },
-				{ lang: 'en', label: 'English' },
-				[
-					{
-						lang: 'es',
-						label: 'Spanish',
-					},
-				],
-			),
+	it('should accept any pattern with at least one valid parameter', () => {
+		assert.throws(() => createPathResolver('docs/path/lang.md', 'en', ['es']));
+		assert.doesNotThrow(() => createPathResolver('docs/:path.md', 'en', ['es']));
+		assert.doesNotThrow(() =>
+			createPathResolver({ source: 'src/ui/@lang.ts', locales: 'src/i18n/@lang.ts' }, 'en', ['es']),
 		);
 	});
 });
