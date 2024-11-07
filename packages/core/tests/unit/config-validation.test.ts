@@ -10,7 +10,17 @@ describe('Configuration validation', () => {
 	});
 
 	it('should throw when there are repeated locales', () => {
-		assert.throws(() => validateFinalConfig({ ...sampleValidConfig, locales: ['en'] }));
+		assert.throws(() =>
+			validateFinalConfig({
+				...sampleValidConfig,
+				locales: [
+					{
+						label: 'English',
+						lang: 'en',
+					},
+				],
+			}),
+		);
 	});
 
 	it('should accept unset `sourceLocale`, `locales`, and `files` before setup hook', () => {
@@ -55,5 +65,49 @@ describe('Configuration validation', () => {
 
 		assert.equal(resultingConfig.repository.name, 'yanthomasdev/lunaria');
 		assert.equal(resultingConfig.repository.rootDir, 'examples/starlight');
+	});
+
+	it('should throw when not all locales share the same parameters keys', () => {
+		assert.throws(() =>
+			validateFinalConfig({
+				...sampleValidConfig,
+				sourceLocale: {
+					lang: 'en',
+					label: 'English',
+					parameters: {
+						tag: 'en',
+					},
+				},
+				locales: [
+					{
+						label: 'Simplified Chinese',
+						lang: 'zh-cn',
+						parameters: {
+							tag: 'zh-CN',
+							some: 'value',
+						},
+					},
+				],
+			}),
+		);
+		assert.throws(() =>
+			validateFinalConfig({
+				...sampleValidConfig,
+				sourceLocale: {
+					lang: 'en',
+					label: 'English',
+				},
+				locales: [
+					{
+						label: 'Simplified Chinese',
+						lang: 'zh-cn',
+						parameters: {
+							tag: 'zh-CN',
+							some: 'value',
+						},
+					},
+				],
+			}),
+		);
 	});
 });

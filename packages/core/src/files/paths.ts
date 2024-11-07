@@ -22,18 +22,47 @@ export function createPathResolver(
 	 * We have to change the accepted locales for each pattern, since the source pattern
 	 * should only accept the source locale, and the locales pattern should accept all the other locales.
 	 */
-	const joinedLocales = locales.join('|');
+	const joinedLocales = locales.map((locale) => locale.lang).join('|');
 
 	// @lang - Matches the locale part of the path.
 	const langPattern = (locales: string) => `:lang(${locales})`;
 	// @path - Matches the rest of the path.
 	const pathPattern = ':path(.*)';
 
-	const placeholders = (locales: string): Record<string, string> => {
-		return {
-			'@lang': langPattern(locales),
+	// All locales are assumed to have the same parameters, so for simplicity
+	// we use the source pattern's parameters as a reference of all shared parameters.
+	const customParameters = sourceLocale.parameters;
+
+	const placeholders = (source: boolean): Record<string, string> => {
+		const basePlaceholders = {
+			'@lang': langPattern(source ? sourceLocale.lang : joinedLocales),
 			'@path': pathPattern,
 		};
+
+		if (customParameters) {
+			const placeholderValue = (key: string) => {
+				// biome-ignore lint/style/noNonNullAssertion: These are ensured to exist by the validation schema.
+				const sourceParameterValue = sourceLocale.parameters![key];
+				// biome-ignore lint/style/noNonNullAssertion: see above
+				const localeParameterValue = locales.map((locale) => locale.parameters![key]).join('|');
+				return source ? sourceParameterValue : localeParameterValue;
+			};
+
+			const customPlaceholders = Object.keys(customParameters).reduce(
+				(acc, param) => {
+					acc[`@${param}`] = `:${param}(${placeholderValue(param)})`;
+					return acc;
+				},
+				{} as Record<string, string>,
+			);
+
+			return {
+				...basePlaceholders,
+				...customPlaceholders,
+			};
+		}
+
+		return basePlaceholders;
 	};
 
 	// We accept either a single string pattern or one for souce and localized content
@@ -42,8 +71,8 @@ export function createPathResolver(
 	const baseSourcePattern = typeof pattern === 'string' ? pattern : pattern.source;
 	const baseLocalesPattern = typeof pattern === 'string' ? pattern : pattern.locales;
 
-	const sourcePattern = stringFromFormat(baseSourcePattern, placeholders(sourceLocale));
-	const localesPattern = stringFromFormat(baseLocalesPattern, placeholders(joinedLocales));
+	const sourcePattern = stringFromFormat(baseSourcePattern, placeholders(true));
+	const localesPattern = stringFromFormat(baseLocalesPattern, placeholders(false));
 
 	/*
 	 * Originally, this was a strict check to see if the source pattern had the `@path` parameter
@@ -54,13 +83,17 @@ export function createPathResolver(
 	 * - Locales path: `src/i18n/pt-BR.yml`
 	 * - Pattern: `src/i18n/@tag.yml`
 	 */
-	const parameters = [':lang', ':path'];
+	const validParameters = [
+		':lang',
+		':path',
+		...(customParameters ? Object.keys(customParameters).map((param) => `:${param}`) : []),
+	];
 
-	if (!hasParameters(sourcePattern, parameters)) {
+	if (!hasParameters(sourcePattern, validParameters)) {
 		throw new Error(InvalidFilesPattern.message(baseSourcePattern));
 	}
 
-	if (!hasParameters(localesPattern, parameters)) {
+	if (!hasParameters(localesPattern, validParameters)) {
 		throw new Error(InvalidFilesPattern.message(baseLocalesPattern));
 	}
 
@@ -82,9 +115,16 @@ export function createPathResolver(
 			// Since the path for the same source and localized content can have different patterns,
 			// we have to check if the `toLang` is from the sourceLocale (i.e. source content) or
 			// from the localized content, meaning we get the correct path always.
-			const selectedPattern = locales.includes(toLang) ? localesPattern : sourcePattern;
+			const selectedPattern = locales.map((locale) => locale.lang).includes(toLang)
+				? localesPattern
+				: sourcePattern;
 			const inverseSelectedPattern =
 				selectedPattern === sourcePattern ? localesPattern : sourcePattern;
+
+			// We inject the custom parameters as-is for the target locale.
+			const localeParameters = [sourceLocale, ...locales].find(
+				(locale) => locale.lang === toLang,
+			)?.parameters;
 
 			const matcher = match(inverseSelectedPattern) as (
 				path: string,
@@ -94,6 +134,7 @@ export function createPathResolver(
 				lang: toLang,
 				// We extract the common path from `fromPath` to build the resulting path.
 				path: matcher(fromPath).params.path,
+				...localeParameters,
 			});
 		},
 		sourcePattern: sourcePattern,

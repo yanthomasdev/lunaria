@@ -20,6 +20,12 @@ export type File =
 
 type GitHostingOptions = 'github' | 'gitlab';
 
+export type Locale = {
+	label: string;
+	lang: string;
+	parameters?: Record<string, string>;
+};
+
 export interface LunariaConfig {
 	repository: {
 		name: string;
@@ -27,8 +33,8 @@ export interface LunariaConfig {
 		rootDir: string;
 		hosting: GitHostingOptions;
 	};
-	sourceLocale: string;
-	locales: [string, ...string[]];
+	sourceLocale: Locale;
+	locales: [Locale, ...Locale[]];
 	files: [File, ...File[]];
 	tracking: {
 		ignoredKeywords: string[];
@@ -47,8 +53,8 @@ export interface LunariaUserConfig {
 		rootDir?: string;
 		hosting?: 'github' | 'gitlab';
 	};
-	sourceLocale?: string;
-	locales?: [string, ...string[]];
+	sourceLocale?: Locale;
+	locales?: [Locale, ...Locale[]];
 	files?: [File, ...File[]];
 	tracking?: {
 		ignoredKeywords?: string[];

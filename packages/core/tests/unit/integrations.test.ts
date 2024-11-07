@@ -32,8 +32,15 @@ describe('Integration setup hook', async () => {
 
 	it('should successfully update the configuration', async () => {
 		const addedConfigFields = {
-			sourceLocale: 'en',
-			locales: ['es', 'fr', 'ja'],
+			sourceLocale: {
+				label: 'English',
+				lang: 'en',
+			},
+			locales: [
+				{ label: 'Spanish', lang: 'es' },
+				{ label: 'French', lang: 'fr' },
+				{ label: 'Japanese', lang: 'ja' },
+			],
 			files: [
 				{
 					include: ['src/content/**/*.mdx'],
@@ -76,7 +83,14 @@ describe('Integration setup hook', async () => {
 				setup: async ({ updateConfig }) =>
 					new Promise<void>((resolve) => {
 						setTimeout(() => {
-							resolve(updateConfig({ locales: ['es', 'pt'] }));
+							resolve(
+								updateConfig({
+									locales: [
+										{ label: 'Spanish', lang: 'es' },
+										{ label: 'Português', lang: 'pt' },
+									],
+								}),
+							);
 						}, 50);
 					}),
 			},
@@ -84,7 +98,10 @@ describe('Integration setup hook', async () => {
 
 		const { integrations, ...expectedConfig } = validateFinalConfig({
 			...sampleValidConfig,
-			locales: ['es', 'pt'],
+			locales: [
+				{ label: 'Spanish', lang: 'es' },
+				{ label: 'Português', lang: 'pt' },
+			],
 		});
 
 		const { integrations: _, ...resultingConfig } = await runSetupHook(

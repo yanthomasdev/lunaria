@@ -126,7 +126,7 @@ class Lunaria {
 		const { isSourcePath, toPath } = this.getPathResolver(fileConfig.pattern);
 
 		/** The given path can be of another locale, therefore we always convert it to the source path */
-		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
+		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
 
 		const isLocalizable = await isFileLocalizable(
 			externalSafePath(external, this.#cwd, path),
@@ -157,12 +157,12 @@ class Lunaria {
 		return {
 			...fileConfig,
 			source: {
-				lang: this.#config.sourceLocale,
+				lang: this.#config.sourceLocale.lang,
 				path: sourcePath,
 				git: latestSourceChanges,
 			},
 			localizations: await Promise.all(
-				this.#config.locales.map(async (lang): Promise<StatusLocalizationEntry> => {
+				this.#config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
 
 					if (!(await exists(resolve(externalSafePath(external, this.#cwd, localizedPath))))) {
@@ -228,7 +228,7 @@ class Lunaria {
 			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
 
 			try {
-				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale);
+				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
 
 				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
 				// therefore we need to test both to find the correct `files` config.

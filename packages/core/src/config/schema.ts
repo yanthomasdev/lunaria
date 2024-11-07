@@ -70,12 +70,18 @@ const LunariaIntegrationSchema = z.object({
 	}),
 });
 
+export const LocaleSchema = z.object({
+	label: z.string(),
+	lang: z.string(),
+	parameters: z.record(z.string(), z.string()).optional(),
+});
+
 // We need both of these schemas so that we can extend the Lunaria config
 // e.g. to validate integrations
 export const BaseLunariaConfigSchema = z.object({
 	repository: RepositorySchema,
-	sourceLocale: z.string(),
-	locales: z.array(z.string()).nonempty(),
+	sourceLocale: LocaleSchema,
+	locales: z.array(LocaleSchema).nonempty(),
 	files: z.array(FileSchema).nonempty(),
 	tracking: z
 		.object({
@@ -92,7 +98,7 @@ export const BaseLunariaConfigSchema = z.object({
 export const LunariaConfigSchema = BaseLunariaConfigSchema.superRefine((config, ctx) => {
 	// Adds an validation issue if any locales share the same value.
 	const locales = new Set();
-	for (const locale of [config.sourceLocale, ...config.locales]) {
+	for (const locale of [config.sourceLocale.lang, ...config.locales.map((locale) => locale.lang)]) {
 		if (locales.has(locale)) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
@@ -100,6 +106,29 @@ export const LunariaConfigSchema = BaseLunariaConfigSchema.superRefine((config, 
 			});
 		}
 		locales.add(locale);
+	}
+
+	let params: Array<string> | undefined = undefined;
+	for (const { parameters, lang } of [config.sourceLocale, ...config.locales]) {
+		// Since the sourceLocale is evaluated first in the array, we can use it
+		// to ensure whe are properly checking no locales has the `parameters` field.
+		if (!params && parameters && config.sourceLocale.parameters) {
+			params = Object.keys(parameters);
+		}
+
+		if (parameters && Object.keys(parameters).join(',') !== params?.join(',')) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'All locales must have the same `parameters` keys',
+			});
+		}
+
+		if (params && !parameters) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: `All locales must have the same \`parameters\` keys. Locale ${lang} does not have \`parameters\`.`,
+			});
+		}
 	}
 
 	if (config.cacheDir === config.cloneDir) {
