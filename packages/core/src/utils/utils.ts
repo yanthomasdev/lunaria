@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto';
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { join as joinPOSIX } from 'node:path/posix';
 import type { z } from 'zod';
+import type { LunariaConfig } from '../config/types.js';
 import { errorMap } from '../errors/zod-map.js';
 import { loadJSON } from '../files/loaders.js';
 
@@ -11,10 +13,6 @@ export function isRelative(path: string) {
 
 export function stripTrailingSlash(path: string) {
 	return path.replace(/\/+$/, '');
-}
-
-export function toUtcString(date: string) {
-	return new Date(date).toISOString();
 }
 
 export function md5(content: string) {
@@ -91,4 +89,35 @@ export async function createCache(dir: string, entry: string, hash: string) {
 	}
 
 	return { contents, write };
+}
+
+export function createGitHostingLinks(repository: LunariaConfig['repository']) {
+	const { name, branch, hosting, rootDir } = repository;
+	const github = 'github.com';
+	const gitlab = 'gitlab.com';
+	// We use the POSIX version of `join` to ensure the URLs match what is expected
+	// of the browser.
+	switch (hosting) {
+		case 'github':
+			return {
+				create: (path: string) =>
+					`https://${joinPOSIX(github, name, 'new', `${branch}?filename=${joinPOSIX(rootDir, path)}`)}`,
+				source: (path: string) =>
+					`https://${joinPOSIX(github, name, 'blob', branch, rootDir, path)}`,
+				history: (path: string, since?: string) =>
+					`https://${joinPOSIX(github, name, 'commits', branch, rootDir, `${path}${since ? `?since=${since}` : ''}`)}`,
+				clone: () => `https://${joinPOSIX(github, name)}.git`,
+			};
+
+		case 'gitlab':
+			return {
+				create: (path: string) =>
+					`https://${joinPOSIX(gitlab, name, '-', 'new', `${branch}?file_name=${joinPOSIX(rootDir, path)}`)}`,
+				source: (path: string) =>
+					`https://${joinPOSIX(gitlab, name, '-', 'blob', branch, rootDir, path)}`,
+				history: (path: string, since?: string) =>
+					`https://${joinPOSIX(gitlab, name, '-', 'commits', branch, rootDir, `${path}${since ? `?since=${since}` : ''}`)}`,
+				clone: () => `https://${joinPOSIX(gitlab, name)}.git`,
+			};
+	}
 }

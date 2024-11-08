@@ -12,7 +12,13 @@ import { LunariaGitInstance } from './status/git.js';
 import { getDictionaryCompletion, isFileLocalizable } from './status/status.js';
 import type { LunariaStatus, StatusLocalizationEntry } from './status/types.js';
 import type { LunariaOpts } from './types.js';
-import { createCache, exists, externalSafePath, md5 } from './utils/utils.js';
+import {
+	createCache,
+	createGitHostingLinks,
+	exists,
+	externalSafePath,
+	md5,
+} from './utils/utils.js';
 
 export type { LunariaIntegration } from './integrations/types.js';
 export type * from './files/types.js';
@@ -243,6 +249,10 @@ class Lunaria {
 				return false;
 			}
 		});
+	}
+
+	gitHostingLinks() {
+		return createGitHostingLinks(this.config.repository);
 	}
 }
 
