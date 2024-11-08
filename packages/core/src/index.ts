@@ -20,7 +20,7 @@ export type * from './status/types.js';
 export type * from './config/types.js';
 
 class Lunaria {
-	#config: LunariaConfig;
+	readonly config: LunariaConfig;
 	#git: LunariaGitInstance;
 	#logger: ConsolaInstance;
 	#force: boolean;
@@ -35,7 +35,7 @@ class Lunaria {
 		cwd: string,
 		force = false,
 	) {
-		this.#config = config;
+		this.config = config;
 		this.#git = git;
 		this.#logger = logger;
 		this.#force = force;
@@ -46,7 +46,7 @@ class Lunaria {
 	}
 
 	async getFullStatus() {
-		const { files } = this.#config;
+		const { files } = this.config;
 
 		const status: LunariaStatus = [];
 
@@ -96,7 +96,7 @@ class Lunaria {
 
 		// Save the existing git data into the cache for next builds.
 		if (!this.#force) {
-			const cache = await createCache(this.#config.cacheDir, 'git', this.#hash);
+			const cache = await createCache(this.config.cacheDir, 'git', this.#hash);
 			await cache.write(this.#git.cache);
 		}
 
@@ -114,7 +114,7 @@ class Lunaria {
 	}
 
 	async #getFileStatus(path: string, cache: boolean) {
-		const { external } = this.#config;
+		const { external } = this.config;
 
 		const fileConfig = this.findFileConfig(path);
 
@@ -126,11 +126,11 @@ class Lunaria {
 		const { isSourcePath, toPath } = this.getPathResolver(fileConfig.pattern);
 
 		/** The given path can be of another locale, therefore we always convert it to the source path */
-		const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
+		const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
 
 		const isLocalizable = await isFileLocalizable(
 			externalSafePath(external, this.#cwd, path),
-			this.#config.tracking.localizableProperty,
+			this.config.tracking.localizableProperty,
 		);
 
 		if (isLocalizable instanceof Error) {
@@ -141,7 +141,7 @@ class Lunaria {
 		// If the file isn't localizable, we don't need to track it.
 		if (!isLocalizable) {
 			this.#logger.debug(
-				`The file \`${path}\` is being tracked but is not localizable. Frontmatter property \`${this.#config.tracking.localizableProperty}\` needs to be \`true\` to get a status for this file.`,
+				`The file \`${path}\` is being tracked but is not localizable. Frontmatter property \`${this.config.tracking.localizableProperty}\` needs to be \`true\` to get a status for this file.`,
 			);
 			return undefined;
 		}
@@ -150,19 +150,19 @@ class Lunaria {
 
 		// Save the existing git data into the cache for next builds.
 		if (cache) {
-			const cache = await createCache(this.#config.cacheDir, 'git', this.#hash);
+			const cache = await createCache(this.config.cacheDir, 'git', this.#hash);
 			await cache.write(this.#git.cache);
 		}
 
 		return {
 			...fileConfig,
 			source: {
-				lang: this.#config.sourceLocale.lang,
+				lang: this.config.sourceLocale.lang,
 				path: sourcePath,
 				git: latestSourceChanges,
 			},
 			localizations: await Promise.all(
-				this.#config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
+				this.config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
 					const localizedPath = toPath(path, lang);
 
 					if (!(await exists(resolve(externalSafePath(external, this.#cwd, localizedPath))))) {
@@ -219,16 +219,16 @@ class Lunaria {
 
 	/** Returns a path resolver for the specified pattern. */
 	getPathResolver(pattern: Pattern) {
-		return createPathResolver(pattern, this.#config.sourceLocale, this.#config.locales);
+		return createPathResolver(pattern, this.config.sourceLocale, this.config.locales);
 	}
 
 	/** Finds the matching `files` configuration for the specified path. */
 	findFileConfig(path: string) {
-		return this.#config.files.find((file) => {
+		return this.config.files.find((file) => {
 			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
 
 			try {
-				const sourcePath = isSourcePath(path) ? path : toPath(path, this.#config.sourceLocale.lang);
+				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
 
 				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
 				// therefore we need to test both to find the correct `files` config.
