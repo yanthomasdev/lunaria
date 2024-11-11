@@ -82,7 +82,7 @@ export async function createCache(dir: string, entry: string, hash: string) {
 	};
 
 	if (!(await exists(path))) {
-		mkdir(resolve(dir), { recursive: true });
+		await mkdir(resolve(dir), { recursive: true });
 		await write({ __validation: hash });
 	} else {
 		await revalidate(hash);

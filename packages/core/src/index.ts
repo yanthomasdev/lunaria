@@ -25,7 +25,6 @@ export type * from './files/types.js';
 export type * from './status/types.js';
 export type * from './config/types.js';
 
-// TODO: Remove this comment
 class Lunaria {
 	readonly config: LunariaConfig;
 	#git: LunariaGitInstance;
