@@ -103,17 +103,17 @@ export function findMissingKeys(
 }
 
 // TODO: Add integration tests for this function
-function loadDictionaries(sourcePath: string, localePath: string) {
+async function loadDictionaries(sourcePath: string, localePath: string) {
 	if (moduleFileRe.test(sourcePath)) {
-		return Promise.all([loadModule(sourcePath), loadModule(localePath)]);
+		return [await loadModule(sourcePath), await loadModule(localePath)];
 	}
 
 	if (yamlFileRe.test(sourcePath)) {
-		return Promise.all([loadYAML(sourcePath), loadYAML(localePath)]);
+		return [await loadYAML(sourcePath), await loadYAML(localePath)];
 	}
 
 	if (jsonFileRe.test(sourcePath)) {
-		return Promise.all([loadJSON(sourcePath), loadJSON(localePath)]);
+		return [await loadJSON(sourcePath), await loadJSON(localePath)];
 	}
 
 	throw new Error(UnsupportedDictionaryFileFormat.message(sourcePath));
