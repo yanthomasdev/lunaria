@@ -5,8 +5,16 @@ export default defineConfig({
 		name: 'yanthomasdev/lunaria',
 		rootDir: 'examples/starlight',
 	},
-	sourceLocale: 'en',
-	locales: ['pt'],
+	sourceLocale: {
+		label: 'English',
+		lang: 'en',
+	},
+	locales: [
+		{
+			label: 'Português',
+			lang: 'pt',
+		},
+	],
 	files: [
 		{
 			include: ['src/content/docs/**/*.(md|mdx)'],
@@ -22,6 +30,14 @@ export default defineConfig({
 			pattern: {
 				source: 'src/content/i18n/@lang.yml',
 				locales: 'src/content/i18n/@lang.yml',
+			},
+			type: 'dictionary',
+		},
+		{
+			include: ['src/content/i18n/en.ts'],
+			pattern: {
+				source: 'src/content/i18n/@lang.ts',
+				locales: 'src/content/i18n/@lang.ts',
 			},
 			type: 'dictionary',
 		},
