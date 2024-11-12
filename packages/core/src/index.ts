@@ -92,12 +92,17 @@ class Lunaria {
 			}
 
 			/** We use `Promise.all` to allow the promises to run in parallel, increasing the performance considerably. */
-			await Promise.all(
-				sourceFilePaths.sort().map(async (path) => {
-					const fileStatus = await this.#getFileStatus(path, false);
-					if (fileStatus) status.push(fileStatus);
-				}),
-			);
+			const entries = (
+				await Promise.all(
+					sourceFilePaths.map(async (path) => {
+						return await this.#getFileStatus(path, false);
+					}),
+				)
+			).sort((a, b) => (a?.source.path ?? '').localeCompare(b?.source.path ?? ''));
+
+			for (const entry of entries) {
+				if (entry) status.push(entry);
+			}
 		}
 
 		// Save the existing git data into the cache for next builds.
