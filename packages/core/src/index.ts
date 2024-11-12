@@ -244,7 +244,7 @@ class Lunaria {
 				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
 				// therefore we need to test both to find the correct `files` config.
 				return (
-					isSourcePath(path) &&
+					isSourcePath(sourcePath) &&
 					picomatch.isMatch(sourcePath, file.include, {
 						ignore: file.exclude,
 					})
