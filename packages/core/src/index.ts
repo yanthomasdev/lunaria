@@ -236,18 +236,11 @@ class Lunaria {
 	/** Finds the matching `files` configuration for the specified path. */
 	findFileConfig(path: string) {
 		return this.config.files.find((file) => {
-			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
-
+			const { isSourcePath, isLocalesPath } = this.getPathResolver(file.pattern);
 			try {
-				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
-
-				// Checks if the path matches the `include` and `exclude` fields.
-				return picomatch.isMatch(sourcePath, file.include, {
-					ignore: file.exclude,
-				});
-
-				// If it fails to match, we assume it's not the respective `files` config and return false.
+				return isSourcePath(path) || isLocalesPath(path);
 			} catch {
+				// If it fails to match, we assume it's not the respective `files` config and return false.
 				return false;
 			}
 		});
