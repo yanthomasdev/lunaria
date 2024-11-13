@@ -36,7 +36,7 @@ export const FileConfigNotFound = {
 	name: 'FileConfigNotFound',
 	title: 'No corresponding `files` entry was found.',
 	message: (path: string) =>
-		`The file \`${path}\` doesn't not match any of the existing \`files\` entries. Verify that the path is correct and a corresponding \`files\` entry is properly set in your Lunaria configuration file.`,
+		`The file \`${path}\` does not match any of the existing \`files\` entries. Verify that the path is correct and a corresponding \`files\` entry is properly set in your Lunaria configuration file.`,
 } satisfies ErrorContext;
 
 export const UncommittedFileFound = {
