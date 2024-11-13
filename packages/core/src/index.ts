@@ -174,7 +174,7 @@ class Lunaria {
 			},
 			localizations: await Promise.all(
 				this.config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
-					const localizedPath = toPath(path, lang);
+					const localizedPath = toPath(sourcePath, lang);
 
 					if (!(await exists(resolve(externalSafePath(external, this.#cwd, localizedPath))))) {
 						return {

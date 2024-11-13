@@ -126,6 +126,8 @@ export function createPathResolver(
 				(locale) => locale.lang === toLang,
 			)?.parameters;
 
+			// TODO: Explore edge case where the fromPath is from the same locale as `toLang`,
+			// which causes an unexpected issue that makes it select the incorrect pattern.
 			const matcher = match(inverseSelectedPattern) as (
 				path: string,
 			) => MatchResult<{ lang?: string; path: string }>;
