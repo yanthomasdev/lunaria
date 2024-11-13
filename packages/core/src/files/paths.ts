@@ -131,10 +131,16 @@ export function createPathResolver(
 			) => MatchResult<{ lang?: string; path: string }>;
 
 			return compile<{ lang?: string; path: string }>(selectedPattern)({
-				lang: toLang,
-				// We extract the common path from `fromPath` to build the resulting path.
-				path: matcher(fromPath).params.path,
+				// We extract and inject any parameters that could be found
+				// from the initial path to the resulting path, this is what
+				// enables the path inferring.
+				...matcher(fromPath).params,
+				// Locale parameters are injected as-is from the locale's `parameters` field,
+				// if the pattern needs any of those parameters, it will have the values needed.
 				...localeParameters,
+				// The lang has to be given last since it could be overwritten by the initial path's
+				// parameters, which we don't want to happen.
+				lang: toLang,
 			});
 		},
 		sourcePattern: sourcePattern,

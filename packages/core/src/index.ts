@@ -241,14 +241,11 @@ class Lunaria {
 			try {
 				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
 
-				// There's a few cases in which the pattern might match, but the include/exclude filters don't,
-				// therefore we need to test both to find the correct `files` config.
-				return (
-					isSourcePath(sourcePath) &&
-					picomatch.isMatch(sourcePath, file.include, {
-						ignore: file.exclude,
-					})
-				);
+				// Checks if the path matches the `include` and `exclude` fields.
+				return picomatch.isMatch(sourcePath, file.include, {
+					ignore: file.exclude,
+				});
+
 				// If it fails to match, we assume it's not the respective `files` config and return false.
 			} catch {
 				return false;
