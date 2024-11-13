@@ -1,6 +1,5 @@
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
-import picomatch from 'picomatch';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateInitialConfig } from './config/config.js';
 import type { LunariaConfig, Pattern } from './config/types.js';
