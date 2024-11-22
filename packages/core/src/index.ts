@@ -1,10 +1,11 @@
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
+import { isMatch } from 'picomatch';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateInitialConfig } from './config/config.js';
 import type { LunariaConfig, Pattern } from './config/types.js';
 import { CONSOLE_LEVELS } from './constants.js';
-import { FileConfigNotFound } from './errors/errors.js';
+import { FilesEntryNotFound, SourceFileNotFound } from './errors/errors.js';
 import { createPathResolver } from './files/paths.js';
 import { runSetupHook } from './integrations/integrations.js';
 import { LunariaGitInstance } from './status/git.js';
@@ -126,20 +127,25 @@ class Lunaria {
 	async #getFileStatus(path: string, cache: boolean) {
 		const { external } = this.config;
 
-		const fileConfig = this.findFileConfig(path);
+		const file = this.findFilesEntry(path);
 
-		if (!fileConfig) {
-			this.#logger.error(FileConfigNotFound.message(path));
+		if (!file) {
+			this.#logger.error(FilesEntryNotFound.message(path));
 			return undefined;
 		}
 
-		const { isSourcePath, toPath } = this.getPathResolver(fileConfig.pattern);
+		const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
 
 		/** The given path can be of another locale, therefore we always convert it to the source path */
 		const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
 
+		if (!(await exists(externalSafePath(external, this.#cwd, sourcePath)))) {
+			this.#logger.error(SourceFileNotFound.message(sourcePath, path));
+			return undefined;
+		}
+
 		const isLocalizable = await isFileLocalizable(
-			externalSafePath(external, this.#cwd, path),
+			externalSafePath(external, this.#cwd, sourcePath),
 			this.config.tracking.localizableProperty,
 		);
 
@@ -165,7 +171,7 @@ class Lunaria {
 		}
 
 		return {
-			...fileConfig,
+			...file,
 			source: {
 				lang: this.config.sourceLocale.lang,
 				path: sourcePath,
@@ -194,10 +200,10 @@ class Lunaria {
 						new Date(latestLocaleChanges.latestTrackedChange.date);
 
 					const entryTypeData = async () => {
-						if (fileConfig.type === 'dictionary') {
+						if (file.type === 'dictionary') {
 							try {
 								const missingKeys = await getDictionaryCompletion(
-									fileConfig.optionalKeys,
+									file.optionalKeys,
 									externalSafePath(external, this.#cwd, sourcePath),
 									externalSafePath(external, this.#cwd, localizedPath),
 								);
@@ -232,12 +238,16 @@ class Lunaria {
 		return createPathResolver(pattern, this.config.sourceLocale, this.config.locales);
 	}
 
-	/** Finds the matching `files` configuration for the specified path. */
-	findFileConfig(path: string) {
+	/** Finds the matching `files` entry for the specified path. */
+	findFilesEntry(path: string) {
 		return this.config.files.find((file) => {
-			const { isSourcePath, isLocalesPath } = this.getPathResolver(file.pattern);
+			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
+
 			try {
-				return isSourcePath(path) || isLocalesPath(path);
+				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
+				return isMatch(sourcePath, file.include, {
+					ignore: file.exclude,
+				});
 			} catch {
 				// If it fails to match, we assume it's not the respective `files` config and return false.
 				return false;

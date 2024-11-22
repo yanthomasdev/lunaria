@@ -32,8 +32,15 @@ export const InvalidFilesPattern = {
 		`The file pattern \`${pattern}\` is missing a valid path parameter. Be sure to add at least one to your pattern string.`,
 } satisfies ErrorContext;
 
-export const FileConfigNotFound = {
-	name: 'FileConfigNotFound',
+export const SourceFileNotFound = {
+	name: 'SourceFileNotFound',
+	title: 'Source file not found.',
+	message: (sourcePath: string, originPath: string) =>
+		`The source file at \`${sourcePath}\` from requested path \`${originPath}\` does not exist. Verify there are no typos in the path or in the corresponding files' entry configuration.`,
+} satisfies ErrorContext;
+
+export const FilesEntryNotFound = {
+	name: 'FilesEntryNotFound',
 	title: 'No corresponding `files` entry was found.',
 	message: (path: string) =>
 		`The file \`${path}\` does not match any of the existing \`files\` entries. Verify that the path is correct and a corresponding \`files\` entry is properly set in your Lunaria configuration file.`,
