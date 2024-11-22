@@ -141,8 +141,9 @@ export function findLatestTrackedCommit(
 			// We filter here to avoid empty strings if an extra semicolon is added at the end.
 			.filter((val) => val.length > 0)
 			.find((pathOrGlob) => {
-				if (directive === '@lunaria-track') return picomatch.isMatch(path, pathOrGlob);
-				if (directive === '@lunaria-ignore') return picomatch.isMatch(path, pathOrGlob);
+				// We trim here since there might be added extra spaces by accident.
+				if (directive === '@lunaria-track') return picomatch.isMatch(path, pathOrGlob.trim());
+				if (directive === '@lunaria-ignore') return picomatch.isMatch(path, pathOrGlob.trim());
 			});
 
 		// If we find the path and it's a `track` directive, we consider the commit as the latest tracked.
