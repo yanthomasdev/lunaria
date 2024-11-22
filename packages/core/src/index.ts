@@ -241,9 +241,15 @@ class Lunaria {
 	/** Finds the matching `files` entry for the specified path. */
 	findFilesEntry(path: string) {
 		return this.config.files.find((file) => {
-			const { isSourcePath, toPath } = this.getPathResolver(file.pattern);
+			const { isSourcePath, isLocalesPath, toPath } = this.getPathResolver(file.pattern);
 
+			// To certify an entry matches fully, we have to first check if the path does match the existing
+			// pattern for that entry, then we convert the path to the source path and check if it matches
+			// against `include` and `exclude` properties. Otherwise, patterns could be matched incorrectly
+			// by matching only partially.
 			try {
+				if (!isSourcePath(path) && !isLocalesPath(path)) return false;
+
 				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
 				return picomatch.isMatch(sourcePath, file.include, {
 					ignore: file.exclude,
