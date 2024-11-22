@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { type ConsolaInstance, createConsola } from 'consola';
-import { isMatch } from 'picomatch';
+import picomatch from 'picomatch';
 import { glob } from 'tinyglobby';
 import { loadConfig, validateInitialConfig } from './config/config.js';
 import type { LunariaConfig, Pattern } from './config/types.js';
@@ -245,7 +245,7 @@ class Lunaria {
 
 			try {
 				const sourcePath = isSourcePath(path) ? path : toPath(path, this.config.sourceLocale.lang);
-				return isMatch(sourcePath, file.include, {
+				return picomatch.isMatch(sourcePath, file.include, {
 					ignore: file.exclude,
 				});
 			} catch {
