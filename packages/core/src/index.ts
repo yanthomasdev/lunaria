@@ -19,6 +19,7 @@ import {
 	externalSafePath,
 	md5,
 } from './utils/utils.js';
+import pAll from 'p-all';
 
 export type { LunariaIntegration } from './integrations/types.js';
 export type * from './files/types.js';
@@ -91,17 +92,27 @@ class Lunaria {
 				);
 			}
 
-			/** We use `Promise.all` to allow the promises to run in parallel, increasing the performance considerably. */
-			const entries = (
-				await Promise.all(
-					sourceFilePaths.map(async (path) => {
-						return await this.#getFileStatus(path, false);
-					}),
-				)
-			).sort((a, b) => (a?.source.path ?? '').localeCompare(b?.source.path ?? ''));
+			const entries: LunariaStatus = new Array(sourceFilePaths.length);
 
-			for (const entry of entries) {
-				if (entry) status.push(entry);
+			await pAll(
+				sourceFilePaths.map((path) => {
+					return async () => {
+						const entry = await this.getFileStatus(path);
+						if (entry) entries.push(entry);
+					};
+				}),
+				{
+					concurrency: 5,
+				},
+			);
+
+			// We sort the entries by source path to make the resulting status consistent.
+			// That is, entries will be laid out by precedence in the `files` array, and then
+			// sorted internally.
+			const sortedEntries = entries.sort((a, b) => a.source.path.localeCompare(b.source.path));
+
+			for (const entry of sortedEntries) {
+				status.push(entry);
 			}
 		}
 
@@ -170,23 +181,19 @@ class Lunaria {
 			await cache.write(this.#git.cache);
 		}
 
-		return {
-			...file,
-			source: {
-				lang: this.config.sourceLocale.lang,
-				path: sourcePath,
-				git: latestSourceChanges,
-			},
-			localizations: await Promise.all(
-				this.config.locales.map(async ({ lang }): Promise<StatusLocalizationEntry> => {
+		const localizations: StatusLocalizationEntry[] = new Array(this.config.locales.length);
+
+		const tasks = this.config.locales.map(({ lang }) => {
+			return async () => {
+				{
 					const localizedPath = toPath(sourcePath, lang);
 
 					if (!(await exists(resolve(externalSafePath(external, this.#cwd, localizedPath))))) {
-						return {
+						localizations.push({
 							lang: lang,
 							path: localizedPath,
 							status: 'missing',
-						};
+						});
 					}
 
 					const latestLocaleChanges = await this.#git.getFileLatestChanges(localizedPath);
@@ -221,15 +228,27 @@ class Lunaria {
 						return {};
 					};
 
-					return {
+					localizations.push({
 						lang: lang,
 						path: localizedPath,
 						git: latestLocaleChanges,
 						status: isOutdated ? 'outdated' : 'up-to-date',
 						...(await entryTypeData()),
-					};
-				}),
-			),
+					});
+				}
+			};
+		});
+
+		await pAll(tasks, { concurrency: 5 });
+
+		return {
+			...file,
+			source: {
+				lang: this.config.sourceLocale.lang,
+				path: sourcePath,
+				git: latestSourceChanges,
+			},
+			localizations,
 		};
 	}
 
