@@ -49,6 +49,7 @@
     "jiti": "2.3.3",
     "js-yaml": "^4.1.0",
     "neotraverse": "^0.6.18",
+    "p-all": "^5.0.0",
     "path-to-regexp": "6.3.0",
     "picomatch": "^4.0.2",
     "simple-git": "^3.27.0",
